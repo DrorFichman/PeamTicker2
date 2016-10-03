@@ -45,6 +45,8 @@ public class PlayerGamesDbHelper {
 
     public static Cursor getGames(SQLiteDatabase db) {
 
+        // TODO needed?
+
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
         String[] projection = {

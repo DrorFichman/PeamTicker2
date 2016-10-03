@@ -153,6 +153,12 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.make_teams) {
 
             startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
+        }
+        if (id == R.id.enter_results) {
+
+            Intent intent = new Intent(MainActivity.this, MakeTeamsActivity.class);
+            intent.putExtra(MakeTeamsActivity.INTENT_SET_RESULT, true);
+            startActivity(intent);
 
         } else if (id == R.id.add_player) {
 

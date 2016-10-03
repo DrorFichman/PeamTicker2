@@ -6,11 +6,15 @@
         android:title="@string/add_player"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_settings"
-        android:title="@string/action_status"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/make_teams"
         android:title="@string/make_teams"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/enter_results"
+        android:title="@string/enter_results"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:title="@string/action_status"
         app:showAsAction="never" />
 </menu>

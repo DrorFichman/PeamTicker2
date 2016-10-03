@@ -95,7 +95,11 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static Cursor getGames(Context context) {
-        return PlayerGamesDbHelper.getGames(getSqLiteDatabase(context));
+        return GameDbHelper.getGames(getSqLiteDatabase(context));
+    }
+
+    public static void insertGame(Context context, int gameId, int score1, int score2) {
+        GameDbHelper.insertGameResults(getSqLiteDatabase(context), gameId, score1, score2);
     }
 
     public static String getNow() {

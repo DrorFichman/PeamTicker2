@@ -14,19 +14,19 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.teampicker.drorfichman.teampicker.Data.DbHelper;
-import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.PreferenceHelper;
-import com.teampicker.drorfichman.teampicker.Data.PlayerGamesDbHelper;
-import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
-import com.teampicker.drorfichman.teampicker.R;
 import com.teampicker.drorfichman.teampicker.Controller.TeamData;
 import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
+import com.teampicker.drorfichman.teampicker.Data.DbHelper;
+import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
+import com.teampicker.drorfichman.teampicker.R;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,11 +37,14 @@ import java.util.List;
 
 public class MakeTeamsActivity extends AppCompatActivity {
 
+    public static String INTENT_SET_RESULT = "INTENT_SET_RESULT";
+
     private ArrayList<Player> players1 = new ArrayList<>();
     private ArrayList<Player> players2 = new ArrayList<>();
-    private Player player;
     private ListView list2;
     private ListView list1;
+
+    private Player player;
 
     private View totalData;
     private TextView teamData2;
@@ -51,6 +54,10 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private View doneView;
     private View moveView;
     private View shuffleView;
+
+    private boolean mSetResult;
+    private Button team1Score;
+    private Button team2Score;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,8 +132,12 @@ public class MakeTeamsActivity extends AppCompatActivity {
         findViewById(R.id.done).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saveTeams();
-                enterSendMode();
+                if (mSetResult) {
+                    saveResults();
+                } else {
+                    saveTeams();
+                    enterSendMode();
+                }
             }
         });
 
@@ -150,7 +161,56 @@ public class MakeTeamsActivity extends AppCompatActivity {
             }
         });
 
+        team1Score = (Button) findViewById(R.id.team_1_score);
+        team2Score = (Button) findViewById(R.id.team_2_score);
+
+        if (PreferenceHelper.getCurrGame(this) > 0) {
+            if (getIntent().getBooleanExtra(INTENT_SET_RESULT, false)) {
+                setResultInit();
+            }
+        }
+
         initialData();
+    }
+
+    private void saveResults() {
+        int currGame = PreferenceHelper.getCurrGame(this);
+        DbHelper.insertGame(this, currGame, getScoreValue(team1Score), getScoreValue(team2Score));
+        PreferenceHelper.setCurrGame(this, -1);
+
+        Toast.makeText(this, "Results saved", Toast.LENGTH_LONG).show();
+        finish();
+    }
+
+    private void setResultInit() {
+
+        mSetResult = true;
+
+        moveView.setVisibility(View.INVISIBLE);
+        shuffleView.setVisibility(View.INVISIBLE);
+        sendView.setVisibility(View.INVISIBLE);
+
+        doneView.setVisibility(View.VISIBLE);
+        team1Score.setVisibility(View.VISIBLE);
+        team2Score.setVisibility(View.VISIBLE);
+
+        team1Score.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                team1Score.setText(String.valueOf((getScoreValue(team1Score) + 1) % 11));
+            }
+        });
+
+        team2Score.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                team2Score.setText(String.valueOf((getScoreValue(team2Score) + 1) % 11));
+            }
+        });
+    }
+
+    int getScoreValue(Button b) {
+        return Integer.valueOf(b.getText().toString());
     }
 
     private void initialData() {
@@ -164,8 +224,11 @@ public class MakeTeamsActivity extends AppCompatActivity {
             players1 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team1);
             players2 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team2);
             updateLists();
-            Toast.makeText(this, "Displaying saved teams, \n" +
-                    "Reshuffle if needed", Toast.LENGTH_LONG).show();
+
+            if (!mSetResult) {
+                Toast.makeText(this, "Displaying saved teams, \n" +
+                        "Reshuffle if needed", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
@@ -236,7 +299,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        if (doneView != null && doneView.getVisibility() != View.VISIBLE) {
+        if (sendView != null && sendView.getVisibility() == View.VISIBLE) {
             exitSendMode();
         } else {
             super.onBackPressed();

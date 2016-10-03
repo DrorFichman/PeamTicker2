@@ -26,7 +26,9 @@ public class GameDbHelper {
     }
 
     public static void insertGameResults(SQLiteDatabase db, int gameId,
-                                    int team1Score, int team2Score) {
+                                         int team1Score, int team2Score) {
+
+        Log.d("TEAMS", "Saving result " + team1Score + " - " + team2Score);
 
         ContentValues values = new ContentValues();
         values.put(PlayerContract.GameEntry.GAME, gameId);
@@ -36,8 +38,39 @@ public class GameDbHelper {
         values.put(PlayerContract.GameEntry.RESULT, TeamEnum.getResult(team1Score, team2Score).ordinal());
 
         // Insert the new row, returning the primary key value of the new row
-        db.insert(PlayerContract.PlayerGameEntry.TABLE_NAME,
+        db.insert(PlayerContract.GameEntry.TABLE_NAME,
                 null,
                 values);
+    }
+
+    public static Cursor getGames(SQLiteDatabase db) {
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                PlayerContract.GameEntry.ID,
+                PlayerContract.GameEntry.GAME,
+                PlayerContract.GameEntry.DATE,
+                PlayerContract.GameEntry.RESULT,
+                PlayerContract.GameEntry.TEAM1_SCORE,
+                PlayerContract.GameEntry.TEAM2_SCORE,
+        };
+
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder = PlayerContract.GameEntry.ID + " DESC";
+
+        Cursor c = db.query(
+                PlayerContract.GameEntry.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+        c.moveToFirst();
+
+        return c;
     }
 }

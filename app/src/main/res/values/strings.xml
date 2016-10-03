@@ -4,7 +4,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="action_status">Status</string>
     <string name="name">Enter player name</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
@@ -14,5 +13,7 @@
     <string name="yes">yes</string>
     <string name="add_player">Add player</string>
     <string name="make_teams">Make teams</string>
+    <string name="enter_results">Enter Results</string>
+    <string name="action_status">Arriving status</string>
     <string name="team_data">" Count: %1$s \n Sum : %2$s \n StdDev: %3$s "</string>
 </resources>

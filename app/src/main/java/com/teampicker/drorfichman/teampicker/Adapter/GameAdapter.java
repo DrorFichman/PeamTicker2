@@ -6,7 +6,6 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.teampicker.drorfichman.teampicker.Data.PlayerContract;
@@ -29,12 +28,14 @@ public class GameAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
         TextView date = (TextView) view.findViewById(R.id.game_date);
-        CheckBox resultSet = (CheckBox) view.findViewById(R.id.game_result_set);
+        TextView resultSet = (TextView) view.findViewById(R.id.game_result_set);
 
-        final String mDate = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.PlayerGameEntry.DATE));
+        String mDate = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.GameEntry.DATE));
+        String team1 = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.GameEntry.TEAM1_SCORE));
+        String team2 = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.GameEntry.TEAM2_SCORE));
 
         date.setText(mDate);
-        resultSet.setChecked(false);
+        resultSet.setText(String.valueOf(team1 + " - " + team2));
 
         view.setTag(mDate);
     }
