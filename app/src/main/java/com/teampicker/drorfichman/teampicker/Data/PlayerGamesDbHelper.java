@@ -30,11 +30,9 @@ public class PlayerGamesDbHelper {
 
     public static void insertPlayerGame(SQLiteDatabase db, Player player, int currGame, TeamEnum team) {
 
-        String now = DbHelper.getNow();
-
         ContentValues values = new ContentValues();
         values.put(PlayerContract.PlayerGameEntry.GAME, currGame);
-        values.put(PlayerContract.PlayerGameEntry.DATE, now);
+        values.put(PlayerContract.PlayerGameEntry.DATE, DbHelper.getNow());
         values.put(PlayerContract.PlayerGameEntry.NAME, player.mName);
         values.put(PlayerContract.PlayerGameEntry.PLAYER_GRADE, player.mGrade);
         values.put(PlayerContract.PlayerGameEntry.TEAM, team.ordinal());
@@ -129,7 +127,9 @@ public class PlayerGamesDbHelper {
         Log.d("teams", "Clear old Game teams ");
 
         int n = db.delete(PlayerContract.PlayerGameEntry.TABLE_NAME,
-                PlayerContract.PlayerGameEntry.GAME_GRADE + " IS NULL ", null);
+                PlayerContract.PlayerGameEntry.GAME + " NOT IN " +
+                        " ( SELECT " + PlayerContract.GameEntry.GAME +
+                        " FROM " + PlayerContract.GameEntry.TABLE_NAME + " )", null);
 
         Log.d("teams", "deleted games players " + n);
     }

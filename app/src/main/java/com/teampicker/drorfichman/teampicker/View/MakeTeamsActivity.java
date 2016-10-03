@@ -299,8 +299,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void takeScreenshotPermitted() {
 
-        String now = DbHelper.getNow();
-
         try {
             // image naming and path  to include sd card  appending name you choose for file
             // TODO app folder
@@ -313,7 +311,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
             File imagePath = new File(Environment.getExternalStorageDirectory().toString() + "/TeamPicker/");
             imagePath.mkdirs();
-            File imageFile = new File(imagePath, now + ".jpg");
+            File imageFile = new File(imagePath, DbHelper.getNow() + ".jpg");
 
             FileOutputStream outputStream = new FileOutputStream(imageFile);
             int quality = 50;

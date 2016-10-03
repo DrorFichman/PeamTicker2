@@ -27,5 +27,15 @@ public final class PlayerContract {
         public static final String GOALS = "goals";
         public static final String ASSISTS = "assists";
     }
+
+    public static abstract class GameEntry {
+        public static final String TABLE_NAME = "game";
+        public static final String ID = "_id";
+        public static final String GAME = "game";
+        public static final String DATE = "date";
+        public static final String TEAM1_SCORE = "team_one_score";
+        public static final String TEAM2_SCORE = "team_two_score";
+        public static final String RESULT = "result";
+    }
 }
 

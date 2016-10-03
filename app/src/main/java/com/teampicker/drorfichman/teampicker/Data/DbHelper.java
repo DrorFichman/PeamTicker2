@@ -25,6 +25,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(PlayerDbHelper.getSqlCreate());
         db.execSQL(PlayerGamesDbHelper.getSqlCreate());
+        db.execSQL(GameDbHelper.getSqlCreate());
 
         // TODO debug data
         PlayerDbHelper.insertPlayer(db, "דרור", 85);
