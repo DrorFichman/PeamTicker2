@@ -1,0 +1,56 @@
+package com.teampicker.drorfichman.teampicker.Adapter;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+
+import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.R;
+
+import java.util.List;
+
+/**
+ * Created by drorfichman on 7/30/16.
+ */
+public class PlayerTeamAdapter extends ArrayAdapter<Player> {
+    private final Context context;
+    private final List<Player> mPlayers;
+
+    public PlayerTeamAdapter(Context ctx, List<Player> players) {
+        super(ctx, -1, players);
+        context = ctx;
+        mPlayers = players;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View rowView = LayoutInflater.from(context).inflate(R.layout.player_item, parent, false);
+
+        Player player = mPlayers.get(position);
+
+        rowView.findViewById(R.id.player_coming).setVisibility(View.GONE);
+        TextView name = (TextView) rowView.findViewById(R.id.player_name);
+        name.setText(player.mName);
+        TextView grade = (TextView) rowView.findViewById(R.id.player_grade);
+
+        if (player.isGradeDisplayed) {
+            grade.setText(String.valueOf(player.mGrade));
+            grade.setVisibility(View.VISIBLE);
+        } else {
+            grade.setVisibility(View.GONE);
+        }
+
+
+        if (player.isSelected) {
+            rowView.setBackgroundColor(Color.CYAN);
+        } else {
+            rowView.setBackgroundColor(Color.TRANSPARENT);
+        }
+
+        return rowView;
+    }
+}

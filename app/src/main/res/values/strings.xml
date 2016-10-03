@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">TeamPicker</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_status">Status</string>
+    <string name="name">Enter player name</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="score">score</string>
+    <string name="current_score">"%1$s : Current score [%2$s]"</string>
+    <string name="new_score">New score</string>
+    <string name="yes">yes</string>
+    <string name="add_player">Add player</string>
+    <string name="make_teams">Make teams</string>
+    <string name="team_data">" Count: %1$s \n Sum : %2$s \n StdDev: %3$s "</string>
+</resources>

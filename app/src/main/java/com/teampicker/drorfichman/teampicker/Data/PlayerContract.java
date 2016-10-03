@@ -1,0 +1,36 @@
+package com.teampicker.drorfichman.teampicker.Data;
+
+/**
+ * Created by drorfichman on 7/30/16.
+ */
+public final class PlayerContract {
+    public PlayerContract() {
+    }
+
+    public static abstract class PlayerEntry {
+        public static final String TABLE_NAME = "player";
+        public static final String ID = "_id";
+        public static final String NAME = "name";
+        public static final String GRADE = "grade";
+        public static final String IS_COMING = "is_coming";
+    }
+
+    public static abstract class PlayerGameEntry {
+        public static final String TABLE_NAME = "player_game";
+        public static final String ID = "_id";
+        public static final String NAME = "name";
+        public static final String GAME = "game";
+        public static final String DATE = "date";
+        public static final String PLAYER_GRADE = "player_grade";
+        public static final String GAME_GRADE = "game_grade";
+        public static final String TEAM = "team";
+        public static final String GOALS = "goals";
+        public static final String ASSISTS = "assists";
+    }
+
+    public enum teamEnum {
+        Team1,
+        Team2
+    }
+}
+
