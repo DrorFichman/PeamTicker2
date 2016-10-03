@@ -10,7 +10,6 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,10 +20,10 @@ import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
-import com.teampicker.drorfichman.teampicker.Data.PlayerContract;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.PreferenceHelper;
-import com.teampicker.drorfichman.teampicker.Data.PlayerGamesHelper;
+import com.teampicker.drorfichman.teampicker.Data.PlayerGamesDbHelper;
+import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
 import com.teampicker.drorfichman.teampicker.Controller.TeamData;
 import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
@@ -162,8 +161,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
             initialDivision();
         } else {
             Log.d("teams", "Initial data curr game > 0 - so getting from DB");
-            players1 = DbHelper.getCurrTeam(this, currGame, PlayerGamesHelper.teamEnum.Team1);
-            players2 = DbHelper.getCurrTeam(this, currGame, PlayerGamesHelper.teamEnum.Team2);
+            players1 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team1);
+            players2 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team2);
             updateLists();
             Toast.makeText(this, "Displaying saved teams, \n" +
                     "Reshuffle if needed", Toast.LENGTH_LONG).show();
@@ -181,10 +180,10 @@ public class MakeTeamsActivity extends AppCompatActivity {
         // TODO : PREF_CURR_GAME_INDEX should be cleared after game results are entered, so new games will be created
 
         for (Player a : players1) {
-            DbHelper.insertPlayerGame(this, a, currGame, PlayerGamesHelper.teamEnum.Team1);
+            DbHelper.insertPlayerGame(this, a, currGame, TeamEnum.Team1);
         }
         for (Player b : players2) {
-            DbHelper.insertPlayerGame(this, b, currGame, PlayerGamesHelper.teamEnum.Team2);
+            DbHelper.insertPlayerGame(this, b, currGame, TeamEnum.Team2);
         }
     }
 

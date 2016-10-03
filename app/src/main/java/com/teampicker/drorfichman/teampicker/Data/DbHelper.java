@@ -1,14 +1,11 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.icu.text.PluralFormat;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -27,7 +24,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(PlayerDbHelper.getSqlCreate());
-        db.execSQL(PlayerGamesHelper.getSqlCreate());
+        db.execSQL(PlayerGamesDbHelper.getSqlCreate());
 
         // TODO debug data
         PlayerDbHelper.insertPlayer(db, "דרור", 85);
@@ -85,19 +82,19 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static void clearOldGameTeams(Context context) {
-        PlayerGamesHelper.clearOldGameTeams(getSqLiteDatabase(context));
+        PlayerGamesDbHelper.clearOldGameTeams(getSqLiteDatabase(context));
     }
 
-    public static void insertPlayerGame(Context context, Player player, int currGame, PlayerGamesHelper.teamEnum team) {
-        PlayerGamesHelper.insertPlayerGames(getSqLiteDatabase(context), player, currGame, team);
+    public static void insertPlayerGame(Context context, Player player, int currGame, TeamEnum team) {
+        PlayerGamesDbHelper.insertPlayerGame(getSqLiteDatabase(context), player, currGame, team);
     }
 
-    public static ArrayList<Player> getCurrTeam(Context context, int currGame, PlayerGamesHelper.teamEnum team) {
-        return PlayerGamesHelper.getCurrTeam(getSqLiteDatabase(context), currGame, team);
+    public static ArrayList<Player> getCurrTeam(Context context, int currGame, TeamEnum team) {
+        return PlayerGamesDbHelper.getCurrTeam(getSqLiteDatabase(context), currGame, team);
     }
 
     public static Cursor getGames(Context context) {
-        return PlayerGamesHelper.getGames(getSqLiteDatabase(context));
+        return PlayerGamesDbHelper.getGames(getSqLiteDatabase(context));
     }
 
     public static String getNow() {

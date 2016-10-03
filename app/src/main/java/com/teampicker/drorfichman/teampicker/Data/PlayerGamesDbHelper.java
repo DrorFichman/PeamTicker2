@@ -10,12 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by drorfichman on 10/3/16.
  */
-public class PlayerGamesHelper {
-
-    public enum teamEnum {
-        Team1,
-        Team2
-    }
+public class PlayerGamesDbHelper {
 
     private static final String SQL_CREATE_PLAYERS_GAMES =
             "CREATE TABLE " + PlayerContract.PlayerGameEntry.TABLE_NAME + " (" +
@@ -33,7 +28,7 @@ public class PlayerGamesHelper {
         return SQL_CREATE_PLAYERS_GAMES;
     }
 
-    public static void insertPlayerGames(SQLiteDatabase db, Player player, int currGame, teamEnum team) {
+    public static void insertPlayerGame(SQLiteDatabase db, Player player, int currGame, TeamEnum team) {
 
         String now = DbHelper.getNow();
 
@@ -78,7 +73,7 @@ public class PlayerGamesHelper {
         return c;
     }
 
-    public static ArrayList<Player> getCurrTeam(SQLiteDatabase db, int currGame, teamEnum team) {
+    public static ArrayList<Player> getCurrTeam(SQLiteDatabase db, int currGame, TeamEnum team) {
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
