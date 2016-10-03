@@ -24,6 +24,7 @@ import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerContract;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.PreferenceHelper;
+import com.teampicker.drorfichman.teampicker.Data.PlayerGamesHelper;
 import com.teampicker.drorfichman.teampicker.R;
 import com.teampicker.drorfichman.teampicker.Controller.TeamData;
 import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
@@ -161,8 +162,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
             initialDivision();
         } else {
             Log.d("teams", "Initial data curr game > 0 - so getting from DB");
-            players1 = DbHelper.getCurrTeam(this, currGame, PlayerContract.teamEnum.Team1);
-            players2 = DbHelper.getCurrTeam(this, currGame, PlayerContract.teamEnum.Team2);
+            players1 = DbHelper.getCurrTeam(this, currGame, PlayerGamesHelper.teamEnum.Team1);
+            players2 = DbHelper.getCurrTeam(this, currGame, PlayerGamesHelper.teamEnum.Team2);
             updateLists();
             Toast.makeText(this, "Displaying saved teams, \n" +
                     "Reshuffle if needed", Toast.LENGTH_LONG).show();
@@ -180,10 +181,10 @@ public class MakeTeamsActivity extends AppCompatActivity {
         // TODO : PREF_CURR_GAME_INDEX should be cleared after game results are entered, so new games will be created
 
         for (Player a : players1) {
-            DbHelper.insertPlayerGame(this, a, currGame, PlayerContract.teamEnum.Team1);
+            DbHelper.insertPlayerGame(this, a, currGame, PlayerGamesHelper.teamEnum.Team1);
         }
         for (Player b : players2) {
-            DbHelper.insertPlayerGame(this, b, currGame, PlayerContract.teamEnum.Team2);
+            DbHelper.insertPlayerGame(this, b, currGame, PlayerGamesHelper.teamEnum.Team2);
         }
     }
 
@@ -299,7 +300,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void takeScreenshotPermitted() {
 
-        String now = DateFormat.format("dd-MM-yyyy_hh:mm:ss", System.currentTimeMillis()).toString();
+        String now = DbHelper.getNow();
 
         try {
             // image naming and path  to include sd card  appending name you choose for file

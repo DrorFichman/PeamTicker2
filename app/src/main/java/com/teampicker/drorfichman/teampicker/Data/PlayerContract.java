@@ -27,10 +27,5 @@ public final class PlayerContract {
         public static final String GOALS = "goals";
         public static final String ASSISTS = "assists";
     }
-
-    public enum teamEnum {
-        Team1,
-        Team2
-    }
 }
 
