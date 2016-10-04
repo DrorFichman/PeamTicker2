@@ -6,11 +6,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,7 +37,30 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
         rowView.findViewById(R.id.player_coming).setVisibility(View.GONE);
         TextView name = (TextView) rowView.findViewById(R.id.player_name);
-        name.setText(player.mName + " \n " + player.getResults());
+        name.setText(player.mName);
+
+        ArrayList<ImageView> starView = new ArrayList();
+        starView.add((ImageView) rowView.findViewById(R.id.res_1));
+        starView.add((ImageView) rowView.findViewById(R.id.res_2));
+        starView.add((ImageView) rowView.findViewById(R.id.res_3));
+        starView.add((ImageView) rowView.findViewById(R.id.res_4));
+        starView.add((ImageView) rowView.findViewById(R.id.res_5));
+
+        for (ImageView im : starView) {
+            im.setVisibility(View.INVISIBLE);
+        }
+
+        for (int r = 0; r < player.results.size(); ++r) {
+            ResultEnum res = player.results.get(r);
+            if (res == ResultEnum.Win) {
+                starView.get(r).setImageResource(R.drawable.star_w_16);
+            } else if (res == ResultEnum.Lose) {
+                starView.get(r).setImageResource(R.drawable.star_l_16);
+            } else if (res == ResultEnum.Tie) {
+                starView.get(r).setImageResource(R.drawable.star_t_16);
+            }
+            starView.get(r).setVisibility(View.VISIBLE);
+        }
 
         TextView grade = (TextView) rowView.findViewById(R.id.player_grade);
 

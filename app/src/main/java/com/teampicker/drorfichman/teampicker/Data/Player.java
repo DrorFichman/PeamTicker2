@@ -30,6 +30,7 @@ public class Player implements Serializable {
         return mName;
     }
 
+    // TODO remove
     public String getResults() {
         String s = "";
         for (ResultEnum r : results) {
