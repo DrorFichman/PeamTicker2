@@ -11,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
@@ -24,6 +25,7 @@ public class NewPlayerActivity extends AppCompatActivity {
     private Player pPlayer;
     private EditText vGrade;
     private EditText vName;
+    private TextView vResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +42,21 @@ public class NewPlayerActivity extends AppCompatActivity {
 
         vName = (EditText) findViewById(R.id.edit_player_name);
         vGrade = (EditText) findViewById(R.id.edit_player_grade);
+        vResults = (TextView) findViewById(R.id.player_results);
+
+        // TODO change to stars
+        // TODO plus/minus ratio
 
         if (isEditPlayer()) {
             vName.setText(getString(R.string.current_score, pPlayer.mName, String.valueOf(pPlayer.mGrade)));
             vName.setEnabled(false);
             vGrade.setHint(R.string.new_score);
-            // vGrade.requestFocus();
+
+            Player player = DbHelper.getPlayer(this, pPlayer.mName);
+            if (player != null) {
+                pPlayer = player;
+                vResults.setText(pPlayer.getResults());
+            }
         }
 
         findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {

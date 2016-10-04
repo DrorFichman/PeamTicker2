@@ -170,4 +170,42 @@ public class PlayerDbHelper {
 
         DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerEntry.TABLE_NAME);
     }
+
+    public static Player getPlayer(SQLiteDatabase db, String name) {
+
+        String[] projection = {
+                PlayerContract.PlayerEntry.ID,
+                PlayerContract.PlayerEntry.NAME,
+                PlayerContract.PlayerEntry.GRADE,
+                PlayerContract.PlayerEntry.IS_COMING
+        };
+
+        String where = PlayerContract.PlayerEntry.NAME + " = ? ";
+        String[] whereArgs = new String[]{name};
+
+        Cursor c = db.query(
+                PlayerContract.PlayerEntry.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                where,                                // The columns for the WHERE clause
+                whereArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+
+        try {
+            if (c.moveToFirst()) {
+                    Player p = new Player(c.getString(c.getColumnIndex(PlayerContract.PlayerEntry.NAME)),
+                            c.getInt(c.getColumnIndex(PlayerContract.PlayerEntry.GRADE)));
+                    p.isComing = c.getInt(c.getColumnIndex(PlayerContract.PlayerEntry.IS_COMING)) == 1;
+                    return p;
+            }
+        } finally {
+            c.close();
+        }
+
+        Log.e("TEAMS", "player " + name + " is missing from the DB");
+        return null;
+    }
 }

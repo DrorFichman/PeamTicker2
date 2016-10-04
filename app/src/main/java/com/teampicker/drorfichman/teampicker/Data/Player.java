@@ -34,7 +34,7 @@ public class Player implements Serializable {
     public String getResults() {
         String s = "";
         for (ResultEnum r : results) {
-            s += r.getChar();
+            s += r.getChar() + " ";
         }
         return s;
     }

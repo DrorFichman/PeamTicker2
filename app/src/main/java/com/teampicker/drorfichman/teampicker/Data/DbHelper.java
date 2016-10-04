@@ -7,9 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
-import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by drorfichman on 7/30/16.
@@ -73,6 +73,15 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static boolean insertPlayer(Context context, String name, int grade) {
         return PlayerDbHelper.insertPlayer(getSqLiteDatabase(context), name, grade);
+    }
+
+    public static Player getPlayer(Context context, String name) {
+        final Player player = PlayerDbHelper.getPlayer(getSqLiteDatabase(context), name);
+        if (player != null) {
+            ArrayList<Player> players = new ArrayList<>(Arrays.asList(player));
+            addLastGameStats(context, 10, players);
+        }
+        return player;
     }
 
     public static Cursor getPlayers(Context context) {
