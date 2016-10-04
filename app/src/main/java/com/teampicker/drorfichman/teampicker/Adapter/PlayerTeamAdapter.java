@@ -34,7 +34,8 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
         rowView.findViewById(R.id.player_coming).setVisibility(View.GONE);
         TextView name = (TextView) rowView.findViewById(R.id.player_name);
-        name.setText(player.mName);
+        name.setText(player.mName + " \n " + player.getResults());
+
         TextView grade = (TextView) rowView.findViewById(R.id.player_grade);
 
         if (player.isGradeDisplayed) {

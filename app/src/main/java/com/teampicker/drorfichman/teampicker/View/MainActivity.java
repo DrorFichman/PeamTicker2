@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity
             startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), 1);
 
         } else if (id == R.id.action_settings) {
-            ArrayList<Player> players = DbHelper.getComingPlayers(this);
+            ArrayList<Player> players = DbHelper.getComingPlayers(this, 0);
 
             if (players.size() == 0) {
                 Toast.makeText(MainActivity.this, "No one is playing!??", Toast.LENGTH_LONG).show();

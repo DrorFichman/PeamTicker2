@@ -12,7 +12,11 @@ import android.widget.ListView;
 
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Adapter.GameAdapter;
+import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
+
+import java.util.ArrayList;
 
 public class GamesActivity extends AppCompatActivity {
 
@@ -33,18 +37,65 @@ public class GamesActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Log.d("DB", "TODO : Game clicked row");
+                ArrayList<Player> team1 = DbHelper.getCurrTeam(GamesActivity.this, Integer.valueOf((String) view.getTag(R.id.game_id)), TeamEnum.Team1, 0);
+                ArrayList<Player> team2 = DbHelper.getCurrTeam(GamesActivity.this, Integer.valueOf((String) view.getTag(R.id.game_id)), TeamEnum.Team2, 0);
+                String details = (String) view.getTag(R.id.game_details);
+                showTeams(team1, team2, details);
+
             }
         });
 
         gamesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                checkGameDeletion((String)view.getTag());
+                checkGameDeletion((String) view.getTag());
                 return true;
             }
         });
 
         gamesList.setAdapter(gamesAdapter);
+    }
+
+    // TODO
+    public static String padRight(String s, int n) {
+        return String.format("%1$-" + n + "s", s);
+    }
+
+    public static String padLeft(String s, int n) {
+        return String.format("%1$" + n + "s", s);
+    }
+
+    private void showTeams(ArrayList<Player> team1, ArrayList<Player> team2, String details) {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        alertDialogBuilder.setTitle(details);
+
+        String teams = "";
+        int size = Math.max(team1.size(), team2.size());
+        for (int i = 0; i < size; ++i) {
+            String team1Name = "";
+            String team2Name = "";
+            if (i < team1.size()) {
+                team1Name = team1.get(i).mName;
+            }
+            if (i < team1.size()) {
+                team2Name = team2.get(i).mName;
+            }
+            teams += padRight(team2Name, 30) + " - " + padLeft(team1Name, 30) + "\n";
+        }
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage(teams)
+                .setCancelable(true)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialogBuilder.create().show();
     }
 
     private void checkGameDeletion(final String game) {

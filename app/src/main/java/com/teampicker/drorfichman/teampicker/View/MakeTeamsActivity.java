@@ -221,8 +221,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
             initialDivision();
         } else {
             Log.d("teams", "Initial data curr game > 0 - so getting from DB");
-            players1 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team1);
-            players2 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team2);
+            players1 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team1, 3);
+            players2 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team2, 3);
             updateLists();
 
             if (!mSetResult) {
@@ -282,7 +282,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         PreferenceHelper.setCurrGame(this, -1);
 
-        ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this);
+        ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, 3);
         int totalPlayers = comingPlayers.size();
         int teamSize = totalPlayers / 2;
         Log.d("teams", "Total " + totalPlayers + ", team " + teamSize);

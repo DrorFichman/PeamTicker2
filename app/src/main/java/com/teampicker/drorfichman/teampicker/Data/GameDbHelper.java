@@ -73,4 +73,50 @@ public class GameDbHelper {
 
         return c;
     }
+
+    public static ArrayList<Game> getLastGames(SQLiteDatabase db, int count) {
+
+        // Define a projection that specifies which columns from the database
+        // you will actually use after this query.
+        String[] projection = {
+                PlayerContract.GameEntry.ID,
+                PlayerContract.GameEntry.GAME,
+                PlayerContract.GameEntry.DATE,
+                PlayerContract.GameEntry.RESULT,
+                PlayerContract.GameEntry.TEAM1_SCORE,
+                PlayerContract.GameEntry.TEAM2_SCORE,
+        };
+
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder = PlayerContract.GameEntry.ID + " DESC";
+
+        Cursor c = db.query(
+                PlayerContract.GameEntry.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+        ArrayList<Game> games = new ArrayList<>();
+        try {
+            if (c.moveToFirst()) {
+                int i = 0;
+                do {
+                    Game g = new Game(c.getInt(c.getColumnIndex(PlayerContract.GameEntry.GAME)),
+                            c.getString(c.getColumnIndex(PlayerContract.GameEntry.DATE)));
+                    g.team1Score = c.getInt(c.getColumnIndex(PlayerContract.GameEntry.TEAM1_SCORE));
+                    g.team2Score = c.getInt(c.getColumnIndex(PlayerContract.GameEntry.TEAM2_SCORE));
+                    g.result = TeamEnum.getResult(g.team1Score, g.team2Score);
+                    games.add(g);
+                } while (c.moveToNext() && i < count);
+            }
+        } finally {
+            c.close();
+        }
+
+        return games;
+    }
 }

@@ -1,6 +1,7 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by drorfichman on 7/27/16.
@@ -12,31 +13,28 @@ public class Player implements Serializable {
     public boolean isComing;
     public boolean isSelected;
 
+    public ArrayList<ResultEnum> results = new ArrayList<>(5);
+
     public Player(String name, int grade) {
         mName = name;
         mGrade = grade;
         isGradeDisplayed = true;
-        // mDisplayGrade = grade;
     }
 
     public void showGrade(boolean show) {
         isGradeDisplayed = show;
-//        if (show) {
-//            mDisplayGrade = mGrade;
-//        } else {
-//            mDisplayGrade = 0;
-//        }
     }
 
     @Override
     public String toString() {
         return mName;
-//        return mName +
-//                (mDisplayGrade != 0 ? " (" + mGrade + ")" : "") +
-//                (isSelected ? " <S>" : "");
     }
 
-    public void setSelected(boolean selected) {
-        isSelected = selected;
+    public String getResults() {
+        String s = "";
+        for (ResultEnum r : results) {
+            s += r.getChar();
+        }
+        return s;
     }
 }

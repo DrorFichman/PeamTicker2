@@ -17,4 +17,28 @@ public enum TeamEnum {
             return Tie;
         }
     }
+
+    public static ResultEnum getTeam2Result(TeamEnum team) {
+        if (team == Team2) {
+            return ResultEnum.Win;
+        } else if (team == Team1) {
+            return ResultEnum.Lose;
+        } else if (team == Tie) {
+            return ResultEnum.Tie;
+        } else {
+            return ResultEnum.NA;
+        }
+    }
+
+    public static ResultEnum getTeam1Result(TeamEnum team) {
+        if (team == Team1) {
+            return ResultEnum.Win;
+        } else if (team == Team2) {
+            return ResultEnum.Lose;
+        } else if (team == Tie) {
+            return ResultEnum.Tie;
+        } else {
+            return ResultEnum.NA;
+        }
+    }
 }

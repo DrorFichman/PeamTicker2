@@ -27,16 +27,20 @@ public class GameAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
-        TextView date = (TextView) view.findViewById(R.id.game_date);
+        TextView dateView = (TextView) view.findViewById(R.id.game_date);
         TextView resultSet = (TextView) view.findViewById(R.id.game_result_set);
 
-        String mDate = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.GameEntry.DATE));
+        String date = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.GameEntry.DATE));
+        String gameId = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.GameEntry.GAME));
         String team1 = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.GameEntry.TEAM1_SCORE));
         String team2 = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.GameEntry.TEAM2_SCORE));
 
-        date.setText(mDate);
-        resultSet.setText(String.valueOf(team1 + " - " + team2));
+        dateView.setText(date);
 
-        view.setTag(mDate);
+        String details = String.valueOf(team1 + " - " + team2);
+        resultSet.setText(details);
+
+        view.setTag(R.id.game_id, gameId);
+        view.setTag(R.id.game_details, details);
     }
 }

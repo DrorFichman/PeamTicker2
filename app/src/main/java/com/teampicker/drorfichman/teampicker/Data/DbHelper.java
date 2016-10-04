@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -74,8 +75,10 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static
     @NonNull
-    ArrayList<Player> getComingPlayers(Context context) {
-        return PlayerDbHelper.getComingPlayers(getSqLiteDatabase(context));
+    ArrayList<Player> getComingPlayers(Context context, int countLastGames) {
+        ArrayList<Player> comingPlayers = PlayerDbHelper.getComingPlayers(getSqLiteDatabase(context));
+        addLastGameStats(context, countLastGames, comingPlayers);
+        return comingPlayers;
     }
 
     public static void deletePlayer(Context context, String name) {
@@ -90,8 +93,42 @@ public class DbHelper extends SQLiteOpenHelper {
         PlayerGamesDbHelper.insertPlayerGame(getSqLiteDatabase(context), player, currGame, team);
     }
 
-    public static ArrayList<Player> getCurrTeam(Context context, int currGame, TeamEnum team) {
-        return PlayerGamesDbHelper.getCurrTeam(getSqLiteDatabase(context), currGame, team);
+    public static ArrayList<Player> getCurrTeam(Context context, int currGame, TeamEnum team, int countLastGames) {
+        ArrayList<Player> currTeam = PlayerGamesDbHelper.getCurrTeam(getSqLiteDatabase(context), currGame, team);
+
+        addLastGameStats(context, countLastGames, currTeam);
+
+        return currTeam;
+    }
+
+    private static void addLastGameStats(Context context, int countLastGames, ArrayList<Player> currTeam) {
+        if (countLastGames > 0) {
+            Log.d("STATS", "count " + countLastGames);
+            ArrayList<Game> lastGames = GameDbHelper.getLastGames(getSqLiteDatabase(context), countLastGames);
+            Log.d("STATS", "found " + lastGames.size());
+            for (int game = 0; game < lastGames.size(); ++game) {
+                Game g = lastGames.get(game);
+                ArrayList<Player> team1 = PlayerGamesDbHelper.getCurrTeam(getSqLiteDatabase(context), g.gameId, TeamEnum.Team1);
+                ArrayList<Player> team2 = PlayerGamesDbHelper.getCurrTeam(getSqLiteDatabase(context), g.gameId, TeamEnum.Team2);
+                for (Player t1 : team1) {
+                    setResult(currTeam, t1, game, TeamEnum.getTeam1Result(g.result));
+                }
+                for (Player t2 : team2) {
+                    setResult(currTeam, t2, game, TeamEnum.getTeam2Result(g.result));
+                }
+            }
+        }
+    }
+
+    private static boolean setResult(ArrayList<Player> players, Player search, int gameIndex, ResultEnum result) {
+        for (Player p : players) {
+            if (p.mName.equals(search.mName)) {
+                p.results.add(gameIndex, result);
+                Log.d("STATS", "set " + p.mName + " with " + result + " in " + gameIndex);
+                return true;
+            }
+        }
+        return false;
     }
 
     public static Cursor getGames(Context context) {
