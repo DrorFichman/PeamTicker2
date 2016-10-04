@@ -18,4 +18,13 @@ public enum ResultEnum {
     public String getChar() {
         return sign;
     }
+
+    public static ResultEnum getResultFromOrdinal(int res) {
+        for (ResultEnum r : ResultEnum.values()) {
+            if (r.ordinal() == res) {
+                return r;
+            }
+        }
+        return null;
+    }
 }

@@ -1,7 +1,6 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
@@ -143,7 +142,7 @@ public class PlayerDbHelper {
         return true;
     }
 
-    public static void updatePlauer(SQLiteDatabase db, String name, int grade) {
+    public static void updatePlayerGrade(SQLiteDatabase db, String name, int grade) {
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
@@ -154,7 +153,7 @@ public class PlayerDbHelper {
         String[] whereArgs = new String[]{name};
 
         // Insert the new row, returning the primary key value of the new row
-        updateRecord(db, values, where, whereArgs);
+        DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerEntry.TABLE_NAME);
     }
 
     public static void updatePlayerComing(SQLiteDatabase db, String name, boolean coming) {
@@ -169,14 +168,6 @@ public class PlayerDbHelper {
         String where = PlayerContract.PlayerEntry.NAME + " = ? ";
         String[] whereArgs = new String[]{name};
 
-        updateRecord(db, values, where, whereArgs);
-    }
-
-    private static void updateRecord(SQLiteDatabase db, ContentValues values, String where, String[] whereArgs) {
-
-        // Insert the new row, returning the primary key value of the new row
-        db.updateWithOnConflict(PlayerContract.PlayerEntry.TABLE_NAME,
-                values,
-                where, whereArgs, SQLiteDatabase.CONFLICT_IGNORE);
+        DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerEntry.TABLE_NAME);
     }
 }

@@ -1,5 +1,6 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -62,7 +63,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static void updatePlayer(Context context, String name, int grade) {
-        PlayerDbHelper.updatePlauer(getSqLiteDatabase(context), name, grade);
+        PlayerDbHelper.updatePlayerGrade(getSqLiteDatabase(context), name, grade);
     }
 
     public static boolean insertPlayer(Context context, String name, int grade) {
@@ -102,33 +103,10 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     private static void addLastGameStats(Context context, int countLastGames, ArrayList<Player> currTeam) {
-        if (countLastGames > 0) {
-            Log.d("STATS", "count " + countLastGames);
-            ArrayList<Game> lastGames = GameDbHelper.getLastGames(getSqLiteDatabase(context), countLastGames);
-            Log.d("STATS", "found " + lastGames.size());
-            for (int game = 0; game < lastGames.size(); ++game) {
-                Game g = lastGames.get(game);
-                ArrayList<Player> team1 = PlayerGamesDbHelper.getCurrTeam(getSqLiteDatabase(context), g.gameId, TeamEnum.Team1);
-                ArrayList<Player> team2 = PlayerGamesDbHelper.getCurrTeam(getSqLiteDatabase(context), g.gameId, TeamEnum.Team2);
-                for (Player t1 : team1) {
-                    setResult(currTeam, t1, game, TeamEnum.getTeam1Result(g.result));
-                }
-                for (Player t2 : team2) {
-                    setResult(currTeam, t2, game, TeamEnum.getTeam2Result(g.result));
-                }
-            }
-        }
-    }
 
-    private static boolean setResult(ArrayList<Player> players, Player search, int gameIndex, ResultEnum result) {
-        for (Player p : players) {
-            if (p.mName.equals(search.mName)) {
-                p.results.add(gameIndex, result);
-                Log.d("STATS", "set " + p.mName + " with " + result + " in " + gameIndex);
-                return true;
-            }
+        for (Player p : currTeam) {
+            p.results = PlayerGamesDbHelper.getPlayerLastGames(getSqLiteDatabase(context), p, countLastGames);
         }
-        return false;
     }
 
     public static Cursor getGames(Context context) {
@@ -137,9 +115,18 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static void insertGame(Context context, int gameId, int score1, int score2) {
         GameDbHelper.insertGameResults(getSqLiteDatabase(context), gameId, score1, score2);
+        PlayerGamesDbHelper.setPlayerGameResult(getSqLiteDatabase(context), gameId, TeamEnum.getResult(score1, score2));
     }
 
     public static String getNow() {
         return DateFormat.format("dd-MM-yyyy", System.currentTimeMillis()).toString();
+    }
+
+    public static void updateRecord(SQLiteDatabase db, ContentValues values, String where, String[] whereArgs, String tableName) {
+
+        // Insert the new row, returning the primary key value of the new row
+        db.updateWithOnConflict(tableName,
+                values,
+                where, whereArgs, SQLiteDatabase.CONFLICT_IGNORE);
     }
 }

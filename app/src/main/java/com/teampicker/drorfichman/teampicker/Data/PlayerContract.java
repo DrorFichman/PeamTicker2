@@ -26,6 +26,7 @@ public final class PlayerContract {
         public static final String TEAM = "team";
         public static final String GOALS = "goals";
         public static final String ASSISTS = "assists";
+        public static final String PLAYER_RESULT = "result";
     }
 
     public static abstract class GameEntry {
@@ -35,7 +36,7 @@ public final class PlayerContract {
         public static final String DATE = "date";
         public static final String TEAM1_SCORE = "team_one_score";
         public static final String TEAM2_SCORE = "team_two_score";
-        public static final String RESULT = "result";
+        public static final String TEAM_RESULT = "result";
     }
 }
 

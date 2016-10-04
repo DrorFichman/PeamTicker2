@@ -17,7 +17,7 @@ public class GameDbHelper {
                     PlayerContract.GameEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     PlayerContract.GameEntry.GAME + " INTEGER, " +
                     PlayerContract.GameEntry.DATE + " TEXT, " +
-                    PlayerContract.GameEntry.RESULT + " INTEGER, " +
+                    PlayerContract.GameEntry.TEAM_RESULT + " INTEGER DEFAULT -1, " +
                     PlayerContract.GameEntry.TEAM1_SCORE + " INTEGER, " +
                     PlayerContract.GameEntry.TEAM2_SCORE + " INTEGER )";
 
@@ -35,7 +35,7 @@ public class GameDbHelper {
         values.put(PlayerContract.GameEntry.DATE, DbHelper.getNow());
         values.put(PlayerContract.GameEntry.TEAM1_SCORE, team1Score);
         values.put(PlayerContract.GameEntry.TEAM2_SCORE, team2Score);
-        values.put(PlayerContract.GameEntry.RESULT, TeamEnum.getResult(team1Score, team2Score).ordinal());
+        values.put(PlayerContract.GameEntry.TEAM_RESULT, TeamEnum.getResult(team1Score, team2Score).ordinal());
 
         // Insert the new row, returning the primary key value of the new row
         db.insert(PlayerContract.GameEntry.TABLE_NAME,
@@ -51,7 +51,7 @@ public class GameDbHelper {
                 PlayerContract.GameEntry.ID,
                 PlayerContract.GameEntry.GAME,
                 PlayerContract.GameEntry.DATE,
-                PlayerContract.GameEntry.RESULT,
+                PlayerContract.GameEntry.TEAM_RESULT,
                 PlayerContract.GameEntry.TEAM1_SCORE,
                 PlayerContract.GameEntry.TEAM2_SCORE,
         };
@@ -82,7 +82,7 @@ public class GameDbHelper {
                 PlayerContract.GameEntry.ID,
                 PlayerContract.GameEntry.GAME,
                 PlayerContract.GameEntry.DATE,
-                PlayerContract.GameEntry.RESULT,
+                PlayerContract.GameEntry.TEAM_RESULT,
                 PlayerContract.GameEntry.TEAM1_SCORE,
                 PlayerContract.GameEntry.TEAM2_SCORE,
         };
@@ -111,6 +111,7 @@ public class GameDbHelper {
                     g.team2Score = c.getInt(c.getColumnIndex(PlayerContract.GameEntry.TEAM2_SCORE));
                     g.result = TeamEnum.getResult(g.team1Score, g.team2Score);
                     games.add(g);
+                    i++;
                 } while (c.moveToNext() && i < count);
             }
         } finally {

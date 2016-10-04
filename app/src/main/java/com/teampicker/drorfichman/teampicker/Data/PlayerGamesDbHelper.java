@@ -22,7 +22,8 @@ public class PlayerGamesDbHelper {
                     PlayerContract.PlayerGameEntry.GAME_GRADE + " INTEGER, " +
                     PlayerContract.PlayerGameEntry.TEAM + " INTEGER, " +
                     PlayerContract.PlayerGameEntry.GOALS + " INTEGER, " +
-                    PlayerContract.PlayerGameEntry.ASSISTS + " INTEGER )";
+                    PlayerContract.PlayerGameEntry.ASSISTS + " INTEGER, " +
+                    PlayerContract.PlayerGameEntry.PLAYER_RESULT + " INTEGER DEFAULT -1)";
 
     public static String getSqlCreate() {
         return SQL_CREATE_PLAYERS_GAMES;
@@ -85,7 +86,8 @@ public class PlayerGamesDbHelper {
                 PlayerContract.PlayerGameEntry.GAME_GRADE,
                 PlayerContract.PlayerGameEntry.GOALS,
                 PlayerContract.PlayerGameEntry.ASSISTS,
-                PlayerContract.PlayerGameEntry.TEAM // TODO add other fields
+                PlayerContract.PlayerGameEntry.TEAM,
+                PlayerContract.PlayerGameEntry.PLAYER_RESULT // TODO add other fields
         };
 
         // How you want the results sorted in the resulting Cursor
@@ -134,5 +136,72 @@ public class PlayerGamesDbHelper {
                         " FROM " + PlayerContract.GameEntry.TABLE_NAME + " )", null);
 
         Log.d("teams", "deleted games players " + n);
+    }
+
+    public static ArrayList<ResultEnum> getPlayerLastGames(SQLiteDatabase db, Player player, int countLastGames) {
+
+        String[] projection = {
+                PlayerContract.PlayerGameEntry.NAME,
+                PlayerContract.PlayerGameEntry.GAME,
+                PlayerContract.PlayerGameEntry.PLAYER_RESULT
+        };
+
+        // How you want the results sorted in the resulting Cursor
+        String sortOrder = PlayerContract.PlayerGameEntry.GAME + " DESC";
+
+        String where = PlayerContract.PlayerGameEntry.NAME + " = ? AND "
+                + PlayerContract.PlayerGameEntry.PLAYER_RESULT + " >= 0 ";
+        String[] whereArgs = new String[]{player.mName};
+
+        Cursor c = db.query(
+                PlayerContract.PlayerGameEntry.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                where,                                // The columns for the WHERE clause
+                whereArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+        ArrayList<ResultEnum> results = new ArrayList<>();
+        try {
+            if (c.moveToFirst()) {
+                int i = 0;
+                do {
+                    int res = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT));
+                    results.add(ResultEnum.getResultFromOrdinal(res));
+                    i++;
+                } while (c.moveToNext() && i < countLastGames);
+            }
+        } finally {
+            c.close();
+        }
+
+        return results;
+    }
+
+    public static void setPlayerGameResult(SQLiteDatabase db, int gameId, TeamEnum result) {
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values1 = new ContentValues();
+        values1.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, TeamEnum.getTeam1Result(result).ordinal());
+
+        String where1 = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
+                PlayerContract.PlayerGameEntry.TEAM + " = ? ";
+        String[] whereArgs1 = new String[]{String.valueOf(gameId), String.valueOf(TeamEnum.Team1.ordinal())};
+
+        // Update the new row, returning the primary key value of the new row
+        DbHelper.updateRecord(db, values1, where1, whereArgs1, PlayerContract.PlayerGameEntry.TABLE_NAME);
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values2 = new ContentValues();
+        values2.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, TeamEnum.getTeam2Result(result).ordinal());
+
+        String where2 = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
+                PlayerContract.PlayerGameEntry.TEAM + " = ? ";
+        String[] whereArgs2 = new String[]{String.valueOf(gameId), String.valueOf(TeamEnum.Team2.ordinal())};
+
+        // Insert the new row, returning the primary key value of the new row
+        DbHelper.updateRecord(db, values2, where2, whereArgs2, PlayerContract.PlayerGameEntry.TABLE_NAME);
     }
 }
