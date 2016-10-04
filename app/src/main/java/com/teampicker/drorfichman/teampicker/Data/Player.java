@@ -13,7 +13,7 @@ public class Player implements Serializable {
     public boolean isComing;
     public boolean isSelected;
 
-    public ArrayList<ResultEnum> results = new ArrayList<>(5);
+    public ArrayList<ResultEnum> results = new ArrayList<>();
 
     public Player(String name, int grade) {
         mName = name;
@@ -37,5 +37,15 @@ public class Player implements Serializable {
             s += r.getChar() + " ";
         }
         return s;
+    }
+
+    public int getSuccess() {
+        int value = 0;
+        for (ResultEnum r : results) {
+            if (r != null) {
+                value += r.getValue();
+            }
+        }
+        return value;
     }
 }

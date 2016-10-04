@@ -60,6 +60,10 @@ public class PreferenceHelper {
         PreferenceHelper.setSharedPreferenceInt(context, PreferenceHelper.PREF_CURR_GAME_INDEX, curr);
     }
 
+    public static void clearCurrGame(Context context){
+        PreferenceHelper.setSharedPreferenceInt(context, PreferenceHelper.PREF_CURR_GAME_INDEX, -1);
+    }
+
     public static int getMaxGame(Context context){
         return PreferenceHelper.getSharedPreference(context).getInt(PreferenceHelper.PREF_MAX_GAME_INDEX, 0);
     }

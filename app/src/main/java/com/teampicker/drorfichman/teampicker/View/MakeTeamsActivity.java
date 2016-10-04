@@ -176,7 +176,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void saveResults() {
         int currGame = PreferenceHelper.getCurrGame(this);
         DbHelper.insertGame(this, currGame, getScoreValue(team1Score), getScoreValue(team2Score));
-        PreferenceHelper.setCurrGame(this, -1);
+        PreferenceHelper.clearCurrGame(this);
 
         Toast.makeText(this, "Results saved", Toast.LENGTH_LONG).show();
         finish();
@@ -240,8 +240,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
         PreferenceHelper.setMaxGame(this, currGame);
         PreferenceHelper.setCurrGame(this, currGame);
 
-        // TODO : PREF_CURR_GAME_INDEX should be cleared after game results are entered, so new games will be created
-
         for (Player a : players1) {
             DbHelper.insertPlayerGame(this, a, currGame, TeamEnum.Team1);
         }
@@ -280,7 +278,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         players1.clear();
         players2.clear();
 
-        PreferenceHelper.setCurrGame(this, -1);
+        PreferenceHelper.clearCurrGame(this);
 
         ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, 3);
         int totalPlayers = comingPlayers.size();
@@ -363,8 +361,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void takeScreenshotPermitted() {
 
         try {
-            // image naming and path  to include sd card  appending name you choose for file
-            // TODO app folder
 
             // create bitmap screen capture
             View v1 = getWindow().getDecorView().getRootView();
@@ -408,6 +404,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         view.setText(getString(R.string.team_data,
                 String.valueOf(players.size()),
                 String.valueOf(new TeamData(players).getSum()),
+                String.valueOf(new TeamData(players).getSuccess()),
                 new TeamData(players).getStdDev()));
     }
 

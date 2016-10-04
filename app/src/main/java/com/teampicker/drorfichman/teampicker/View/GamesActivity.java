@@ -55,7 +55,6 @@ public class GamesActivity extends AppCompatActivity {
         gamesList.setAdapter(gamesAdapter);
     }
 
-    // TODO
     public static String padRight(String s, int n) {
         return String.format("%1$-" + n + "s", s);
     }
@@ -81,6 +80,8 @@ public class GamesActivity extends AppCompatActivity {
             if (i < team1.size()) {
                 team2Name = team2.get(i).mName;
             }
+
+            // TODO improve spacing
             teams += padRight(team2Name, 30) + " - " + padLeft(team1Name, 30) + "\n";
         }
 

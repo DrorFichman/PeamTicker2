@@ -12,6 +12,8 @@ import java.util.ArrayList;
  */
 public class PlayerGamesDbHelper {
 
+    public static final int EMPTY_RESULT = -10;
+
     private static final String SQL_CREATE_PLAYERS_GAMES =
             "CREATE TABLE " + PlayerContract.PlayerGameEntry.TABLE_NAME + " (" +
                     PlayerContract.PlayerGameEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -23,7 +25,7 @@ public class PlayerGamesDbHelper {
                     PlayerContract.PlayerGameEntry.TEAM + " INTEGER, " +
                     PlayerContract.PlayerGameEntry.GOALS + " INTEGER, " +
                     PlayerContract.PlayerGameEntry.ASSISTS + " INTEGER, " +
-                    PlayerContract.PlayerGameEntry.PLAYER_RESULT + " INTEGER DEFAULT -1)";
+                    PlayerContract.PlayerGameEntry.PLAYER_RESULT + " INTEGER DEFAULT " + EMPTY_RESULT + ")";
 
     public static String getSqlCreate() {
         return SQL_CREATE_PLAYERS_GAMES;
@@ -44,36 +46,6 @@ public class PlayerGamesDbHelper {
                 values);
     }
 
-    public static Cursor getGames(SQLiteDatabase db) {
-
-        // TODO needed?
-
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
-        String[] projection = {
-                PlayerContract.PlayerGameEntry.ID,
-                PlayerContract.PlayerGameEntry.GAME,
-                PlayerContract.PlayerGameEntry.DATE
-        };
-
-        // How you want the results sorted in the resulting Cursor
-        String sortOrder = PlayerContract.PlayerGameEntry.DATE + " DESC";
-
-        Cursor c = db.query(
-                PlayerContract.PlayerGameEntry.TABLE_NAME,  // The table to query
-                projection,                               // The columns to return
-                null,                                // The columns for the WHERE clause
-                null,                            // The values for the WHERE clause
-                PlayerContract.PlayerGameEntry.GAME,
-                null,                                     // don't filter by row groups
-                sortOrder                                 // The sort order
-        );
-
-        c.moveToFirst();
-
-        return c;
-    }
-
     public static ArrayList<Player> getCurrTeam(SQLiteDatabase db, int currGame, TeamEnum team) {
 
         // Define a projection that specifies which columns from the database
@@ -87,7 +59,7 @@ public class PlayerGamesDbHelper {
                 PlayerContract.PlayerGameEntry.GOALS,
                 PlayerContract.PlayerGameEntry.ASSISTS,
                 PlayerContract.PlayerGameEntry.TEAM,
-                PlayerContract.PlayerGameEntry.PLAYER_RESULT // TODO add other fields
+                PlayerContract.PlayerGameEntry.PLAYER_RESULT
         };
 
         // How you want the results sorted in the resulting Cursor
@@ -150,8 +122,8 @@ public class PlayerGamesDbHelper {
         String sortOrder = PlayerContract.PlayerGameEntry.GAME + " DESC";
 
         String where = PlayerContract.PlayerGameEntry.NAME + " = ? AND "
-                + PlayerContract.PlayerGameEntry.PLAYER_RESULT + " >= 0 ";
-        String[] whereArgs = new String[]{player.mName};
+                + PlayerContract.PlayerGameEntry.PLAYER_RESULT + " > ? ";
+        String[] whereArgs = new String[]{player.mName, String.valueOf(EMPTY_RESULT)};
 
         Cursor c = db.query(
                 PlayerContract.PlayerGameEntry.TABLE_NAME,  // The table to query

@@ -48,4 +48,15 @@ public class TeamData {
     public String getStdDev() {
         return new BigDecimal(Math.sqrt(getVariance())).round(new MathContext(4)).toString();
     }
+
+    public int getSuccess() {
+        if (players.size() == 0) {
+            return 0;
+        }
+        int success = 0;
+        for (Player p : players) {
+            success += p.getSuccess();
+        }
+        return success;
+    }
 }

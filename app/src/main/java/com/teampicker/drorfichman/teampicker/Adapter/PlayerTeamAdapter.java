@@ -50,7 +50,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             im.setVisibility(View.INVISIBLE);
         }
 
-        for (int r = 0; r < player.results.size(); ++r) {
+        for (int r = 0; r < player.results.size() && r < starView.size(); ++r) {
             ResultEnum res = player.results.get(r);
             if (res == ResultEnum.Win) {
                 starView.get(r).setImageResource(R.drawable.star_w_16);
