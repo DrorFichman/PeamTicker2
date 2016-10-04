@@ -20,6 +20,8 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Players.db";
 
+    private static SQLiteDatabase writableDatabase;
+
     public DbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -54,8 +56,11 @@ public class DbHelper extends SQLiteOpenHelper {
     private static SQLiteDatabase getSqLiteDatabase(Context context) {
 
         // Gets the data repository in write mode
-        DbHelper mDbHelper = new DbHelper(context);
-        return mDbHelper.getWritableDatabase();
+        if (writableDatabase == null) {
+            DbHelper mDbHelper = new DbHelper(context.getApplicationContext());
+            writableDatabase = mDbHelper.getWritableDatabase();
+        }
+        return writableDatabase;
     }
 
     public static void updatePlayerComing(Context context, String name, boolean coming) {

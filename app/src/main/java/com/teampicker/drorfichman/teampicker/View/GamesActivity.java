@@ -36,7 +36,6 @@ public class GamesActivity extends AppCompatActivity {
         gamesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("DB", "TODO : Game clicked row");
                 ArrayList<Player> team1 = DbHelper.getCurrTeam(GamesActivity.this, Integer.valueOf((String) view.getTag(R.id.game_id)), TeamEnum.Team1, 0);
                 ArrayList<Player> team2 = DbHelper.getCurrTeam(GamesActivity.this, Integer.valueOf((String) view.getTag(R.id.game_id)), TeamEnum.Team2, 0);
                 String details = (String) view.getTag(R.id.game_details);
