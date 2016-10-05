@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -51,13 +52,13 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private TextView teamData1;
 
     private View sendView;
-    private View doneView;
     private View moveView;
     private View shuffleView;
 
     private boolean mSetResult;
     private Button team1Score;
     private Button team2Score;
+    private View saveView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,7 +97,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         list1.setOnItemClickListener(selected);
         list2.setOnItemClickListener(selected);
 
-        moveView = findViewById(R.id.move_to_1);
+        moveView = findViewById(R.id.move);
         moveView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -128,16 +129,11 @@ public class MakeTeamsActivity extends AppCompatActivity {
             }
         });
 
-        doneView = findViewById(R.id.done);
-        findViewById(R.id.done).setOnClickListener(new View.OnClickListener() {
+        saveView = findViewById(R.id.save);
+        saveView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mSetResult) {
-                    saveResults();
-                } else {
-                    saveTeams();
-                    enterSendMode();
-                }
+                saveResults();
             }
         });
 
@@ -146,10 +142,22 @@ public class MakeTeamsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                takeScreenShot();
-                Log.d("teams", "Shot taken");
+                Log.d("teams", "Enter send mode");
+                saveTeams();
+                enterSendMode();
 
-                exitSendMode();
+                // TODO runnable 0.5 second?
+                Handler handler = new Handler();
+
+                final Runnable r = new Runnable() {
+                    public void run() {
+                        takeScreenShot();
+                        Log.d("teams", "Exit send mode - Shot taken");
+                        exitSendMode();
+                    }
+                };
+
+                handler.postDelayed(r, 200);
             }
         });
 
@@ -186,11 +194,12 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         mSetResult = true;
 
-        moveView.setVisibility(View.INVISIBLE);
-        shuffleView.setVisibility(View.INVISIBLE);
-        sendView.setVisibility(View.INVISIBLE);
+        moveView.setVisibility(View.GONE);
+        shuffleView.setVisibility(View.GONE);
+        sendView.setVisibility(View.GONE);
 
-        doneView.setVisibility(View.VISIBLE);
+        saveView.setVisibility(View.VISIBLE);
+
         team1Score.setVisibility(View.VISIBLE);
         team2Score.setVisibility(View.VISIBLE);
 
@@ -249,9 +258,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void enterSendMode() {
-        sendView.setVisibility(View.VISIBLE);
 
-        doneView.setVisibility(View.GONE);
+        sendView.setVisibility(View.GONE);
         moveView.setVisibility(View.GONE);
         shuffleView.setVisibility(View.GONE);
 
@@ -262,9 +270,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void exitSendMode() {
-        sendView.setVisibility(View.GONE);
 
-        doneView.setVisibility(View.VISIBLE);
+        sendView.setVisibility(View.VISIBLE);
         moveView.setVisibility(View.VISIBLE);
         shuffleView.setVisibility(View.VISIBLE);
 
@@ -296,12 +303,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
-        if (sendView != null && sendView.getVisibility() == View.VISIBLE) {
-            exitSendMode();
-        } else {
-            super.onBackPressed();
-        }
+        saveTeams();
+        super.onBackPressed();
     }
 
     private void showStats(boolean show) {

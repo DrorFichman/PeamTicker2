@@ -32,6 +32,8 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(GameDbHelper.getSqlCreate());
 
         // TODO debug data
+
+
         PlayerDbHelper.insertPlayer(db, "דרור", 85);
         PlayerDbHelper.insertPlayer(db, "אורי", 91);
         PlayerDbHelper.insertPlayer(db, "נדב", 87);
