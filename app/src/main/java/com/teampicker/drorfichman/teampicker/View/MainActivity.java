@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +19,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerAdapter;
@@ -40,14 +41,30 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final FloatingActionsMenu fab = (FloatingActionsMenu) findViewById(R.id.fab);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton makeTeamsButton = new FloatingActionButton(this);
+        makeTeamsButton.setTitle("Teams");
+        makeTeamsButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                fab.collapse();
                 startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
             }
         });
+
+        FloatingActionButton enterResultsButton = new FloatingActionButton(this);
+        enterResultsButton.setTitle("Results");
+        enterResultsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fab.collapse();
+                startEnterResultActivity();
+            }
+        });
+
+        fab.addButton(makeTeamsButton);
+        fab.addButton(enterResultsButton);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -157,9 +174,7 @@ public class MainActivity extends AppCompatActivity
         }
         if (id == R.id.enter_results) {
 
-            Intent intent = new Intent(MainActivity.this, MakeTeamsActivity.class);
-            intent.putExtra(MakeTeamsActivity.INTENT_SET_RESULT, true);
-            startActivity(intent);
+            startEnterResultActivity();
 
         } else if (id == R.id.add_player) {
 
@@ -195,6 +210,12 @@ public class MainActivity extends AppCompatActivity
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startEnterResultActivity() {
+        Intent intent = new Intent(MainActivity.this, MakeTeamsActivity.class);
+        intent.putExtra(MakeTeamsActivity.INTENT_SET_RESULT, true);
+        startActivity(intent);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
