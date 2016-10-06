@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.PreferenceHelper;
@@ -45,20 +46,19 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private ListView list2;
     private ListView list1;
 
-    private Player player;
-
     private View totalData;
     private TextView teamData2;
     private TextView teamData1;
 
     private View sendView;
-    private View moveView;
+    private ToggleButton moveView;
     private View shuffleView;
 
-    private boolean mSetResult;
     private Button team1Score;
     private Button team2Score;
     private View saveView;
+
+    private boolean mSetResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,61 +73,22 @@ public class MakeTeamsActivity extends AppCompatActivity {
         list1 = (ListView) findViewById(R.id.team_1);
         list2 = (ListView) findViewById(R.id.team_2);
 
+        moveView = (ToggleButton) findViewById(R.id.move);
+
         AdapterView.OnItemClickListener selected = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Player oldSelected = player;
 
-                Player newSelected = (Player) adapterView.getItemAtPosition(i);
-                if (player != newSelected) {
-                    player = newSelected;
-                    player.isSelected = true;
-                    Log.d("teams", "selected " + player.mName);
+                if (moveView.isChecked()) {
+                    switchPlayer((Player) adapterView.getItemAtPosition(i));
                 } else {
-                    player = null;
+                    // TODO what to do when a player is clicked?
                 }
-
-                if (oldSelected != null) {
-                    oldSelected.isSelected = false;
-                }
-
-                updateLists();
             }
         };
+
         list1.setOnItemClickListener(selected);
         list2.setOnItemClickListener(selected);
-
-        moveView = findViewById(R.id.move);
-        moveView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (player == null) {
-
-                    Toast.makeText(MakeTeamsActivity.this, "Select a player to be moved", Toast.LENGTH_LONG).show();
-
-                } else {
-                    for (Player curr : players1) {
-                        if (curr.mName.equals(player.mName)) {
-                            players1.remove(curr);
-                            players2.add(curr);
-
-                            updateLists();
-                            return;
-                        }
-                    }
-
-                    for (Player curr : players2) {
-                        if (curr.mName.equals(player.mName)) {
-                            players1.add(curr);
-                            players2.remove(curr);
-
-                            updateLists();
-                            return;
-                        }
-                    }
-                }
-            }
-        });
 
         saveView = findViewById(R.id.save);
         saveView.setOnClickListener(new View.OnClickListener() {
@@ -172,6 +133,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         team1Score = (Button) findViewById(R.id.team_1_score);
         team2Score = (Button) findViewById(R.id.team_2_score);
 
+        // TODO curr game might not be needed since we're always saving teams - never auto-reshuffle
         if (PreferenceHelper.getCurrGame(this) > 0) {
             if (getIntent().getBooleanExtra(INTENT_SET_RESULT, false)) {
                 setResultInit();
@@ -232,12 +194,19 @@ public class MakeTeamsActivity extends AppCompatActivity {
             Log.d("teams", "Initial data curr game > 0 - so getting from DB");
             players1 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team1, 3);
             players2 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team2, 3);
-            updateLists();
 
-            if (!mSetResult) {
-                Toast.makeText(this, "Displaying saved teams, \n" +
-                        "Reshuffle if needed", Toast.LENGTH_LONG).show();
+            if (players1 != null && players1.size() > 0 && players2 != null && players2.size() > 0) {
+                updateLists();
+            } else {
+                Log.e("TEAMS", "Unable to find teams for curr game " + currGame);
+                initialDivision();
             }
+
+            // TODO no need for this message?
+//            if (!mSetResult) {
+//                Toast.makeText(this, "Displaying saved teams, \n" +
+//                        "Reshuffle if needed", Toast.LENGTH_LONG).show();
+//            }
         }
     }
 
@@ -263,7 +232,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
         moveView.setVisibility(View.GONE);
         shuffleView.setVisibility(View.GONE);
 
-        hideSelection();
         showGrade(false);
         showStats(false);
         updateLists();
@@ -311,13 +279,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
         totalData.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private void hideSelection() {
-        if (player != null) {
-            player.isSelected = false;
-        }
-        player = null;
-    }
-
     private void showGrade(boolean show) {
         for (Player p : players1) {
             p.showGrade(show);
@@ -353,8 +314,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
                                            String[] permissions,
                                            int[] grantResults) {
         if (requestCode == 1) {
-            if (grantResults.length > 0
-                    && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 exitSendMode();
                 Toast.makeText(this, "We're ready! you can now share your teams :)", Toast.LENGTH_LONG).show();
             }
@@ -418,6 +379,29 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 return p1.mName.compareTo(t1.mName);
             }
         });
+    }
+
+    private void switchPlayer(Player movedPlayer) {
+
+        for (Player curr : players1) {
+            if (curr.mName.equals(movedPlayer.mName)) {
+                players1.remove(curr);
+                players2.add(curr);
+
+                updateLists();
+                return;
+            }
+        }
+
+        for (Player curr : players2) {
+            if (curr.mName.equals(movedPlayer.mName)) {
+                players1.add(curr);
+                players2.remove(curr);
+
+                updateLists();
+                return;
+            }
+        }
     }
 
     @NonNull

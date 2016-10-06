@@ -11,7 +11,6 @@ public class Player implements Serializable {
     public int mGrade;
     public boolean isGradeDisplayed;
     public boolean isComing;
-    public boolean isSelected;
 
     public ArrayList<ResultEnum> results = new ArrayList<>();
 
