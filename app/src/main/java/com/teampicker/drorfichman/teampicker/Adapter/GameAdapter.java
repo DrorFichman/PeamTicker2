@@ -6,34 +6,42 @@ import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.teampicker.drorfichman.teampicker.Data.Game;
+import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerContract;
 import com.teampicker.drorfichman.teampicker.R;
+
+import java.util.List;
 
 /**
  * Created by drorfichman on 7/30/16.
  */
-public class GameAdapter extends CursorAdapter {
+public class GameAdapter extends ArrayAdapter<Game> {
 
-    public GameAdapter(Context context, Cursor cursor, int flags) {
-        super(context, cursor, flags);
+    private final Context context;
+    private final List<Game> mGames;
+
+    public GameAdapter(Context ctx, List<Game> games) {
+        super(ctx, -1, games);
+        context = ctx;
+        mGames = games;
     }
 
     @Override
-    public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(R.layout.game_item, parent, false);
-    }
-
-    @Override
-    public void bindView(View view, final Context context, Cursor cursor) {
+    public View getView(int position, View convertView, ViewGroup parent) {
+        View view = LayoutInflater.from(context).inflate(R.layout.game_item, parent, false);
         TextView dateView = (TextView) view.findViewById(R.id.game_date);
         TextView resultSet = (TextView) view.findViewById(R.id.game_result_set);
 
-        String date = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.GameEntry.DATE));
-        String gameId = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.GameEntry.GAME));
-        String team1 = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.GameEntry.TEAM1_SCORE));
-        String team2 = cursor.getString(cursor.getColumnIndexOrThrow(PlayerContract.GameEntry.TEAM2_SCORE));
+        Game g = mGames.get(position);
+
+        String date = g.date;
+        String gameId = String.valueOf(g.gameId);
+        String team1 = String.valueOf(g.team1Score);
+        String team2 = String.valueOf(g.team2Score);
 
         dateView.setText(date);
 
@@ -42,5 +50,7 @@ public class GameAdapter extends CursorAdapter {
 
         view.setTag(R.id.game_id, gameId);
         view.setTag(R.id.game_details, details);
+
+        return view;
     }
 }

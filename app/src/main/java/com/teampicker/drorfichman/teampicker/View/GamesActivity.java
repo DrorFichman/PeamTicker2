@@ -12,6 +12,7 @@ import android.widget.ListView;
 
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Adapter.GameAdapter;
+import com.teampicker.drorfichman.teampicker.Data.Game;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
@@ -30,8 +31,8 @@ public class GamesActivity extends AppCompatActivity {
 
         gamesList = (ListView) findViewById(R.id.games_list);
 
-        Cursor games = DbHelper.getGames(getApplicationContext());
-        gamesAdapter = new GameAdapter(this, games, 0);
+        ArrayList<Game> games = DbHelper.getGames(getApplicationContext());
+        gamesAdapter = new GameAdapter(this, games);
 
         gamesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -122,9 +123,9 @@ public class GamesActivity extends AppCompatActivity {
     }
 
     private void refreshGames() {
-        Cursor games = DbHelper.getGames(getApplicationContext());
+        ArrayList<Game> games = DbHelper.getGames(getApplicationContext());
 
         // Attach cursor adapter to the ListView
-        gamesAdapter.changeCursor(games);
+        gamesList.setAdapter(new GameAdapter(this, games));
     }
 }

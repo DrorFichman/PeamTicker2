@@ -2,7 +2,6 @@ package com.teampicker.drorfichman.teampicker.Data;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
@@ -163,7 +162,7 @@ public class DbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public static Cursor getGames(Context context) {
+    public static ArrayList<Game> getGames(Context context) {
         return GameDbHelper.getGames(getSqLiteDatabase(context));
     }
 

@@ -3,6 +3,7 @@ package com.teampicker.drorfichman.teampicker.Data;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class GameDbHelper {
                 values);
     }
 
-    public static Cursor getGames(SQLiteDatabase db) {
+    public static ArrayList<Game> getGames(SQLiteDatabase db) {
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -69,9 +70,7 @@ public class GameDbHelper {
                 sortOrder                                 // The sort order
         );
 
-        c.moveToFirst();
-
-        return c;
+        return getGames(c, -1);
     }
 
     public static ArrayList<Game> getLastGames(SQLiteDatabase db, int count) {
@@ -100,6 +99,12 @@ public class GameDbHelper {
                 sortOrder                                 // The sort order
         );
 
+        return getGames(c, count);
+    }
+
+    @NonNull
+    private static ArrayList<Game> getGames(Cursor c, int count) {
+
         ArrayList<Game> games = new ArrayList<>();
         try {
             if (c.moveToFirst()) {
@@ -112,12 +117,11 @@ public class GameDbHelper {
                     g.result = TeamEnum.getResult(g.team1Score, g.team2Score);
                     games.add(g);
                     i++;
-                } while (c.moveToNext() && i < count);
+                } while (c.moveToNext() && (i < count || count == -1));
             }
         } finally {
             c.close();
         }
-
         return games;
     }
 }
