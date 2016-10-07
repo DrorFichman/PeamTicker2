@@ -110,6 +110,8 @@ public class GamesActivity extends AppCompatActivity {
                 .setCancelable(true)
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+
+                        // TODO delete/edit game results?
                         Log.d("teams", "TODO delete game");
                         refreshGames();
                         dialog.dismiss();

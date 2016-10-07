@@ -53,13 +53,19 @@ public class PlayerDbHelper {
                 sortOrder                                 // The sort order
         );
 
+        return getPlayers(c);
+    }
+
+    @NonNull
+    private static ArrayList<Player> getPlayers(Cursor c) {
+
         ArrayList<Player> players = new ArrayList<>();
         try {
             if (c.moveToFirst()) {
                 do {
                     Player p = new Player(c.getString(c.getColumnIndex(PlayerContract.PlayerEntry.NAME)),
                             c.getInt(c.getColumnIndex(PlayerContract.PlayerEntry.GRADE)));
-                    p.isComing = true;
+                    p.isComing = c.getInt(c.getColumnIndex(PlayerContract.PlayerEntry.IS_COMING)) == 1; // Check true;
                     players.add(p);
                 } while (c.moveToNext());
             }
@@ -78,7 +84,7 @@ public class PlayerDbHelper {
                 new String[]{name});
     }
 
-    public static Cursor getPlayers(SQLiteDatabase db) {
+    public static ArrayList<Player> getPlayers(SQLiteDatabase db) {
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -102,9 +108,7 @@ public class PlayerDbHelper {
                 sortOrder                                 // The sort order
         );
 
-        c.moveToFirst();
-
-        return c;
+        return getPlayers(c);
     }
 
     public static boolean insertPlayer(SQLiteDatabase db, String name, int grade) {

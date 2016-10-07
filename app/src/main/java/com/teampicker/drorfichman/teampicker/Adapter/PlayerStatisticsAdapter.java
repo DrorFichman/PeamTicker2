@@ -21,12 +21,12 @@ import java.util.List;
 /**
  * Created by drorfichman on 7/30/16.
  */
-public class PlayerAdapter extends ArrayAdapter<Player> {
+public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
 
     private final Context context;
     private final List<Player> mPlayers;
 
-    public PlayerAdapter(Context ctx, List<Player> players) {
+    public PlayerStatisticsAdapter(Context ctx, List<Player> players) {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
@@ -34,25 +34,17 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View view = LayoutInflater.from(context).inflate(R.layout.player_item, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.player_statistics_item, parent, false);
         TextView name = (TextView) view.findViewById(R.id.player_name);
         TextView grade = (TextView) view.findViewById(R.id.player_grade);
-        final CheckBox vComing = (CheckBox) view.findViewById(R.id.player_coming);
 
-        final Player p = mPlayers.get(position);
+        Player player = mPlayers.get(position);
+
+        Player p = new Player(player.mName, player.mGrade);
         name.setText(p.mName);
         grade.setText(String.valueOf(p.mGrade));
-        vComing.setChecked(p.isComing);
 
         view.setTag(p);
-
-        vComing.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("DB", "Player clicked checkbox");
-                DbHelper.updatePlayerComing(context, p.mName, vComing.isChecked());
-            }
-        });
 
         return view;
     }

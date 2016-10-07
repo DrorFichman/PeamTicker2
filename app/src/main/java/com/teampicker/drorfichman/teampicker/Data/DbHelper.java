@@ -124,7 +124,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return player;
     }
 
-    public static Cursor getPlayers(Context context) {
+    public static ArrayList<Player> getPlayers(Context context) {
         return PlayerDbHelper.getPlayers(getSqLiteDatabase(context));
     }
 

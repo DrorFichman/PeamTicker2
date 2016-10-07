@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity
 
         playersList = (ListView) findViewById(R.id.players_list);
 
-        Cursor players = DbHelper.getPlayers(getApplicationContext());
-        playersAdapter = new PlayerAdapter(this, players, 0);
+        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext());
+        playersAdapter = new PlayerAdapter(this, players);
 
         playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -138,10 +138,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void refreshPlayers() {
-        Cursor players = DbHelper.getPlayers(getApplicationContext());
+        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext());
 
         // Attach cursor adapter to the ListView
-        playersAdapter.changeCursor(players);
+        playersAdapter.clear();
+        playersAdapter.addAll(players);
     }
 
     @Override
@@ -226,6 +227,8 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_games) {
             startActivity(new Intent(this, GamesActivity.class));
+        } else if (id == R.id.nav_stats) {
+            startActivity(new Intent(this, StatisticsActivity.class));
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -28,6 +28,12 @@
         </activity>
 
         <activity
+            android:name=".View.StatisticsActivity"
+            android:label="View games history"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <activity
             android:name=".View.NewPlayerActivity"
             android:label="Edit player details"
             android:theme="@style/AppTheme.NoActionBar">

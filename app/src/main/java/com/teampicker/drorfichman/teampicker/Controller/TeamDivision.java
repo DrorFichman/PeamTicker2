@@ -21,7 +21,6 @@ public class TeamDivision {
                                      @NonNull List<Player> players1,
                                      @NonNull List<Player> players2) {
 
-
         players1.clear();
         players2.clear();
 
