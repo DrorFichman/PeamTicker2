@@ -71,6 +71,13 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             grade.setVisibility(View.GONE);
         }
 
+
+        if (player.isMoved()) {
+            rowView.setBackgroundColor(Color.CYAN);
+        } else {
+            rowView.setBackgroundColor(Color.TRANSPARENT);
+        }
+
         return rowView;
     }
 }

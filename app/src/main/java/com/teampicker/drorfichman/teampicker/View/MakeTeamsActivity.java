@@ -74,12 +74,18 @@ public class MakeTeamsActivity extends AppCompatActivity {
         list2 = (ListView) findViewById(R.id.team_2);
 
         moveView = (ToggleButton) findViewById(R.id.move);
+        moveView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hideSelection();
+            }
+        });
 
         AdapterView.OnItemClickListener selected = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                if (moveView.isChecked()) {
+                if (!mSetResult && moveView.isChecked()) {
                     switchPlayer((Player) adapterView.getItemAtPosition(i));
                 } else {
                     // TODO what to do when a player is clicked?
@@ -232,8 +238,10 @@ public class MakeTeamsActivity extends AppCompatActivity {
         moveView.setVisibility(View.GONE);
         shuffleView.setVisibility(View.GONE);
 
+        hideSelection();
         showGrade(false);
         showStats(false);
+
         updateLists();
     }
 
@@ -245,6 +253,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         showGrade(true);
         showStats(true);
+
         updateLists();
     }
 
@@ -286,6 +295,16 @@ public class MakeTeamsActivity extends AppCompatActivity {
         for (Player p : players2) {
             p.showGrade(show);
         }
+    }
+
+    private void hideSelection() {
+        for (Player p : players1) {
+            p.switchMoved(false);
+        }
+        for (Player p : players2) {
+            p.switchMoved(false);
+        }
+        updateLists();
     }
 
     private void openScreenshot(File imageFile) {
@@ -382,6 +401,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void switchPlayer(Player movedPlayer) {
+
+        movedPlayer.switchMoved(true);
 
         for (Player curr : players1) {
             if (curr.mName.equals(movedPlayer.mName)) {

@@ -11,6 +11,7 @@ public class Player implements Serializable {
     public int mGrade;
     public boolean isGradeDisplayed;
     public boolean isComing;
+    private boolean isMoved;
 
     public ArrayList<ResultEnum> results = new ArrayList<>();
 
@@ -46,5 +47,17 @@ public class Player implements Serializable {
             }
         }
         return value;
+    }
+
+    public boolean isMoved() {
+        return isMoved;
+    }
+
+    public void switchMoved(boolean moved) {
+        if (!moved) {
+            isMoved = false;
+        } else {
+            isMoved = !isMoved;
+        }
     }
 }
