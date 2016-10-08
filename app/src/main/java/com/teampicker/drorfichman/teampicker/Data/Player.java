@@ -1,5 +1,7 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
+import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -14,6 +16,7 @@ public class Player implements Serializable {
     private boolean isMoved;
 
     public ArrayList<ResultEnum> results = new ArrayList<>();
+    public StatisticsData statistics;
 
     public Player(String name, int grade) {
         mName = name;
@@ -59,5 +62,9 @@ public class Player implements Serializable {
         } else {
             isMoved = !isMoved;
         }
+    }
+
+    public void setStatistics(StatisticsData statistics) {
+        this.statistics = statistics;
     }
 }

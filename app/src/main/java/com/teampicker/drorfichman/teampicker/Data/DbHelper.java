@@ -123,6 +123,15 @@ public class DbHelper extends SQLiteOpenHelper {
         return player;
     }
 
+    public static ArrayList<Player> getPlayersStatistics(Context context) {
+        return PlayerGamesDbHelper.getPlayersStatistics(getSqLiteDatabase(context));
+    }
+
+    public static Player getPlayerStatistics(Context context, String name) {
+        // TODO
+        return null;
+    }
+
     public static ArrayList<Player> getPlayers(Context context) {
         return PlayerDbHelper.getPlayers(getSqLiteDatabase(context));
     }

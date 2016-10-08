@@ -10,9 +10,32 @@
     android:paddingTop="5dp">
 
     <TextView
-        android:id="@+id/player_grade"
-        android:layout_width="wrap_content"
+        android:id="@+id/stat_player_grade"
+        android:layout_width="60dp"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="3dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/stat_games_count"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="2dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/stat_success"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:layout_marginLeft="2dp"
         android:layout_marginRight="3dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
@@ -24,6 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="right"
+        android:layout_gravity="center"
         android:paddingRight="3dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="14sp" />

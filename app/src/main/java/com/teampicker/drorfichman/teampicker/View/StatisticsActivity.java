@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerStatisticsAdapter;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
@@ -13,6 +14,8 @@ import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class StatisticsActivity extends AppCompatActivity {
 
@@ -24,10 +27,21 @@ public class StatisticsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_statistics_activity);
 
+        ((TextView)findViewById(R.id.player_name)).setText("Name");
+        ((TextView)findViewById(R.id.stat_player_grade)).setText("Grade");
+        ((TextView)findViewById(R.id.stat_success)).setText("Success");
+        ((TextView)findViewById(R.id.stat_games_count)).setText("Games");
+
         playersList = (ListView) findViewById(R.id.players_statistics_list);
 
-        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext());
-        playersAdapter = new PlayerStatisticsAdapter(this, players);
+        final ArrayList<Player> players = DbHelper.getPlayersStatistics(getApplicationContext());
+
+        updateList(players);
+
+        sortByNameHandler(players);
+        sortByGradeHandler(players);
+        sortBySuccessHandler(players);
+        sortByGamesHandler(players);
 
         playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -41,7 +55,74 @@ public class StatisticsActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
 
+    private void updateList(ArrayList<Player> players) {
+        playersAdapter = new PlayerStatisticsAdapter(StatisticsActivity.this, players);
         playersList.setAdapter(playersAdapter);
+    }
+
+    private void sortByGamesHandler(final ArrayList<Player> players) {
+        View.OnClickListener sort = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Collections.sort(players, new Comparator<Player>() {
+                    @Override
+                    public int compare(Player p1, Player p2) {
+                        return ((Integer)p2.statistics.gamesCount).compareTo(p1.statistics.gamesCount);
+                    }
+                });
+                updateList(players);
+            }
+        };
+        findViewById(R.id.stat_games_count).setOnClickListener(sort);
+    }
+
+    private void sortBySuccessHandler(final ArrayList<Player> players) {
+        View.OnClickListener sort = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Collections.sort(players, new Comparator<Player>() {
+                    @Override
+                    public int compare(Player p1, Player p2) {
+                        return ((Integer)p2.statistics.successRate).compareTo(p1.statistics.successRate);
+                    }
+                });
+                updateList(players);
+            }
+        };
+        findViewById(R.id.stat_success).setOnClickListener(sort);
+    }
+
+    private void sortByGradeHandler(final ArrayList<Player> players) {
+        View.OnClickListener sort = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Collections.sort(players, new Comparator<Player>() {
+                    @Override
+                    public int compare(Player p1, Player p2) {
+                        return ((Integer)p2.mGrade).compareTo(p1.mGrade);
+                    }
+                });
+                updateList(players);
+            }
+        };
+        findViewById(R.id.stat_player_grade).setOnClickListener(sort);
+    }
+
+    private void sortByNameHandler(final ArrayList<Player> players) {
+        View.OnClickListener sort = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Collections.sort(players, new Comparator<Player>() {
+                    @Override
+                    public int compare(Player p1, Player p2) {
+                        return p1.mName.compareTo(p2.mName);
+                    }
+                });
+                updateList(players);
+            }
+        };
+        findViewById(R.id.player_name).setOnClickListener(sort);
     }
 }

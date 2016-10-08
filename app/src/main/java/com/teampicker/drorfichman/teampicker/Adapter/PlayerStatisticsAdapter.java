@@ -35,14 +35,21 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = LayoutInflater.from(context).inflate(R.layout.player_statistics_item, parent, false);
+
         TextView name = (TextView) view.findViewById(R.id.player_name);
-        TextView grade = (TextView) view.findViewById(R.id.player_grade);
+        TextView grade = (TextView) view.findViewById(R.id.stat_player_grade);
+        TextView count = (TextView) view.findViewById(R.id.stat_games_count);
+        TextView success = (TextView) view.findViewById(R.id.stat_success);
 
-        Player player = mPlayers.get(position);
+        Player p = mPlayers.get(position);
 
-        Player p = new Player(player.mName, player.mGrade);
         name.setText(p.mName);
         grade.setText(String.valueOf(p.mGrade));
+
+        if (p.statistics != null) {
+            success.setText(String.valueOf(p.statistics.successRate));
+            count.setText(String.valueOf(p.statistics.gamesCount));
+        }
 
         view.setTag(p);
 

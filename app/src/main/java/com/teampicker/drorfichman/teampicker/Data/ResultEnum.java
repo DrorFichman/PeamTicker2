@@ -32,7 +32,7 @@ public enum ResultEnum {
 
     public static ResultEnum getResultFromOrdinal(int res) {
         for (ResultEnum r : ResultEnum.values()) {
-            if (r.ordinal() == res) {
+            if (r.getValue() == res) {
                 return r;
             }
         }

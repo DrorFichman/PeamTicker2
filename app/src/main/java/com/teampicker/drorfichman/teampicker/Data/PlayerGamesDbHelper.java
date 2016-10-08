@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
+
 import java.util.ArrayList;
 
 /**
@@ -48,8 +50,6 @@ public class PlayerGamesDbHelper {
 
     public static ArrayList<Player> getCurrTeam(SQLiteDatabase db, int currGame, TeamEnum team) {
 
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
         String[] projection = {
                 PlayerContract.PlayerGameEntry.ID,
                 PlayerContract.PlayerGameEntry.NAME,
@@ -62,7 +62,6 @@ public class PlayerGamesDbHelper {
                 PlayerContract.PlayerGameEntry.PLAYER_RESULT
         };
 
-        // How you want the results sorted in the resulting Cursor
         String sortOrder = PlayerContract.PlayerGameEntry.PLAYER_GRADE + " DESC";
 
         String where = PlayerContract.PlayerGameEntry.TEAM + " = ? AND " +
@@ -156,7 +155,7 @@ public class PlayerGamesDbHelper {
 
         // Create a new map of values, where column names are the keys
         ContentValues values1 = new ContentValues();
-        values1.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, TeamEnum.getTeam1Result(result).ordinal());
+        values1.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, TeamEnum.getTeam1Result(result).getValue());
 
         String where1 = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
                 PlayerContract.PlayerGameEntry.TEAM + " = ? ";
@@ -167,7 +166,7 @@ public class PlayerGamesDbHelper {
 
         // Create a new map of values, where column names are the keys
         ContentValues values2 = new ContentValues();
-        values2.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, TeamEnum.getTeam2Result(result).ordinal());
+        values2.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, TeamEnum.getTeam2Result(result).getValue());
 
         String where2 = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
                 PlayerContract.PlayerGameEntry.TEAM + " = ? ";
@@ -175,5 +174,40 @@ public class PlayerGamesDbHelper {
 
         // Insert the new row, returning the primary key value of the new row
         DbHelper.updateRecord(db, values2, where2, whereArgs2, PlayerContract.PlayerGameEntry.TABLE_NAME);
+    }
+
+    public static ArrayList<Player> getPlayersStatistics(SQLiteDatabase db) {
+
+        Cursor c = db.rawQuery("select player.name as player_name, player.grade as player_grade, " +
+                " sum(result) as results_sum, " +
+                " count(result) as results_count " +
+                " from player_game, player " +
+                " where result != " + PlayerGamesDbHelper.EMPTY_RESULT +
+                " AND player.name = player_game.name " +
+                " group by player_name " +
+                " order by results_sum DESC",
+                null, null);
+
+        ArrayList<Player> players = new ArrayList<>();
+        try {
+            if (c.moveToFirst()) {
+                do {
+                    Player p = new Player(c.getString(c.getColumnIndex("player_name")),
+                            c.getInt(c.getColumnIndex("player_grade")));
+                    p.isComing = true;
+
+                    int games = c.getInt(c.getColumnIndex("results_count"));
+                    int success = c.getInt(c.getColumnIndex("results_sum"));
+                    StatisticsData s = new StatisticsData(games, success);
+                    p.setStatistics(s);
+
+                    players.add(p);
+                } while (c.moveToNext());
+            }
+        } finally {
+            c.close();
+        }
+
+        return players;
     }
 }
