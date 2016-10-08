@@ -142,7 +142,7 @@ public class PlayerGamesDbHelper {
                     int res = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT));
                     results.add(ResultEnum.getResultFromOrdinal(res));
                     i++;
-                } while (c.moveToNext() && i < countLastGames);
+                } while (c.moveToNext() && (i < countLastGames || countLastGames == -1));
             }
         } finally {
             c.close();

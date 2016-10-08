@@ -82,7 +82,7 @@ public class GamesActivity extends AppCompatActivity {
                 team2Name = team2.get(i).mName;
             }
 
-            // TODO improve spacing
+            // TODO use table layout instead of sting formatting
             teams += padRight(team2Name, 30) + " - " + padLeft(team1Name, 30) + "\n";
         }
 

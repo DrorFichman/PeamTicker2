@@ -39,6 +39,7 @@ import java.util.List;
 
 public class MakeTeamsActivity extends AppCompatActivity {
 
+    private static final int STARS_COUNT = 3;
     public static String INTENT_SET_RESULT = "INTENT_SET_RESULT";
 
     private ArrayList<Player> players1 = new ArrayList<>();
@@ -198,8 +199,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
             initialDivision();
         } else {
             Log.d("teams", "Initial data curr game > 0 - so getting from DB");
-            players1 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team1, 3);
-            players2 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team2, 3);
+            players1 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team1, STARS_COUNT);
+            players2 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team2, STARS_COUNT);
 
             if (players1 != null && players1.size() > 0 && players2 != null && players2.size() > 0) {
                 updateLists();
@@ -264,7 +265,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         PreferenceHelper.clearCurrGame(this);
 
-        ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, 3);
+        ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, STARS_COUNT);
         int totalPlayers = comingPlayers.size();
         int teamSize = totalPlayers / 2;
         Log.d("teams", "Total " + totalPlayers + ", team " + teamSize);

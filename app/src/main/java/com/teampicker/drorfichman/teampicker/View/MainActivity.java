@@ -2,7 +2,6 @@ package com.teampicker.drorfichman.teampicker.View;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -181,7 +180,7 @@ public class MainActivity extends AppCompatActivity
 
             startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), 1);
 
-        } else if (id == R.id.action_settings) {
+        } else if (id == R.id.action_status) {
             ArrayList<Player> players = DbHelper.getComingPlayers(this, 0);
 
             if (players.size() == 0) {
