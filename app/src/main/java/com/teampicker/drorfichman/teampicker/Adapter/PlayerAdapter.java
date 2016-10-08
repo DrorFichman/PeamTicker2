@@ -50,6 +50,7 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
             @Override
             public void onClick(View view) {
                 Log.d("DB", "Player clicked checkbox");
+                p.isComing = vComing.isChecked();
                 DbHelper.updatePlayerComing(context, p.mName, vComing.isChecked());
             }
         });
