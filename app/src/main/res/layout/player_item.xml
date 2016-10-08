@@ -27,46 +27,6 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="14sp" />
 
-    <ImageView
-        android:id="@+id/res_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:visibility="gone"
-        android:padding="1dp" />
-
-    <ImageView
-        android:id="@+id/res_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:visibility="gone"
-        android:padding="1dp" />
-
-    <ImageView
-        android:id="@+id/res_3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:visibility="gone"
-        android:padding="1dp" />
-
-    <ImageView
-        android:id="@+id/res_4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:visibility="gone"
-        android:padding="1dp" />
-
-    <ImageView
-        android:id="@+id/res_5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:visibility="gone"
-        android:padding="1dp" />
-
     <TextView
         android:id="@+id/player_name"
         android:layout_width="0dp"

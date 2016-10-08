@@ -31,12 +31,11 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View rowView = LayoutInflater.from(context).inflate(R.layout.player_item, parent, false);
+        View rowView = LayoutInflater.from(context).inflate(R.layout.player_team_item, parent, false);
 
         Player player = mPlayers.get(position);
 
-        rowView.findViewById(R.id.player_coming).setVisibility(View.GONE);
-        TextView name = (TextView) rowView.findViewById(R.id.player_name);
+        TextView name = (TextView) rowView.findViewById(R.id.player_team_name);
         name.setText(player.mName);
 
         ArrayList<ImageView> starView = new ArrayList();
@@ -62,7 +61,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             starView.get(r).setVisibility(View.VISIBLE);
         }
 
-        TextView grade = (TextView) rowView.findViewById(R.id.player_grade);
+        TextView grade = (TextView) rowView.findViewById(R.id.player_team_grade);
 
         if (player.isGradeDisplayed) {
             grade.setText(String.valueOf(player.mGrade));
@@ -70,7 +69,6 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         } else {
             grade.setVisibility(View.GONE);
         }
-
 
         if (player.isMoved()) {
             rowView.setBackgroundColor(Color.CYAN);
