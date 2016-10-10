@@ -179,13 +179,13 @@ public class PlayerGamesDbHelper {
     public static ArrayList<Player> getPlayersStatistics(SQLiteDatabase db) {
 
         Cursor c = db.rawQuery("select player.name as player_name, player.grade as player_grade, " +
-                " sum(result) as results_sum, " +
-                " count(result) as results_count " +
-                " from player_game, player " +
-                " where result != " + PlayerGamesDbHelper.EMPTY_RESULT +
-                " AND player.name = player_game.name " +
-                " group by player_name " +
-                " order by results_sum DESC",
+                        " sum(result) as results_sum, " +
+                        " count(result) as results_count " +
+                        " from player_game, player " +
+                        " where result != " + PlayerGamesDbHelper.EMPTY_RESULT +
+                        " AND player.name = player_game.name " +
+                        " group by player_name " +
+                        " order by results_sum DESC",
                 null, null);
 
         ArrayList<Player> players = new ArrayList<>();
@@ -209,5 +209,12 @@ public class PlayerGamesDbHelper {
         }
 
         return players;
+    }
+
+    public static void deleteGame(SQLiteDatabase db, String gameId) {
+        int delete = db.delete(PlayerContract.PlayerGameEntry.TABLE_NAME,
+                PlayerContract.PlayerGameEntry.GAME + " = ? ",
+                new String[]{gameId});
+        Log.d("TEAMS", delete + " game players were deleted");
     }
 }

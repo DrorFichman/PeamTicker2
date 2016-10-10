@@ -41,14 +41,13 @@ public class GamesActivity extends AppCompatActivity {
                 ArrayList<Player> team2 = DbHelper.getCurrTeam(GamesActivity.this, Integer.valueOf((String) view.getTag(R.id.game_id)), TeamEnum.Team2, 0);
                 String details = (String) view.getTag(R.id.game_details);
                 showTeams(team1, team2, details);
-
             }
         });
 
         gamesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                checkGameDeletion((String) view.getTag());
+                checkGameDeletion((String) view.getTag(R.id.game_id));
                 return true;
             }
         });
@@ -112,8 +111,7 @@ public class GamesActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
-                        // TODO delete/edit game results?
-                        Log.d("teams", "TODO delete game");
+                        DbHelper.deleteGame(GamesActivity.this, game);
                         refreshGames();
                         dialog.dismiss();
                     }

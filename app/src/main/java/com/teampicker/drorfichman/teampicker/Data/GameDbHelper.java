@@ -124,4 +124,11 @@ public class GameDbHelper {
         }
         return games;
     }
+
+    public static void deleteGame(SQLiteDatabase db, String gameId) {
+        int delete = db.delete(PlayerContract.GameEntry.TABLE_NAME,
+                PlayerContract.GameEntry.GAME + " = ? ",
+                new String[]{gameId});
+        Log.d("TEAMS", delete + " game was deleted");
+    }
 }
