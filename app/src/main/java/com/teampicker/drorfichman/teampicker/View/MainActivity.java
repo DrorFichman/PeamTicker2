@@ -180,6 +180,11 @@ public class MainActivity extends AppCompatActivity
 
             startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), 1);
 
+        } else if (id == R.id.clear_all) {
+
+            DbHelper.clearComingPlayers(this);
+            refreshPlayers();
+
         } else if (id == R.id.action_status) {
             ArrayList<Player> players = DbHelper.getComingPlayers(this, 0);
 

@@ -212,4 +212,12 @@ public class PlayerDbHelper {
         Log.e("TEAMS", "player " + name + " is missing from the DB");
         return null;
     }
+
+    public static void clearAllComing(SQLiteDatabase db) {
+
+        ContentValues values = new ContentValues();
+        values.put(PlayerContract.PlayerEntry.IS_COMING, 0);
+
+        DbHelper.updateRecord(db, values, null, null, PlayerContract.PlayerEntry.TABLE_NAME);
+    }
 }
