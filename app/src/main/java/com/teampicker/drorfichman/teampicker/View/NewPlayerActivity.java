@@ -48,9 +48,9 @@ public class NewPlayerActivity extends AppCompatActivity {
         // TODO plus/minus ratio
 
         if (isEditPlayer()) {
-            vName.setText(getString(R.string.current_score, pPlayer.mName, String.valueOf(pPlayer.mGrade)));
+            vName.setText(pPlayer.mName);
             vName.setEnabled(false);
-            vGrade.setHint(R.string.new_score);
+            vGrade.setHint(String.valueOf(pPlayer.mGrade));
 
             Player player = DbHelper.getPlayer(this, pPlayer.mName);
             if (player != null) {
