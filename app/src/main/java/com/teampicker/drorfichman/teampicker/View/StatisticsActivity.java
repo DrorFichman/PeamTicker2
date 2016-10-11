@@ -1,6 +1,5 @@
 package com.teampicker.drorfichman.teampicker.View;
 
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -27,10 +26,11 @@ public class StatisticsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_statistics_activity);
 
-        ((TextView)findViewById(R.id.player_name)).setText("Name");
-        ((TextView)findViewById(R.id.stat_player_grade)).setText("Grade");
-        ((TextView)findViewById(R.id.stat_success)).setText("Success");
-        ((TextView)findViewById(R.id.stat_games_count)).setText("Games");
+        ((TextView) findViewById(R.id.player_name)).setText("Name");
+        ((TextView) findViewById(R.id.stat_player_grade)).setText("Grade");
+        ((TextView) findViewById(R.id.stat_success)).setText("Success");
+        ((TextView) findViewById(R.id.stat_games_count)).setText("Games");
+        ((TextView) findViewById(R.id.stat_wins_percentage)).setText("Win rate");
 
         playersList = (ListView) findViewById(R.id.players_statistics_list);
 
@@ -42,10 +42,12 @@ public class StatisticsActivity extends AppCompatActivity {
         sortByGradeHandler(players);
         sortBySuccessHandler(players);
         sortByGamesHandler(players);
+        sortByWinRateHandler(players);
 
         playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                // TODO edit player (NewPlayerActivity) / show games history
             }
         });
 
@@ -62,6 +64,22 @@ public class StatisticsActivity extends AppCompatActivity {
         playersList.setAdapter(playersAdapter);
     }
 
+    private void sortByWinRateHandler(final ArrayList<Player> players) {
+        View.OnClickListener sort = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Collections.sort(players, new Comparator<Player>() {
+                    @Override
+                    public int compare(Player p1, Player p2) {
+                        return (Float.valueOf(p2.statistics.getWinRate()).compareTo(Float.valueOf(p1.statistics.getWinRate())));
+                    }
+                });
+                updateList(players);
+            }
+        };
+        findViewById(R.id.stat_wins_percentage).setOnClickListener(sort);
+    }
+
     private void sortByGamesHandler(final ArrayList<Player> players) {
         View.OnClickListener sort = new View.OnClickListener() {
             @Override
@@ -69,7 +87,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 Collections.sort(players, new Comparator<Player>() {
                     @Override
                     public int compare(Player p1, Player p2) {
-                        return ((Integer)p2.statistics.gamesCount).compareTo(p1.statistics.gamesCount);
+                        return ((Integer) p2.statistics.gamesCount).compareTo(p1.statistics.gamesCount);
                     }
                 });
                 updateList(players);
@@ -85,7 +103,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 Collections.sort(players, new Comparator<Player>() {
                     @Override
                     public int compare(Player p1, Player p2) {
-                        return ((Integer)p2.statistics.successRate).compareTo(p1.statistics.successRate);
+                        return ((Integer) p2.statistics.successRate).compareTo(p1.statistics.successRate);
                     }
                 });
                 updateList(players);
@@ -101,7 +119,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 Collections.sort(players, new Comparator<Player>() {
                     @Override
                     public int compare(Player p1, Player p2) {
-                        return ((Integer)p2.mGrade).compareTo(p1.mGrade);
+                        return ((Integer) p2.mGrade).compareTo(p1.mGrade);
                     }
                 });
                 updateList(players);

@@ -153,7 +153,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static void insertPlayerGame(Context context, Player player, int currGame, TeamEnum team) {
-        PlayerGamesDbHelper.insertPlayerGame(getSqLiteDatabase(context), player, currGame, team);
+        PlayerGamesDbHelper.addPlayerGame(getSqLiteDatabase(context), player, currGame, team);
     }
 
     public static ArrayList<Player> getCurrTeam(Context context, int currGame, TeamEnum team, int countLastGames) {

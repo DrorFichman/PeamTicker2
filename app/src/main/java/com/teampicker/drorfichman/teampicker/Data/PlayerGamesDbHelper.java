@@ -27,13 +27,14 @@ public class PlayerGamesDbHelper {
                     PlayerContract.PlayerGameEntry.TEAM + " INTEGER, " +
                     PlayerContract.PlayerGameEntry.GOALS + " INTEGER, " +
                     PlayerContract.PlayerGameEntry.ASSISTS + " INTEGER, " +
+                    PlayerContract.PlayerGameEntry.DID_WIN + " INTEGER, " +
                     PlayerContract.PlayerGameEntry.PLAYER_RESULT + " INTEGER DEFAULT " + EMPTY_RESULT + ")";
 
     public static String getSqlCreate() {
         return SQL_CREATE_PLAYERS_GAMES;
     }
 
-    public static void insertPlayerGame(SQLiteDatabase db, Player player, int currGame, TeamEnum team) {
+    public static void addPlayerGame(SQLiteDatabase db, Player player, int currGame, TeamEnum team) {
 
         ContentValues values = new ContentValues();
         values.put(PlayerContract.PlayerGameEntry.GAME, currGame);
@@ -155,35 +156,45 @@ public class PlayerGamesDbHelper {
         return results;
     }
 
-    public static void setPlayerGameResult(SQLiteDatabase db, int gameId, TeamEnum result) {
+    public static void setPlayerGameResult(SQLiteDatabase db, int gameId, TeamEnum winningTeam) {
 
-        // Create a new map of values, where column names are the keys
-        ContentValues values1 = new ContentValues();
-        values1.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, TeamEnum.getTeam1Result(result).getValue());
+        updateTeamGameResult(db, gameId, TeamEnum.Team1, TeamEnum.getTeam1Result(winningTeam));
 
-        String where1 = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
+        updateTeamGameResult(db, gameId, TeamEnum.Team2, TeamEnum.getTeam2Result(winningTeam));
+
+//        // Create a new map of values, where column names are the keys
+//        ContentValues values2 = new ContentValues();
+//        ResultEnum res2 = TeamEnum.getTeam1Result(result);
+//        values2.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, res2.getValue());
+//        values2.put(PlayerContract.PlayerGameEntry.DID_WIN, res2 == ResultEnum.Win ? 1 : 0);
+//
+//        String where2 = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
+//                PlayerContract.PlayerGameEntry.TEAM + " = ? ";
+//        String[] whereArgs2 = new String[]{String.valueOf(gameId), String.valueOf(TeamEnum.Team2.ordinal())};
+//
+//        // Insert the new row, returning the primary key value of the new row
+//        DbHelper.updateRecord(db, values2, where2, whereArgs2, PlayerContract.PlayerGameEntry.TABLE_NAME);
+    }
+
+    private static void updateTeamGameResult(SQLiteDatabase db, int gameId, TeamEnum team, ResultEnum result) {
+
+        ContentValues values = new ContentValues();
+        values.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, result.getValue());
+        values.put(PlayerContract.PlayerGameEntry.DID_WIN, result == ResultEnum.Win ? 1 : 0);
+
+        String where = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
                 PlayerContract.PlayerGameEntry.TEAM + " = ? ";
-        String[] whereArgs1 = new String[]{String.valueOf(gameId), String.valueOf(TeamEnum.Team1.ordinal())};
+        String[] whereArgs = new String[]{String.valueOf(gameId), String.valueOf(team.ordinal())};
 
         // Update the new row, returning the primary key value of the new row
-        DbHelper.updateRecord(db, values1, where1, whereArgs1, PlayerContract.PlayerGameEntry.TABLE_NAME);
-
-        // Create a new map of values, where column names are the keys
-        ContentValues values2 = new ContentValues();
-        values2.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, TeamEnum.getTeam2Result(result).getValue());
-
-        String where2 = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
-                PlayerContract.PlayerGameEntry.TEAM + " = ? ";
-        String[] whereArgs2 = new String[]{String.valueOf(gameId), String.valueOf(TeamEnum.Team2.ordinal())};
-
-        // Insert the new row, returning the primary key value of the new row
-        DbHelper.updateRecord(db, values2, where2, whereArgs2, PlayerContract.PlayerGameEntry.TABLE_NAME);
+        DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerGameEntry.TABLE_NAME);
     }
 
     public static ArrayList<Player> getPlayersStatistics(SQLiteDatabase db) {
 
         Cursor c = db.rawQuery("select player.name as player_name, player.grade as player_grade, " +
                         " sum(result) as results_sum, " +
+                        " sum(did_win) as results_wins, " +
                         " count(result) as results_count " +
                         " from player_game, player " +
                         " where result != " + PlayerGamesDbHelper.EMPTY_RESULT +
@@ -202,7 +213,8 @@ public class PlayerGamesDbHelper {
 
                     int games = c.getInt(c.getColumnIndex("results_count"));
                     int success = c.getInt(c.getColumnIndex("results_sum"));
-                    StatisticsData s = new StatisticsData(games, success);
+                    int wins = c.getInt(c.getColumnIndex("results_wins"));
+                    StatisticsData s = new StatisticsData(games, success, wins);
                     p.setStatistics(s);
 
                     players.add(p);

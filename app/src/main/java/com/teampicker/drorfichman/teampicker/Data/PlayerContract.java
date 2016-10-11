@@ -27,6 +27,7 @@ public final class PlayerContract {
         public static final String GOALS = "goals";
         public static final String ASSISTS = "assists";
         public static final String PLAYER_RESULT = "result";
+        public static final String DID_WIN = "did_win";
     }
 
     public static abstract class GameEntry {

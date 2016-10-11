@@ -40,6 +40,7 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
         TextView grade = (TextView) view.findViewById(R.id.stat_player_grade);
         TextView count = (TextView) view.findViewById(R.id.stat_games_count);
         TextView success = (TextView) view.findViewById(R.id.stat_success);
+        TextView winRate = (TextView) view.findViewById(R.id.stat_wins_percentage);
 
         Player p = mPlayers.get(position);
 
@@ -49,6 +50,7 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
         if (p.statistics != null) {
             success.setText(String.valueOf(p.statistics.successRate));
             count.setText(String.valueOf(p.statistics.gamesCount));
+            winRate.setText(String.valueOf(p.statistics.getWinRate()));
         }
 
         view.setTag(p);

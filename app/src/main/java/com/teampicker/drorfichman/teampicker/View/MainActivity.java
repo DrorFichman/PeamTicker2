@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity
         playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("DB", "Player clicked row");
                 Player p = (Player) view.getTag();
                 Intent intent = new Intent(MainActivity.this, NewPlayerActivity.class);
                 intent.putExtra(NewPlayerActivity.PLAYER, p);

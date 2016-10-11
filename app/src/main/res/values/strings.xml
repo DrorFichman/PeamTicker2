@@ -17,4 +17,5 @@
     <string name="action_status">Arriving status</string>
     <string name="team_data">" Count: %1$s \n Sum : %2$s \n Success : %3$s \n StdDev: %4$s "</string>
     <string name="delete">Delete</string>
+    <string name="win_rate">Win rate</string>
 </resources>
