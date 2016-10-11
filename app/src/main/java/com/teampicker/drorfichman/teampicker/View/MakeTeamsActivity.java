@@ -141,9 +141,12 @@ public class MakeTeamsActivity extends AppCompatActivity {
         team2Score = (Button) findViewById(R.id.team_2_score);
 
         // TODO curr game might not be needed since we're always saving teams - never auto-reshuffle
-        if (PreferenceHelper.getCurrGame(this) > 0) {
-            if (getIntent().getBooleanExtra(INTENT_SET_RESULT, false)) {
+        if (getIntent().getBooleanExtra(INTENT_SET_RESULT, false)) {
+            if (PreferenceHelper.getCurrGame(this) > 0) {
                 setResultInit();
+            } else {
+                Toast.makeText(this, "No saved teams found, \n" +
+                        "Make teams first", Toast.LENGTH_LONG).show();
             }
         }
 
