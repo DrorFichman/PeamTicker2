@@ -64,7 +64,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.make_teams);
+        setContentView(R.layout.layout_make_teams_activity);
         Log.d("teams", "onCreate");
 
         totalData = findViewById(R.id.total_scores);

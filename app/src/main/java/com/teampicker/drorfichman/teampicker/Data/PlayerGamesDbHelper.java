@@ -111,6 +111,11 @@ public class PlayerGamesDbHelper {
 
     public static ArrayList<ResultEnum> getPlayerLastGames(SQLiteDatabase db, Player player, int countLastGames) {
 
+        ArrayList<ResultEnum> results = new ArrayList<>();
+        if (countLastGames == 0) {
+            return results;
+        }
+
         String[] projection = {
                 PlayerContract.PlayerGameEntry.NAME,
                 PlayerContract.PlayerGameEntry.GAME,
@@ -134,7 +139,6 @@ public class PlayerGamesDbHelper {
                 sortOrder                                 // The sort order
         );
 
-        ArrayList<ResultEnum> results = new ArrayList<>();
         try {
             if (c.moveToFirst()) {
                 int i = 0;

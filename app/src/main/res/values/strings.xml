@@ -16,4 +16,5 @@
     <string name="enter_results">Enter Results</string>
     <string name="action_status">Arriving status</string>
     <string name="team_data">" Count: %1$s \n Sum : %2$s \n Success : %3$s \n StdDev: %4$s "</string>
+    <string name="delete">Delete</string>
 </resources>

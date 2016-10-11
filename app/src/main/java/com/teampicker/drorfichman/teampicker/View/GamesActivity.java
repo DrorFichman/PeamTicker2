@@ -1,17 +1,17 @@
 package com.teampicker.drorfichman.teampicker.View;
 
+import android.app.DialogFragment;
+import android.app.FragmentTransaction;
 import android.content.DialogInterface;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Adapter.GameAdapter;
+import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Game;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
@@ -40,7 +40,7 @@ public class GamesActivity extends AppCompatActivity {
                 ArrayList<Player> team1 = DbHelper.getCurrTeam(GamesActivity.this, Integer.valueOf((String) view.getTag(R.id.game_id)), TeamEnum.Team1, 0);
                 ArrayList<Player> team2 = DbHelper.getCurrTeam(GamesActivity.this, Integer.valueOf((String) view.getTag(R.id.game_id)), TeamEnum.Team2, 0);
                 String details = (String) view.getTag(R.id.game_details);
-                showTeams(team1, team2, details);
+                showTeamsDialog(team1, team2, details);
             }
         });
 
@@ -55,54 +55,19 @@ public class GamesActivity extends AppCompatActivity {
         gamesList.setAdapter(gamesAdapter);
     }
 
-    public static String padRight(String s, int n) {
-        return String.format("%1$-" + n + "s", s);
-    }
+    private void showTeamsDialog(ArrayList<Player> team1, ArrayList<Player> team2, String details) {
 
-    public static String padLeft(String s, int n) {
-        return String.format("%1$" + n + "s", s);
-    }
-
-    private void showTeams(ArrayList<Player> team1, ArrayList<Player> team2, String details) {
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-        alertDialogBuilder.setTitle(details);
-
-        String teams = "";
-        int size = Math.max(team1.size(), team2.size());
-        for (int i = 0; i < size; ++i) {
-            String team1Name = "";
-            String team2Name = "";
-            if (i < team1.size()) {
-                team1Name = team1.get(i).mName;
-            }
-            if (i < team1.size()) {
-                team2Name = team2.get(i).mName;
-            }
-
-            // TODO use table layout instead of sting formatting
-            teams += padRight(team2Name, 30) + " - " + padLeft(team1Name, 30) + "\n";
-        }
-
-        // set dialog message
-        alertDialogBuilder
-                .setMessage(teams)
-                .setCancelable(true)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-
-        alertDialogBuilder.create().show();
+        // Create and show the dialog.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        DialogFragment newFragment = GameDetailsDialogFragment.newInstance(team1, team2, details);
+        newFragment.show(ft, "game_dialog");
     }
 
     private void checkGameDeletion(final String game) {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
-        alertDialogBuilder.setTitle("Delete");
+        alertDialogBuilder.setTitle(R.string.delete);
 
         // set dialog message
         alertDialogBuilder

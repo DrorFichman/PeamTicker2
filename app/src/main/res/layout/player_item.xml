@@ -5,7 +5,6 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingBottom="5dp"
-    android:paddingLeft="3dp"
     android:paddingRight="5dp"
     android:paddingTop="5dp">
 
@@ -16,7 +15,8 @@
         android:layout_gravity="left"
         android:checked="true"
         android:focusable="false"
-        android:padding="5dp" />
+        android:padding="7dp"
+        android:paddingEnd="10dp" />
 
     <TextView
         android:id="@+id/player_grade"
