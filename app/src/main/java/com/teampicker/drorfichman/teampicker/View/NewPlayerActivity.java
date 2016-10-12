@@ -3,6 +3,7 @@ package com.teampicker.drorfichman.teampicker.View;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -27,6 +28,13 @@ public class NewPlayerActivity extends AppCompatActivity {
     private EditText vName;
     private TextView vResults;
 
+    @NonNull
+    public static Intent getEditPlayerIntent(Context context, String playerName) {
+        Intent intent = new Intent(context, NewPlayerActivity.class);
+        intent.putExtra(NewPlayerActivity.PLAYER, playerName);
+        return intent;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +42,7 @@ public class NewPlayerActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if (intent.hasExtra(PLAYER)) {
-            pPlayer = (Player) intent.getSerializableExtra(PLAYER);
+            pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(PLAYER));
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -51,12 +59,7 @@ public class NewPlayerActivity extends AppCompatActivity {
             vName.setText(pPlayer.mName);
             vName.setEnabled(false);
             vGrade.setHint(String.valueOf(pPlayer.mGrade));
-
-            Player player = DbHelper.getPlayer(this, pPlayer.mName);
-            if (player != null) {
-                pPlayer = player;
-                vResults.setText(pPlayer.getResults());
-            }
+            vResults.setText(pPlayer.getResults());
         }
 
         findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {

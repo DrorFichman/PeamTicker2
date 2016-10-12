@@ -53,7 +53,7 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
             winRate.setText(String.valueOf(p.statistics.getWinRate()));
         }
 
-        view.setTag(p);
+        view.setTag(R.id.player_id, p.mName);
 
         return view;
     }

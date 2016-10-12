@@ -1,8 +1,10 @@
 package com.teampicker.drorfichman.teampicker.View;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -83,8 +85,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Player p = (Player) view.getTag();
-                Intent intent = new Intent(MainActivity.this, NewPlayerActivity.class);
-                intent.putExtra(NewPlayerActivity.PLAYER, p);
+                Intent intent = NewPlayerActivity.getEditPlayerIntent(MainActivity.this, p.mName);
                 startActivityForResult(intent, 1);
             }
         });

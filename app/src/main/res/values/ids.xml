@@ -2,4 +2,5 @@
 <resources>
     <item name="game_id" type="id">game_id</item>
     <item name="game_details" type="id">game_details</item>
+    <item name="player_id" type="id">player_id</item>
 </resources>

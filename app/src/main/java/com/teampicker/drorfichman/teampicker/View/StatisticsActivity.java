@@ -1,7 +1,9 @@
 package com.teampicker.drorfichman.teampicker.View;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -34,20 +36,13 @@ public class StatisticsActivity extends AppCompatActivity {
 
         playersList = (ListView) findViewById(R.id.players_statistics_list);
 
-        final ArrayList<Player> players = DbHelper.getPlayersStatistics(getApplicationContext());
-
-        updateList(players);
-
-        sortByNameHandler(players);
-        sortByGradeHandler(players);
-        sortBySuccessHandler(players);
-        sortByGamesHandler(players);
-        sortByWinRateHandler(players);
+        refreshList();
 
         playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // TODO edit player (NewPlayerActivity) / show games history
+                Intent intent = NewPlayerActivity.getEditPlayerIntent(StatisticsActivity.this, (String) view.getTag(R.id.player_id));
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -57,6 +52,29 @@ public class StatisticsActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private void refreshList() {
+
+        ArrayList<Player> players = DbHelper.getPlayersStatistics(getApplicationContext());
+
+        updateList(players);
+
+        sortByNameHandler(players);
+        sortByGradeHandler(players);
+        sortBySuccessHandler(players);
+        sortByGamesHandler(players);
+        sortByWinRateHandler(players);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == 1) {
+            Log.d("TEAMS", "TODO : refresh statistics list on result?");
+            refreshList();
+        }
     }
 
     private void updateList(ArrayList<Player> players) {
