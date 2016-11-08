@@ -52,11 +52,11 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         for (int r = 0; r < player.results.size() && r < starView.size(); ++r) {
             ResultEnum res = player.results.get(r);
             if (res == ResultEnum.Win) {
-                starView.get(r).setImageResource(R.drawable.star_w_16);
+                starView.get(r).setImageResource(R.drawable.circle_win);
             } else if (res == ResultEnum.Lose) {
-                starView.get(r).setImageResource(R.drawable.star_l_16);
+                starView.get(r).setImageResource(R.drawable.circle_lose);
             } else if (res == ResultEnum.Tie) {
-                starView.get(r).setImageResource(R.drawable.star_t_16);
+                starView.get(r).setImageResource(R.drawable.circle_draw);
             }
             starView.get(r).setVisibility(View.VISIBLE);
         }

@@ -39,7 +39,7 @@ import java.util.List;
 
 public class MakeTeamsActivity extends AppCompatActivity {
 
-    private static final int STARS_COUNT = 3;
+    private static final int STARS_COUNT = 5;
     public static String INTENT_SET_RESULT = "INTENT_SET_RESULT";
 
     private ArrayList<Player> players1 = new ArrayList<>();
