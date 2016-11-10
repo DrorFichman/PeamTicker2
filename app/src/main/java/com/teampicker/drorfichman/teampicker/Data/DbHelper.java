@@ -180,13 +180,16 @@ public class DbHelper extends SQLiteOpenHelper {
         PlayerGamesDbHelper.setPlayerGameResult(getSqLiteDatabase(context), gameId, TeamEnum.getResult(score1, score2));
     }
 
+    public static void updatePlayerResult(Context context, int gameId, String name, ResultEnum res) {
+        PlayerGamesDbHelper.updatePlayerResult(getSqLiteDatabase(context), gameId, name, res);
+    }
+
     public static String getNow() {
         return DateFormat.format("dd-MM-yyyy", System.currentTimeMillis()).toString();
     }
 
     public static void updateRecord(SQLiteDatabase db, ContentValues values, String where, String[] whereArgs, String tableName) {
 
-        // Insert the new row, returning the primary key value of the new row
         db.updateWithOnConflict(tableName,
                 values,
                 where, whereArgs, SQLiteDatabase.CONFLICT_IGNORE);

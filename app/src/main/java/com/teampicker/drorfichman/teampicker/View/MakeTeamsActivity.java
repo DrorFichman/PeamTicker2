@@ -27,6 +27,7 @@ import com.teampicker.drorfichman.teampicker.Controller.TeamData;
 import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
 
@@ -89,7 +90,16 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 if (!mSetResult && moveView.isChecked()) {
                     switchPlayer((Player) adapterView.getItemAtPosition(i));
                 } else {
-                    // TODO what to do when a player is clicked?
+
+                    // Switch player NA/Missed status
+                    Player player = (Player) adapterView.getItemAtPosition(i);
+
+                    ResultEnum newResult = player.isMissed() ? ResultEnum.NA : ResultEnum.Missed;
+                    player.switchMissed();
+
+                    DbHelper.updatePlayerResult(MakeTeamsActivity.this, PreferenceHelper.getCurrGame(MakeTeamsActivity.this), player.mName, newResult);
+
+                    updateLists();
                 }
             }
         };

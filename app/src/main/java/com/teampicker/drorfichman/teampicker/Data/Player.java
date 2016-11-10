@@ -14,6 +14,7 @@ public class Player implements Serializable {
     public boolean isGradeDisplayed;
     public boolean isComing;
     private boolean isMoved;
+    private boolean isMissed;
 
     public ArrayList<ResultEnum> results = new ArrayList<>();
     public StatisticsData statistics;
@@ -64,6 +65,14 @@ public class Player implements Serializable {
         } else {
             isMoved = !isMoved;
         }
+    }
+
+    public boolean isMissed() {
+        return isMissed;
+    }
+
+    public void switchMissed() {
+        isMissed = !isMissed;
     }
 
     public void setStatistics(StatisticsData statistics) {

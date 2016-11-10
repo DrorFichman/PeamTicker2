@@ -9,7 +9,8 @@ public enum ResultEnum {
     Win("W", 1),
     Lose("L", -1),
     Tie("T", 0),
-    NA("?", PlayerGamesDbHelper.EMPTY_RESULT);
+    NA("?", PlayerGamesDbHelper.EMPTY_RESULT),
+    Missed("M", PlayerGamesDbHelper.MISSED_GAME);
 
     ResultEnum(String s, int v) {
         sign = s;

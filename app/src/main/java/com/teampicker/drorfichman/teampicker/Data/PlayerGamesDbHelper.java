@@ -15,6 +15,7 @@ import java.util.ArrayList;
 public class PlayerGamesDbHelper {
 
     public static final int EMPTY_RESULT = -10;
+    public static final int MISSED_GAME = -9;
 
     private static final String SQL_CREATE_PLAYERS_GAMES =
             "CREATE TABLE " + PlayerContract.PlayerGameEntry.TABLE_NAME + " (" +
@@ -89,6 +90,10 @@ public class PlayerGamesDbHelper {
                     Player p = new Player(c.getString(c.getColumnIndex(PlayerContract.PlayerGameEntry.NAME)),
                             c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_GRADE)));
                     p.isComing = true;
+                    int res = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT));
+                    if (ResultEnum.Missed.getValue() == res) {
+                        p.switchMissed();
+                    }
                     players.add(p);
                 } while (c.moveToNext());
             }
@@ -159,21 +164,19 @@ public class PlayerGamesDbHelper {
     public static void setPlayerGameResult(SQLiteDatabase db, int gameId, TeamEnum winningTeam) {
 
         updateTeamGameResult(db, gameId, TeamEnum.Team1, TeamEnum.getTeam1Result(winningTeam));
-
         updateTeamGameResult(db, gameId, TeamEnum.Team2, TeamEnum.getTeam2Result(winningTeam));
+    }
 
-//        // Create a new map of values, where column names are the keys
-//        ContentValues values2 = new ContentValues();
-//        ResultEnum res2 = TeamEnum.getTeam1Result(result);
-//        values2.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, res2.getValue());
-//        values2.put(PlayerContract.PlayerGameEntry.DID_WIN, res2 == ResultEnum.Win ? 1 : 0);
-//
-//        String where2 = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
-//                PlayerContract.PlayerGameEntry.TEAM + " = ? ";
-//        String[] whereArgs2 = new String[]{String.valueOf(gameId), String.valueOf(TeamEnum.Team2.ordinal())};
-//
-//        // Insert the new row, returning the primary key value of the new row
-//        DbHelper.updateRecord(db, values2, where2, whereArgs2, PlayerContract.PlayerGameEntry.TABLE_NAME);
+    public static void updatePlayerResult(SQLiteDatabase db, int gameId, String name, ResultEnum res) {
+        ContentValues values = new ContentValues();
+        values.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, res.getValue());
+
+        String where = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
+                PlayerContract.PlayerGameEntry.NAME + " = ? ";
+        String[] whereArgs = new String[]{String.valueOf(gameId), name};
+
+        // Update the new row, returning the primary key value of the new row
+        DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerGameEntry.TABLE_NAME);
     }
 
     private static void updateTeamGameResult(SQLiteDatabase db, int gameId, TeamEnum team, ResultEnum result) {
@@ -183,8 +186,11 @@ public class PlayerGamesDbHelper {
         values.put(PlayerContract.PlayerGameEntry.DID_WIN, result == ResultEnum.Win ? 1 : 0);
 
         String where = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
-                PlayerContract.PlayerGameEntry.TEAM + " = ? ";
-        String[] whereArgs = new String[]{String.valueOf(gameId), String.valueOf(team.ordinal())};
+                PlayerContract.PlayerGameEntry.TEAM + " = ? AND " +
+                PlayerContract.PlayerGameEntry.PLAYER_RESULT + " != ? ";
+        String[] whereArgs = new String[]{String.valueOf(gameId),
+                String.valueOf(team.ordinal()),
+                String.valueOf(ResultEnum.Missed.getValue())};
 
         // Update the new row, returning the primary key value of the new row
         DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerGameEntry.TABLE_NAME);
@@ -197,8 +203,11 @@ public class PlayerGamesDbHelper {
                         " sum(did_win) as results_wins, " +
                         " count(result) as results_count " +
                         " from player_game, player " +
-                        " where result != " + PlayerGamesDbHelper.EMPTY_RESULT +
-                        " AND player.name = player_game.name " +
+                        " where " +
+                        " player.name = player_game.name " +
+                        " AND result NOT IN ( " +
+                        PlayerGamesDbHelper.EMPTY_RESULT + ", " +
+                        PlayerGamesDbHelper.MISSED_GAME + " ) " +
                         " group by player_name " +
                         " order by results_sum DESC",
                 null, null);

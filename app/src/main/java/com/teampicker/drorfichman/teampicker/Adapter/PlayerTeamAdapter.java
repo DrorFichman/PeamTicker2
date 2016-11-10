@@ -35,8 +35,9 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
         Player player = mPlayers.get(position);
 
+        String isMissed = player.isMissed() ? " **" : "";
         TextView name = (TextView) rowView.findViewById(R.id.player_team_name);
-        name.setText(player.mName);
+        name.setText(player.mName + isMissed);
 
         ArrayList<ImageView> starView = new ArrayList();
         starView.add((ImageView) rowView.findViewById(R.id.res_1));
@@ -57,6 +58,8 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
                 starView.get(r).setImageResource(R.drawable.circle_lose);
             } else if (res == ResultEnum.Tie) {
                 starView.get(r).setImageResource(R.drawable.circle_draw);
+            } else if (res == ResultEnum.Missed) {
+                starView.get(r).setImageResource(R.drawable.circle_na);
             }
             starView.get(r).setVisibility(View.VISIBLE);
         }
