@@ -398,11 +398,13 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void updateTeamData(TextView view, List<Player> players) {
+        TeamData teamData = new TeamData(players);
         view.setText(getString(R.string.team_data,
-                String.valueOf(players.size()),
-                String.valueOf(new TeamData(players).getSum()),
-                String.valueOf(new TeamData(players).getSuccess()),
-                new TeamData(players).getStdDev()));
+                String.valueOf(teamData.getCount()),
+                String.valueOf(teamData.getSum()),
+                String.valueOf(teamData.getAverage()),
+                String.valueOf(teamData.getSuccess()),
+                String.valueOf(teamData.getStdDev())));
     }
 
     private void sortPlayerNames(ArrayList<Player> playersList) {

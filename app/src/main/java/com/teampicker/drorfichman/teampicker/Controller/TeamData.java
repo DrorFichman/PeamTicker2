@@ -34,6 +34,10 @@ public class TeamData {
         return getSum() / players.size();
     }
 
+    public int getCount() {
+        return players.size();
+    }
+
     private double getVariance() {
         if (players.size() == 0) {
             return 0;
@@ -45,8 +49,8 @@ public class TeamData {
         return diff / players.size();
     }
 
-    public String getStdDev() {
-        return new BigDecimal(Math.sqrt(getVariance())).round(new MathContext(4)).toString();
+    public BigDecimal getStdDev() {
+        return new BigDecimal(Math.sqrt(getVariance())).round(new MathContext(4));
     }
 
     public int getSuccess() {
@@ -58,5 +62,9 @@ public class TeamData {
             success += p.getSuccess();
         }
         return success;
+    }
+
+    public BigDecimal getAverage() {
+        return new BigDecimal((double) getSum() / getCount()).round(new MathContext(3));
     }
 }
