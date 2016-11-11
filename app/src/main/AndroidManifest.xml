@@ -24,14 +24,14 @@
 
         <activity
             android:name=".View.GamesActivity"
-            android:label="View games history"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="Games history"
+            android:theme="@style/Theme.AppCompat.Light">
         </activity>
 
         <activity
             android:name=".View.StatisticsActivity"
-            android:label="View players statistics"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="Players statistics"
+            android:theme="@style/Theme.AppCompat.Light">
         </activity>
 
         <activity
@@ -44,8 +44,8 @@
             android:name=".View.MakeTeamsActivity"
             android:label="Divide player into teams"
             android:theme="@style/AppTheme.NoActionBar">
-        </activity><!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+        </activity>
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
