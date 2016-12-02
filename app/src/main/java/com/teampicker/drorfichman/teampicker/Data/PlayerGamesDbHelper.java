@@ -196,7 +196,13 @@ public class PlayerGamesDbHelper {
         DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerGameEntry.TABLE_NAME);
     }
 
-    public static ArrayList<Player> getPlayersStatistics(SQLiteDatabase db) {
+    public static ArrayList<Player> getPlayersStatistics(SQLiteDatabase db, int gameCount) {
+
+        String limitGamesCount = "";
+        Log.d("teams", "Game count " + gameCount);
+        if (gameCount > 0) {
+            limitGamesCount = " AND game in (select game_index from game order by game_index DESC LIMIT " + gameCount + " ) ";
+        }
 
         Cursor c = db.rawQuery("select player.name as player_name, player.grade as player_grade, " +
                         " sum(result) as results_sum, " +
@@ -208,6 +214,7 @@ public class PlayerGamesDbHelper {
                         " AND result NOT IN ( " +
                         PlayerGamesDbHelper.EMPTY_RESULT + ", " +
                         PlayerGamesDbHelper.MISSED_GAME + " ) " +
+                        limitGamesCount +
                         " group by player_name " +
                         " order by results_sum DESC",
                 null, null);

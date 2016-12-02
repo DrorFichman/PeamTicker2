@@ -23,6 +23,7 @@ import android.widget.ToggleButton;
 
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.PreferenceHelper;
+import com.teampicker.drorfichman.teampicker.Controller.ScreenshotHelper;
 import com.teampicker.drorfichman.teampicker.Controller.TeamData;
 import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
@@ -87,9 +88,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                if (!mSetResult && moveView.isChecked()) {
-                    switchPlayer((Player) adapterView.getItemAtPosition(i));
-                } else {
+                if (mSetResult) { // Setting "Missed"
 
                     // Switch player NA/Missed status
                     Player player = (Player) adapterView.getItemAtPosition(i);
@@ -98,8 +97,11 @@ public class MakeTeamsActivity extends AppCompatActivity {
                     player.switchMissed();
 
                     DbHelper.updatePlayerResult(MakeTeamsActivity.this, PreferenceHelper.getCurrGame(MakeTeamsActivity.this), player.mName, newResult);
-
                     updateLists();
+
+                } else if (moveView.isChecked()) { // Moving
+
+                    switchPlayer((Player) adapterView.getItemAtPosition(i));
                 }
             }
         };
@@ -124,18 +126,15 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 saveTeams();
                 enterSendMode();
 
-                // TODO runnable 0.5 second?
-                Handler handler = new Handler();
-
                 final Runnable r = new Runnable() {
                     public void run() {
-                        takeScreenShot();
+                        ScreenshotHelper.takeScreenShot(MakeTeamsActivity.this);
                         Log.d("teams", "Exit send mode - Shot taken");
                         exitSendMode();
                     }
                 };
 
-                handler.postDelayed(r, 200);
+                new Handler().postDelayed(r, 200);
             }
         });
 
@@ -321,28 +320,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
         updateLists();
     }
 
-    private void openScreenshot(File imageFile) {
-
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(imageFile));
-        intent.setType("image/*");
-        startActivity(Intent.createChooser(intent, "Share teams"));
-    }
-
-    public void takeScreenShot() {
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-        } else {
-            takeScreenshotPermitted();
-        }
-    }
-
     public void onRequestPermissionsResult(int requestCode,
                                            String[] permissions,
                                            int[] grantResults) {
@@ -350,38 +327,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
             if (grantResults.length > 0 &&
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 exitSendMode();
-                Toast.makeText(this, "We're ready! you can now share your teams :)", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "We're ready! you can now share your screenshot :)", Toast.LENGTH_LONG).show();
             }
-        }
-    }
-
-    private void takeScreenshotPermitted() {
-
-        try {
-
-            // create bitmap screen capture
-            View v1 = getWindow().getDecorView().getRootView();
-            v1.setDrawingCacheEnabled(true);
-            Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
-            v1.setDrawingCacheEnabled(false);
-
-            File imagePath = new File(Environment.getExternalStorageDirectory().toString() + "/TeamPicker/");
-            imagePath.mkdirs();
-            File imageFile = new File(imagePath, DbHelper.getNow() + ".jpg");
-
-            FileOutputStream outputStream = new FileOutputStream(imageFile);
-            int quality = 50;
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, outputStream);
-            outputStream.flush();
-            outputStream.close();
-
-            openScreenshot(imageFile);
-
-        } catch (Throwable e) {
-
-            // Several error may come out with file handling or OOM
-            Toast.makeText(this, "Failed to take screenshot " + e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
         }
     }
 

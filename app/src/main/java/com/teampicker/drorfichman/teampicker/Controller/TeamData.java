@@ -65,6 +65,10 @@ public class TeamData {
     }
 
     public BigDecimal getAverage() {
-        return new BigDecimal((double) getSum() / getCount()).round(new MathContext(3));
+        if (getCount() != 0) {
+            return new BigDecimal((double) getSum() / getCount()).round(new MathContext(3));
+        } else {
+            return BigDecimal.valueOf(0);
+        }
     }
 }

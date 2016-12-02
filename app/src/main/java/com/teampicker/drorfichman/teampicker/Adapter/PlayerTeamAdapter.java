@@ -66,7 +66,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
         TextView grade = (TextView) rowView.findViewById(R.id.player_team_grade);
 
-        if (player.isGradeDisplayed) {
+        if (player.isGradeDisplayed()) {
             grade.setText(String.valueOf(player.mGrade));
             grade.setVisibility(View.VISIBLE);
         } else {

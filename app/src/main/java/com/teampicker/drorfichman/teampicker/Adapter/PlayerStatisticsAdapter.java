@@ -45,7 +45,12 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
         Player p = mPlayers.get(position);
 
         name.setText(p.mName);
-        grade.setText(String.valueOf(p.mGrade));
+
+        if (p.isGradeDisplayed()) {
+            grade.setText(String.valueOf(p.mGrade));
+        } else {
+            grade.setVisibility(View.INVISIBLE);
+        }
 
         if (p.statistics != null) {
             success.setText(String.valueOf(p.statistics.successRate));

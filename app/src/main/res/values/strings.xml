@@ -18,4 +18,9 @@
     <string name="team_data">" Count: %1$s \n Sum : %2$s \n Average: %3$s \n Success : %4$s \n StdDev: %5$s "</string>
     <string name="delete">Delete</string>
     <string name="win_rate">Win rate</string>
+
+    <string name="action_statistics_10">Last 10 games</string>
+    <string name="action_statistics_50">Last 50 games</string>
+    <string name="action_statistics_no_limit">All games</string>
+    <string name="action_send_statistics">Send Statistics</string>
 </resources>

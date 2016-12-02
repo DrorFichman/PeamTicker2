@@ -45,8 +45,8 @@ public class NewPlayerActivity extends AppCompatActivity {
             pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(PLAYER));
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
         vName = (EditText) findViewById(R.id.edit_player_name);
         vGrade = (EditText) findViewById(R.id.edit_player_grade);

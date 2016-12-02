@@ -1,15 +1,21 @@
 package com.teampicker.drorfichman.teampicker.View;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerStatisticsAdapter;
+import com.teampicker.drorfichman.teampicker.Controller.ScreenshotHelper;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
@@ -23,20 +29,25 @@ public class StatisticsActivity extends AppCompatActivity {
     private ListView playersList;
     private PlayerStatisticsAdapter playersAdapter;
 
+    TextView gradeTitle;
+    private int games = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_statistics_activity);
 
+        gradeTitle = (TextView) findViewById(R.id.stat_player_grade);
+        gradeTitle.setText("Grade");
+
         ((TextView) findViewById(R.id.player_name)).setText("Name");
-        ((TextView) findViewById(R.id.stat_player_grade)).setText("Grade");
         ((TextView) findViewById(R.id.stat_success)).setText("Success");
         ((TextView) findViewById(R.id.stat_games_count)).setText("Games");
         ((TextView) findViewById(R.id.stat_wins_percentage)).setText("Win rate");
 
         playersList = (ListView) findViewById(R.id.players_statistics_list);
 
-        refreshList();
+        refreshList(games);
 
         playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -54,9 +65,82 @@ public class StatisticsActivity extends AppCompatActivity {
         });
     }
 
-    private void refreshList() {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.statisctics_menu, menu);
+        return true;
+    }
 
-        ArrayList<Player> players = DbHelper.getPlayersStatistics(getApplicationContext());
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_send_statistics:
+
+                enterSendMode();
+
+                final Runnable r = new Runnable() {
+                    public void run() {
+                        ScreenshotHelper.takeScreenShot(StatisticsActivity.this);
+                        Log.d("teams", "Exit send mode - Shot taken");
+                        exitSendMode();
+                    }
+                };
+
+                new Handler().postDelayed(r, 400);
+
+                break;
+
+            case R.id.action_last_10_games:
+                games = 10;
+                break;
+            case R.id.action_last_50_games:
+                games = 50;
+                break;
+            case R.id.action_no_limit:
+                games = -1;
+                break;
+        }
+
+        if (games != 0) {
+            refreshList(games);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void onRequestPermissionsResult(int requestCode,
+                                           String[] permissions,
+                                           int[] grantResults) {
+        if (requestCode == 1) {
+            if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                exitSendMode();
+                Toast.makeText(this, "We're ready! you can now share your screenshot :)", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private void enterSendMode() {
+        gradeTitle.setVisibility(View.INVISIBLE);
+        refreshList(games);
+    }
+
+    private void exitSendMode() {
+        gradeTitle.setVisibility(View.VISIBLE);
+        refreshList(games);
+    }
+
+    private void showHideGrades(ArrayList<Player> players) {
+        boolean isGradeVisible = gradeTitle.getVisibility() == View.VISIBLE;
+
+        for (Player p : players) {
+            p.showGrade(isGradeVisible);
+        }
+    }
+
+    private void refreshList(int games) {
+
+        ArrayList<Player> players = DbHelper.getPlayersStatistics(getApplicationContext(), games);
 
         updateList(players);
 
@@ -65,6 +149,8 @@ public class StatisticsActivity extends AppCompatActivity {
         sortBySuccessHandler(players);
         sortByGamesHandler(players);
         sortByWinRateHandler(players);
+
+        showHideGrades(players);
     }
 
     @Override
@@ -73,7 +159,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
         if (resultCode == 1) {
             Log.d("TEAMS", "TODO : refresh statistics list on result?");
-            refreshList();
+            refreshList(games);
         }
     }
 

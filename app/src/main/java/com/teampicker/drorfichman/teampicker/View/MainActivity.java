@@ -163,55 +163,48 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        if (id == R.id.make_teams) {
+        switch (item.getItemId()) {
+            case R.id.make_teams :
+                startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
+                break;
+            case R.id.enter_results :
+                startEnterResultActivity();
+                break;
+            case R.id.add_player :
+                startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), 1);
+                break;
+            case R.id.clear_all:
+                DbHelper.clearComingPlayers(this);
+                refreshPlayers();
+                break;
+            case R.id.action_status:
+                ArrayList<Player> players = DbHelper.getComingPlayers(this, 0);
 
-            startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
-        }
-        if (id == R.id.enter_results) {
+                if (players.size() == 0) {
+                    Toast.makeText(MainActivity.this, "No one is playing!??", Toast.LENGTH_LONG).show();
+                    return true;
+                }
 
-            startEnterResultActivity();
+                int sum = 0;
+                for (Player p : players) {
+                    sum += p.mGrade;
+                }
 
-        } else if (id == R.id.add_player) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+                alertDialogBuilder.setTitle("Status");
+                alertDialogBuilder
+                        .setMessage("Players : " + players.size() + " \n" +
+                                "Average score : " + (sum / players.size()))
+                        .setCancelable(false)
+                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        });
+                alertDialogBuilder.create().show();
 
-            startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), 1);
-
-        } else if (id == R.id.clear_all) {
-
-            DbHelper.clearComingPlayers(this);
-            refreshPlayers();
-
-        } else if (id == R.id.action_status) {
-            ArrayList<Player> players = DbHelper.getComingPlayers(this, 0);
-
-            if (players.size() == 0) {
-                Toast.makeText(MainActivity.this, "No one is playing!??", Toast.LENGTH_LONG).show();
                 return true;
-            }
-
-            int sum = 0;
-            for (Player p : players) {
-                sum += p.mGrade;
-            }
-
-            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setTitle("Status");
-            alertDialogBuilder
-                    .setMessage("Players : " + players.size() + " \n" +
-                            "Average score : " + (sum / players.size()))
-                    .setCancelable(false)
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.dismiss();
-                        }
-                    });
-            alertDialogBuilder.create().show();
-
-            return true;
         }
 
         return super.onOptionsItemSelected(item);

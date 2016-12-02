@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class Player implements Serializable {
     public String mName;
     public int mGrade;
-    public boolean isGradeDisplayed;
+    private boolean mIsGradeDisplayed;
     public boolean isComing;
     private boolean isMoved;
     private boolean isMissed;
@@ -22,11 +22,15 @@ public class Player implements Serializable {
     public Player(String name, int grade) {
         mName = name;
         mGrade = grade;
-        isGradeDisplayed = true;
+        mIsGradeDisplayed = true;
     }
 
     public void showGrade(boolean show) {
-        isGradeDisplayed = show;
+        mIsGradeDisplayed = show;
+    }
+
+    public boolean isGradeDisplayed() {
+        return mIsGradeDisplayed;
     }
 
     @Override

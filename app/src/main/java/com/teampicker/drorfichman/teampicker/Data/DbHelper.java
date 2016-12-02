@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -123,8 +124,8 @@ public class DbHelper extends SQLiteOpenHelper {
         return player;
     }
 
-    public static ArrayList<Player> getPlayersStatistics(Context context) {
-        return PlayerGamesDbHelper.getPlayersStatistics(getSqLiteDatabase(context));
+    public static ArrayList<Player> getPlayersStatistics(Context context, int games) {
+        return PlayerGamesDbHelper.getPlayersStatistics(getSqLiteDatabase(context), games);
     }
 
     public static Player getPlayerStatistics(Context context, String name) {
