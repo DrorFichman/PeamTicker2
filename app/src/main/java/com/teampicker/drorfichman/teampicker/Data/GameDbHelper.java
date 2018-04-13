@@ -39,9 +39,9 @@ public class GameDbHelper {
         values.put(PlayerContract.GameEntry.TEAM_RESULT, TeamEnum.getResult(team1Score, team2Score).ordinal());
 
         // Insert the new row, returning the primary key value of the new row
-        db.insert(PlayerContract.GameEntry.TABLE_NAME,
+        db.insertWithOnConflict(PlayerContract.GameEntry.TABLE_NAME,
                 null,
-                values);
+                values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
     public static ArrayList<Game> getGames(SQLiteDatabase db) {
