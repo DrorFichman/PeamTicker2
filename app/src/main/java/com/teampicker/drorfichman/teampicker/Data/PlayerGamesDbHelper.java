@@ -91,7 +91,7 @@ public class PlayerGamesDbHelper {
                 do {
                     // TODO set rest of the fields - goals, grades...
                     Player p = PlayerDbHelper.createPlayerFromCursor(c, context,
-                            PlayerContract.PlayerGameEntry.NAME, PlayerContract.PlayerGameEntry.PLAYER_GRADE);
+                            PlayerContract.PlayerGameEntry.NAME, PlayerContract.PlayerGameEntry.PLAYER_GRADE, null);
 
                     int res = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT));
                     if (ResultEnum.Missed.getValue() == res) {
@@ -226,7 +226,7 @@ public class PlayerGamesDbHelper {
         try {
             if (c.moveToFirst()) {
                 do {
-                    Player p = PlayerDbHelper.createPlayerFromCursor(c, context, "player_name", "player_grade");
+                    Player p = PlayerDbHelper.createPlayerFromCursor(c, context, "player_name", "player_grade", null);
 
                     int games = c.getInt(c.getColumnIndex("results_count"));
                     int success = c.getInt(c.getColumnIndex("results_sum"));

@@ -40,8 +40,8 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         name.setText(player.mName + isMissed);
 
         rowView.findViewById(R.id.player_gk).setVisibility(player.isGK ? View.VISIBLE : View.GONE);
-        rowView.findViewById(R.id.player_D).setVisibility(player.isDefender ? View.VISIBLE : View.GONE);
-        rowView.findViewById(R.id.player_PM).setVisibility(player.isPlaymaker ? View.VISIBLE : View.GONE);
+        rowView.findViewById(R.id.player_d).setVisibility(player.isDefender ? View.VISIBLE : View.GONE);
+        rowView.findViewById(R.id.player_pm).setVisibility(player.isPlaymaker ? View.VISIBLE : View.GONE);
 
         ArrayList<ImageView> starView = new ArrayList();
         starView.add((ImageView) rowView.findViewById(R.id.res_1));
@@ -75,6 +75,9 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             grade.setVisibility(View.VISIBLE);
         } else {
             grade.setVisibility(View.GONE);
+            rowView.findViewById(R.id.player_gk).setVisibility(View.GONE);
+            rowView.findViewById(R.id.player_d).setVisibility(View.GONE);
+            rowView.findViewById(R.id.player_pm).setVisibility(View.GONE);
         }
 
         if (player.isMoved()) {

@@ -69,7 +69,7 @@
         android:textSize="8sp" />
 
     <TextView
-        android:id="@+id/player_D"
+        android:id="@+id/player_d"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="2dp"
@@ -79,7 +79,7 @@
         android:textSize="8sp" />
 
     <TextView
-        android:id="@+id/player_PM"
+        android:id="@+id/player_pm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="2dp"

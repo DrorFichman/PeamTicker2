@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 public class MakeTeamsActivity extends AppCompatActivity {
 
@@ -290,6 +291,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         TeamDivision.dividePlayers(comingPlayers, players1, players2);
 
+        scramble();
+
         updateLists();
     }
 
@@ -338,12 +341,39 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         sortPlayerNames(players1);
         sortPlayerNames(players2);
-
         list1.setAdapter(newArrayAdapter(players1));
         list2.setAdapter(newArrayAdapter(players2));
 
-        updateTeamData(teamData1, players1);
-        updateTeamData(teamData2, players2);
+        updateStats();
+    }
+
+    private void updateStats() {
+        ArrayList<Player> team1Stats = players1;
+        ArrayList<Player> team2Stats = players2;
+        if (players1.size() > players2.size()) {
+            ArrayList<Player> players = TeamDivision.cloneList(players1);
+            Collections.sort(players);
+            players.remove(players.size() - 1);
+            team1Stats = players;
+        }
+        if (players2.size() > players1.size()) {
+            ArrayList<Player> players = TeamDivision.cloneList(players2);
+            Collections.sort(players);
+            players.remove(players.size() - 1);
+            team2Stats = players;
+        }
+
+        updateTeamData(teamData1, team1Stats);
+        updateTeamData(teamData2, team2Stats);
+    }
+
+    private void scramble() {
+        if (new Random().nextInt(3) % 2 == 1) {
+            Log.d("Team", "Scramble");
+            ArrayList<Player> temp = players1;
+            players1 = players2;
+            players2 = temp;
+        }
     }
 
     private void updateTeamData(TextView view, List<Player> players) {

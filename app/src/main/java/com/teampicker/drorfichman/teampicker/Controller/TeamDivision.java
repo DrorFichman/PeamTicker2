@@ -26,10 +26,10 @@ public class TeamDivision {
 
         Collections.sort(comingPlayers);
 
-        maxOptionsDivision(cloneList(comingPlayers), players1, players2 );
+        maxOptionsDivision(cloneList(comingPlayers), players1, players2);
     }
 
-    private static ArrayList<Player> cloneList(List<Player> players) {
+    public static ArrayList<Player> cloneList(List<Player> players) {
         ArrayList<Player> clone = new ArrayList<>(players.size());
         clone.addAll(players);
         return clone;
@@ -41,15 +41,37 @@ public class TeamDivision {
 
         int OPTIONS = 20;
 
-        Player extraPlayer = null;
-        if (comingPlayers.size() % 2 == 1) {
-            extraPlayer = comingPlayers.get(comingPlayers.size() - 1);
-            comingPlayers.remove(comingPlayers.size() - 1);
+        List<Player> GKs = new ArrayList<>();
+        List<Player> Defenders = new ArrayList<>();
+        List<Player> Playmakers = new ArrayList<>();
+        List<Player> Others = new ArrayList<>();
+        for (int curr = 0; curr < comingPlayers.size(); ++curr) {
+            Player currPlayer = comingPlayers.get(curr);
+            if (currPlayer.isGK) {
+                GKs.add(currPlayer);
+            } else if (currPlayer.isDefender) {
+                Defenders.add(currPlayer);
+            } else if (currPlayer.isPlaymaker) {
+                Playmakers.add(currPlayer);
+            } else {
+                Others.add(currPlayer);
+            }
         }
 
-        OptionalDivision selected = getOption(cloneList(comingPlayers));
+        Collections.sort(GKs);
+        Collections.sort(Defenders);
+        Collections.sort(Playmakers);
+        Collections.sort(Others);
+
+        Player extraPlayer = null;
+        if (comingPlayers.size() % 2 == 1 && Others.size() > 0) {
+            extraPlayer = Others.get(Others.size() - 1);
+            Others.remove(extraPlayer);
+        }
+
+        OptionalDivision selected = getOption(cloneList(Others), cloneList(GKs), cloneList(Defenders), cloneList(Playmakers));
         for (int option = 0; option < OPTIONS; ++option) {
-            OptionalDivision another = getOption(cloneList(comingPlayers));
+            OptionalDivision another = getOption(cloneList(Others), cloneList(GKs), cloneList(Defenders), cloneList(Playmakers));
             if (another.score() < selected.score()) {
                 selected = another;
             }
@@ -64,18 +86,44 @@ public class TeamDivision {
         }
     }
 
-    private static OptionalDivision getOption(List<Player> players) {
+    private static TeamData getNext(OptionalDivision option) {
+        if (option.players1.getCount() > option.players2.getCount()) {
+            return option.players2;
+        } else {
+            return option.players1;
+        }
+    }
+
+    private static OptionalDivision getOption(ArrayList<Player> others,
+                                              ArrayList<Player> GKs,
+                                              ArrayList<Player> Defenders,
+                                              ArrayList<Player> Playmakers) {
         OptionalDivision option = new OptionalDivision();
 
         Random r = new Random();
 
-        while (players.size() > 0) {
-            int a = r.nextInt(players.size());
-            option.players1.players.add(players.get(a));
-            players.remove(a);
-            int b = r.nextInt(players.size());
-            option.players2.players.add(players.get(b));
-            players.remove(b);
+        while (GKs.size() > 0) {
+            int a = r.nextInt(GKs.size());
+            getNext(option).players.add(GKs.get(a));
+            GKs.remove(a);
+        }
+
+        while (Defenders.size() > 0) {
+            int a = r.nextInt(Defenders.size());
+            getNext(option).players.add(Defenders.get(a));
+            Defenders.remove(a);
+        }
+
+        while (Playmakers.size() > 0) {
+            int a = r.nextInt(Playmakers.size());
+            getNext(option).players.add(Playmakers.get(a));
+            Playmakers.remove(a);
+        }
+
+        while (others.size() > 0) {
+            int a = r.nextInt(others.size());
+            getNext(option).players.add(others.get(a));
+            others.remove(a);
         }
 
         return option;

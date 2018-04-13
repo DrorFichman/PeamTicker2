@@ -1,8 +1,6 @@
 package com.teampicker.drorfichman.teampicker.Adapter;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.support.v4.widget.CursorAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +11,6 @@ import android.widget.TextView;
 
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
-import com.teampicker.drorfichman.teampicker.Data.PlayerContract;
 import com.teampicker.drorfichman.teampicker.R;
 
 import java.util.List;
@@ -45,8 +42,8 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
         vComing.setChecked(p.isComing);
 
         view.findViewById(R.id.player_gk).setVisibility(p.isGK ? View.VISIBLE : View.INVISIBLE);
-        view.findViewById(R.id.player_D).setVisibility(p.isDefender ? View.VISIBLE : View.INVISIBLE);
-        view.findViewById(R.id.player_PM).setVisibility(p.isPlaymaker ? View.VISIBLE : View.INVISIBLE);
+        view.findViewById(R.id.player_d).setVisibility(p.isDefender ? View.VISIBLE : View.INVISIBLE);
+        view.findViewById(R.id.player_pm).setVisibility(p.isPlaymaker ? View.VISIBLE : View.INVISIBLE);
 
         view.setTag(p);
 
