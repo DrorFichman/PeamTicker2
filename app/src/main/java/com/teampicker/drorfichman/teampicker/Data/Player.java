@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Created by drorfichman on 7/27/16.
  */
-public class Player implements Serializable {
+public class Player implements Serializable, Comparable {
     public String mName;
     public int mGrade;
     private boolean mIsGradeDisplayed;
@@ -81,5 +81,21 @@ public class Player implements Serializable {
 
     public void setStatistics(StatisticsData statistics) {
         this.statistics = statistics;
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        if (o instanceof Player) {
+            Player p2 = (Player) o;
+            if (this.mGrade > p2.mGrade) {
+                return -1;
+            } else if (this.mGrade == p2.mGrade) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
+
+        return -1;
     }
 }

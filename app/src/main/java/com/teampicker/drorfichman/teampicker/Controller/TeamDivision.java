@@ -24,18 +24,7 @@ public class TeamDivision {
         players1.clear();
         players2.clear();
 
-        Collections.sort(comingPlayers, new Comparator<Player>() {
-            @Override
-            public int compare(Player p1, Player p2) {
-                if (p1.mGrade > p2.mGrade) {
-                    return -1;
-                } else if (p1.mGrade == p2.mGrade) {
-                    return 0;
-                } else {
-                    return 1;
-                }
-            }
-        });
+        Collections.sort(comingPlayers);
 
         maxOptionsDivision(cloneList(comingPlayers), players1, players2);
     }
