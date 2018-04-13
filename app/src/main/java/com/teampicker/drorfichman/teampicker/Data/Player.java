@@ -18,6 +18,9 @@ public class Player implements Serializable, Comparable {
 
     public ArrayList<ResultEnum> results = new ArrayList<>();
     public StatisticsData statistics;
+    public boolean isGK;
+    public boolean isDefender;
+    public boolean isPlaymaker;
 
     public Player(String name, int grade) {
         mName = name;

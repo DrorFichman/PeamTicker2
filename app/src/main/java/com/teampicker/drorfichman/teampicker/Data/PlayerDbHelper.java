@@ -1,10 +1,13 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.util.Log;
+
+import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
 
 import java.util.ArrayList;
 
@@ -26,7 +29,7 @@ public class PlayerDbHelper {
 
     public static
     @NonNull
-    ArrayList<Player> getComingPlayers(SQLiteDatabase db) {
+    ArrayList<Player> getComingPlayers(Context context, SQLiteDatabase db) {
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -53,19 +56,17 @@ public class PlayerDbHelper {
                 sortOrder                                 // The sort order
         );
 
-        return getPlayers(c);
+        return getPlayers(c, context);
     }
 
     @NonNull
-    private static ArrayList<Player> getPlayers(Cursor c) {
+    private static ArrayList<Player> getPlayers(Cursor c, Context ctx) {
 
         ArrayList<Player> players = new ArrayList<>();
         try {
             if (c.moveToFirst()) {
                 do {
-                    Player p = new Player(c.getString(c.getColumnIndex(PlayerContract.PlayerEntry.NAME)),
-                            c.getInt(c.getColumnIndex(PlayerContract.PlayerEntry.GRADE)));
-                    p.isComing = c.getInt(c.getColumnIndex(PlayerContract.PlayerEntry.IS_COMING)) == 1; // Check true;
+                    Player p = createPlayerFromCursor(c, ctx);
                     players.add(p);
                 } while (c.moveToNext());
             }
@@ -76,6 +77,17 @@ public class PlayerDbHelper {
         return players;
     }
 
+    @NonNull
+    private static Player createPlayerFromCursor(Cursor c, Context ctx) {
+        Player p = new Player(c.getString(c.getColumnIndex(PlayerContract.PlayerEntry.NAME)),
+                c.getInt(c.getColumnIndex(PlayerContract.PlayerEntry.GRADE)));
+        p.isComing = c.getInt(c.getColumnIndex(PlayerContract.PlayerEntry.IS_COMING)) == 1; // Check true;
+        p.isGK = PreferenceAttributesHelper.getPlayerPreferences(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isGK);
+        p.isDefender = PreferenceAttributesHelper.getPlayerPreferences(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isDefender);
+        p.isPlaymaker = PreferenceAttributesHelper.getPlayerPreferences(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker);
+        return p;
+    }
+
     public static void deletePlayer(SQLiteDatabase db, String name) {
         Log.d("DB", "delete player " + name);
 
@@ -84,7 +96,7 @@ public class PlayerDbHelper {
                 new String[]{name});
     }
 
-    public static ArrayList<Player> getPlayers(SQLiteDatabase db) {
+    public static ArrayList<Player> getPlayers(Context context, SQLiteDatabase db) {
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -108,7 +120,7 @@ public class PlayerDbHelper {
                 sortOrder                                 // The sort order
         );
 
-        return getPlayers(c);
+        return getPlayers(c, context);
     }
 
     public static boolean insertPlayer(SQLiteDatabase db, String name, int grade) {
@@ -175,7 +187,7 @@ public class PlayerDbHelper {
         DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerEntry.TABLE_NAME);
     }
 
-    public static Player getPlayer(SQLiteDatabase db, String name) {
+    public static Player getPlayer(Context ctx, SQLiteDatabase db, String name) {
 
         String[] projection = {
                 PlayerContract.PlayerEntry.ID,
@@ -200,10 +212,7 @@ public class PlayerDbHelper {
 
         try {
             if (c.moveToFirst()) {
-                    Player p = new Player(c.getString(c.getColumnIndex(PlayerContract.PlayerEntry.NAME)),
-                            c.getInt(c.getColumnIndex(PlayerContract.PlayerEntry.GRADE)));
-                    p.isComing = c.getInt(c.getColumnIndex(PlayerContract.PlayerEntry.IS_COMING)) == 1;
-                    return p;
+                return createPlayerFromCursor(c, ctx);
             }
         } finally {
             c.close();

@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="10dp"
     android:orientation="vertical">
 
     <EditText
@@ -16,16 +17,35 @@
         android:id="@+id/edit_player_grade"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/edit_player_name"
         android:layout_marginTop="10dp"
         android:hint="@string/grade"
         android:inputType="number" />
+
+    <CheckBox
+        android:id="@+id/player_is_gk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Is GK" />
+
+    <CheckBox
+        android:id="@+id/player_is_defender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Is Defender" />
+
+    <CheckBox
+        android:id="@+id/player_is_playmaker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="Is Play-Maker" />
 
     <TextView
         android:id="@+id/player_results"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/edit_player_grade"
         android:layout_marginTop="10dp"
         android:padding="5dp"
         android:textSize="18sp" />
@@ -33,7 +53,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/player_results"
         android:layout_marginTop="10dp">
 
         <Button
@@ -41,7 +60,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/cancel" />
+            android:text="BACK" />
 
         <Button
             android:id="@+id/save"
@@ -51,4 +70,4 @@
             android:text="@string/save" />
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

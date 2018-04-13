@@ -116,7 +116,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static Player getPlayer(Context context, String name) {
-        final Player player = PlayerDbHelper.getPlayer(getSqLiteDatabase(context), name);
+        final Player player = PlayerDbHelper.getPlayer(context, getSqLiteDatabase(context), name);
         if (player != null) {
             ArrayList<Player> players = new ArrayList<>(Arrays.asList(player));
             addLastGameStats(context, -1, players);
@@ -134,13 +134,13 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static ArrayList<Player> getPlayers(Context context) {
-        return PlayerDbHelper.getPlayers(getSqLiteDatabase(context));
+        return PlayerDbHelper.getPlayers(context, getSqLiteDatabase(context));
     }
 
     public static
     @NonNull
     ArrayList<Player> getComingPlayers(Context context, int countLastGames) {
-        ArrayList<Player> comingPlayers = PlayerDbHelper.getComingPlayers(getSqLiteDatabase(context));
+        ArrayList<Player> comingPlayers = PlayerDbHelper.getComingPlayers(context, getSqLiteDatabase(context));
         addLastGameStats(context, countLastGames, comingPlayers);
         return comingPlayers;
     }

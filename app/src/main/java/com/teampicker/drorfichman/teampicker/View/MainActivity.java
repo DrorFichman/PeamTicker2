@@ -1,10 +1,8 @@
 package com.teampicker.drorfichman.teampicker.View;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +20,7 @@ import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerAdapter;
@@ -114,6 +113,7 @@ public class MainActivity extends AppCompatActivity
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         DbHelper.deletePlayer(MainActivity.this, player.mName);
+                        PreferenceAttributesHelper.deletePlayerAttributes(MainActivity.this, player.mName);
                         refreshPlayers();
                         dialog.dismiss();
                     }
