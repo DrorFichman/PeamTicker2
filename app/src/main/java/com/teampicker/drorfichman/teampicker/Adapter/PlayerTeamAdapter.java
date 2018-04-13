@@ -39,6 +39,10 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         TextView name = (TextView) rowView.findViewById(R.id.player_team_name);
         name.setText(player.mName + isMissed);
 
+        rowView.findViewById(R.id.player_gk).setVisibility(player.isGK ? View.VISIBLE : View.GONE);
+        rowView.findViewById(R.id.player_D).setVisibility(player.isDefender ? View.VISIBLE : View.GONE);
+        rowView.findViewById(R.id.player_PM).setVisibility(player.isPlaymaker ? View.VISIBLE : View.GONE);
+
         ArrayList<ImageView> starView = new ArrayList();
         starView.add((ImageView) rowView.findViewById(R.id.res_1));
         starView.add((ImageView) rowView.findViewById(R.id.res_2));

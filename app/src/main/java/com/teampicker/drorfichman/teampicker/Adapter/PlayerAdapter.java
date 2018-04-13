@@ -44,6 +44,10 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
         grade.setText(String.valueOf(p.mGrade));
         vComing.setChecked(p.isComing);
 
+        view.findViewById(R.id.player_gk).setVisibility(p.isGK ? View.VISIBLE : View.INVISIBLE);
+        view.findViewById(R.id.player_D).setVisibility(p.isDefender ? View.VISIBLE : View.INVISIBLE);
+        view.findViewById(R.id.player_PM).setVisibility(p.isPlaymaker ? View.VISIBLE : View.INVISIBLE);
+
         view.setTag(p);
 
         vComing.setOnClickListener(new View.OnClickListener() {

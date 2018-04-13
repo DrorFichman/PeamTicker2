@@ -5,16 +5,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
@@ -27,6 +29,9 @@ public class NewPlayerActivity extends AppCompatActivity {
     private EditText vGrade;
     private EditText vName;
     private TextView vResults;
+    private CheckBox isGK;
+    private CheckBox isDefender;
+    private CheckBox isPlaymaker;
 
     @NonNull
     public static Intent getEditPlayerIntent(Context context, String playerName) {
@@ -51,6 +56,9 @@ public class NewPlayerActivity extends AppCompatActivity {
         vName = (EditText) findViewById(R.id.edit_player_name);
         vGrade = (EditText) findViewById(R.id.edit_player_grade);
         vResults = (TextView) findViewById(R.id.player_results);
+        isGK = (CheckBox) findViewById(R.id.player_is_gk);
+        isDefender = (CheckBox) findViewById(R.id.player_is_defender);
+        isPlaymaker = (CheckBox) findViewById(R.id.player_is_playmaker);
 
         // TODO change to stars
         // TODO plus/minus ratio
@@ -61,6 +69,8 @@ public class NewPlayerActivity extends AppCompatActivity {
             vGrade.setHint(String.valueOf(pPlayer.mGrade));
             vResults.setText(pPlayer.getResults());
         }
+
+        initPlayerAttributes();
 
         findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,6 +119,39 @@ public class NewPlayerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 finishNow(0);
+            }
+        });
+    }
+
+    private void initPlayerAttributes() {
+        isGK.setChecked(pPlayer.isGK);
+        isDefender.setChecked(pPlayer.isDefender);
+        isPlaymaker.setChecked(pPlayer.isPlaymaker);
+
+        isGK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PreferenceAttributesHelper.setPlayerPreferences(NewPlayerActivity.this,
+                        pPlayer.mName, PreferenceAttributesHelper.PlayerAttribute.isGK, isGK.isChecked());
+                Toast.makeText(NewPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        isDefender.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PreferenceAttributesHelper.setPlayerPreferences(NewPlayerActivity.this,
+                        pPlayer.mName, PreferenceAttributesHelper.PlayerAttribute.isDefender, isDefender.isChecked());
+                Toast.makeText(NewPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        isPlaymaker.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PreferenceAttributesHelper.setPlayerPreferences(NewPlayerActivity.this,
+                        pPlayer.mName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker, isPlaymaker.isChecked());
+                Toast.makeText(NewPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
             }
         });
     }

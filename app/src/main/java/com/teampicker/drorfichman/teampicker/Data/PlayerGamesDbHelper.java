@@ -1,10 +1,13 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
 import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
 
 import java.util.ArrayList;
@@ -50,7 +53,7 @@ public class PlayerGamesDbHelper {
                 values);
     }
 
-    public static ArrayList<Player> getCurrTeam(SQLiteDatabase db, int currGame, TeamEnum team) {
+    public static ArrayList<Player> getCurrTeam(Context context, SQLiteDatabase db, int currGame, TeamEnum team) {
 
         String[] projection = {
                 PlayerContract.PlayerGameEntry.ID,
@@ -87,9 +90,9 @@ public class PlayerGamesDbHelper {
             if (c.moveToFirst()) {
                 do {
                     // TODO set rest of the fields - goals, grades...
-                    Player p = new Player(c.getString(c.getColumnIndex(PlayerContract.PlayerGameEntry.NAME)),
-                            c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_GRADE)));
-                    p.isComing = true;
+                    Player p = PlayerDbHelper.createPlayerFromCursor(c, context,
+                            PlayerContract.PlayerGameEntry.NAME, PlayerContract.PlayerGameEntry.PLAYER_GRADE);
+
                     int res = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT));
                     if (ResultEnum.Missed.getValue() == res) {
                         p.switchMissed();
@@ -196,7 +199,7 @@ public class PlayerGamesDbHelper {
         DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerGameEntry.TABLE_NAME);
     }
 
-    public static ArrayList<Player> getPlayersStatistics(SQLiteDatabase db, int gameCount) {
+    public static ArrayList<Player> getPlayersStatistics(Context context, SQLiteDatabase db, int gameCount) {
 
         String limitGamesCount = "";
         Log.d("teams", "Game count " + gameCount);
@@ -223,9 +226,7 @@ public class PlayerGamesDbHelper {
         try {
             if (c.moveToFirst()) {
                 do {
-                    Player p = new Player(c.getString(c.getColumnIndex("player_name")),
-                            c.getInt(c.getColumnIndex("player_grade")));
-                    p.isComing = true;
+                    Player p = PlayerDbHelper.createPlayerFromCursor(c, context, "player_name", "player_grade");
 
                     int games = c.getInt(c.getColumnIndex("results_count"));
                     int success = c.getInt(c.getColumnIndex("results_sum"));

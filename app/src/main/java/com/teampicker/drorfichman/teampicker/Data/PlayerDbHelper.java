@@ -66,7 +66,8 @@ public class PlayerDbHelper {
         try {
             if (c.moveToFirst()) {
                 do {
-                    Player p = createPlayerFromCursor(c, ctx);
+                    Player p = createPlayerFromCursor(c, ctx,
+                            PlayerContract.PlayerEntry.NAME, PlayerContract.PlayerEntry.GRADE);
                     players.add(p);
                 } while (c.moveToNext());
             }
@@ -78,10 +79,9 @@ public class PlayerDbHelper {
     }
 
     @NonNull
-    private static Player createPlayerFromCursor(Cursor c, Context ctx) {
-        Player p = new Player(c.getString(c.getColumnIndex(PlayerContract.PlayerEntry.NAME)),
-                c.getInt(c.getColumnIndex(PlayerContract.PlayerEntry.GRADE)));
-        p.isComing = c.getInt(c.getColumnIndex(PlayerContract.PlayerEntry.IS_COMING)) == 1; // Check true;
+    public static Player createPlayerFromCursor(Cursor c, Context ctx, String player_name, String player_grade) {
+        Player p = new Player(c.getString(c.getColumnIndex(player_name)), c.getInt(c.getColumnIndex(player_grade)));
+        p.isComing = true;
         p.isGK = PreferenceAttributesHelper.getPlayerPreferences(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isGK);
         p.isDefender = PreferenceAttributesHelper.getPlayerPreferences(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isDefender);
         p.isPlaymaker = PreferenceAttributesHelper.getPlayerPreferences(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker);
@@ -212,7 +212,8 @@ public class PlayerDbHelper {
 
         try {
             if (c.moveToFirst()) {
-                return createPlayerFromCursor(c, ctx);
+                return createPlayerFromCursor(c, ctx,
+                        PlayerContract.PlayerEntry.NAME, PlayerContract.PlayerEntry.GRADE);
             }
         } finally {
             c.close();

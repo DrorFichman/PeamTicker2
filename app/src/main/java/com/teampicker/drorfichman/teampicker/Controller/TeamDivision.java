@@ -26,7 +26,7 @@ public class TeamDivision {
 
         Collections.sort(comingPlayers);
 
-        maxOptionsDivision(cloneList(comingPlayers), players1, players2);
+        maxOptionsDivision(cloneList(comingPlayers), players1, players2 );
     }
 
     private static ArrayList<Player> cloneList(List<Player> players) {
