@@ -163,12 +163,22 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void saveResults() {
-        int currGame = PreferenceHelper.getCurrGame(this);
+        int currGame = getCurrGame();
         DbHelper.insertGame(this, currGame, getScoreValue(team1Score), getScoreValue(team2Score));
-        PreferenceHelper.clearCurrGame(this);
+        clearCurrGame();
 
         Toast.makeText(this, "Results saved", Toast.LENGTH_LONG).show();
         finish();
+    }
+
+    private int getCurrGame() {
+        // TODO add activity parameter to change another game results, add if
+        return PreferenceHelper.getCurrGame(this);
+    }
+
+    void clearCurrGame() {
+        // TODO add activity parameter to change another game results, add if
+        PreferenceHelper.clearCurrGame(this);
     }
 
     private void setResultInit() {
