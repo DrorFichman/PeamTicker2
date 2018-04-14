@@ -16,9 +16,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
 import com.teampicker.drorfichman.teampicker.R;
 
 public class NewPlayerActivity extends AppCompatActivity {
@@ -131,8 +131,7 @@ public class NewPlayerActivity extends AppCompatActivity {
         isGK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PreferenceAttributesHelper.setPlayerPreferences(NewPlayerActivity.this,
-                        pPlayer.mName, PreferenceAttributesHelper.PlayerAttribute.isGK, isGK.isChecked());
+                PlayerDbHelper.setIsGK(NewPlayerActivity.this, pPlayer.mName, isGK.isChecked());
                 Toast.makeText(NewPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
             }
         });
@@ -140,8 +139,7 @@ public class NewPlayerActivity extends AppCompatActivity {
         isDefender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PreferenceAttributesHelper.setPlayerPreferences(NewPlayerActivity.this,
-                        pPlayer.mName, PreferenceAttributesHelper.PlayerAttribute.isDefender, isDefender.isChecked());
+                PlayerDbHelper.setIsDefender(NewPlayerActivity.this, pPlayer.mName, isDefender.isChecked());
                 Toast.makeText(NewPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
             }
         });
@@ -149,8 +147,7 @@ public class NewPlayerActivity extends AppCompatActivity {
         isPlaymaker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PreferenceAttributesHelper.setPlayerPreferences(NewPlayerActivity.this,
-                        pPlayer.mName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker, isPlaymaker.isChecked());
+                PlayerDbHelper.setIsPlaymaker(NewPlayerActivity.this, pPlayer.mName, isPlaymaker.isChecked());
                 Toast.makeText(NewPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
             }
         });

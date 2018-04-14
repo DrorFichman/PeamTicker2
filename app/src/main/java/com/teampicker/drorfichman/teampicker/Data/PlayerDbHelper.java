@@ -83,10 +83,37 @@ public class PlayerDbHelper {
     public static Player createPlayerFromCursor(Cursor c, Context ctx, String player_name, String player_grade, String is_coming) {
         Player p = new Player(c.getString(c.getColumnIndex(player_name)), c.getInt(c.getColumnIndex(player_grade)));
         p.isComing = (is_coming != null) ? c.getInt(c.getColumnIndex(is_coming)) == 1 : true; // Check true;
-        p.isGK = PreferenceAttributesHelper.getPlayerPreferences(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isGK);
-        p.isDefender = PreferenceAttributesHelper.getPlayerPreferences(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isDefender);
-        p.isPlaymaker = PreferenceAttributesHelper.getPlayerPreferences(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker);
+        p.isGK = isGK(ctx, p.mName);
+        p.isDefender = isDefender(ctx, p.mName);
+        p.isPlaymaker = isPlaymaker(ctx, p.mName);
         return p;
+    }
+
+    public static boolean isGK(Context ctx, String playerName) {
+        return PreferenceAttributesHelper.getPlayerPreferences(ctx, playerName, PreferenceAttributesHelper.PlayerAttribute.isGK);
+    }
+
+    public static void setIsGK(Context ctx, String playerName, boolean set) {
+        PreferenceAttributesHelper.setPlayerPreferences(ctx,
+                playerName, PreferenceAttributesHelper.PlayerAttribute.isGK, set);
+    }
+
+    public static boolean isPlaymaker(Context ctx, String playerName) {
+        return PreferenceAttributesHelper.getPlayerPreferences(ctx, playerName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker);
+    }
+
+    public static void setIsPlaymaker(Context ctx, String playerName, boolean set) {
+        PreferenceAttributesHelper.setPlayerPreferences(ctx,
+                playerName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker, set);
+    }
+
+    public static boolean isDefender(Context ctx, String playerName) {
+        return PreferenceAttributesHelper.getPlayerPreferences(ctx, playerName, PreferenceAttributesHelper.PlayerAttribute.isDefender);
+    }
+
+    public static void setIsDefender(Context ctx, String playerName, boolean set) {
+        PreferenceAttributesHelper.setPlayerPreferences(ctx,
+                playerName, PreferenceAttributesHelper.PlayerAttribute.isDefender, set);
     }
 
     public static void deletePlayer(SQLiteDatabase db, String name) {

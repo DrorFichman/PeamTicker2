@@ -6,7 +6,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
-import android.util.Log;
+
+import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -145,8 +146,9 @@ public class DbHelper extends SQLiteOpenHelper {
         return comingPlayers;
     }
 
-    public static void deletePlayer(Context context, String name) {
-        PlayerDbHelper.deletePlayer(getSqLiteDatabase(context), name);
+    public static void deletePlayer(Context context, String playerName) {
+        PlayerDbHelper.deletePlayer(getSqLiteDatabase(context), playerName);
+        PreferenceAttributesHelper.deletePlayerAttributes(context, playerName);
     }
 
     public static void clearOldGameTeams(Context context) {
