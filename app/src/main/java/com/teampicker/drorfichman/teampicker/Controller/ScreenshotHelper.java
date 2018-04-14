@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.widget.Toast;
 
@@ -70,7 +71,11 @@ public class ScreenshotHelper {
     private static void openScreenshot(Context ctx, File imageFile) {
 
         Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(imageFile));
+        Uri photoURI = FileProvider.getUriForFile(ctx,
+                ctx.getApplicationContext().getPackageName() + ".team.picker.share.screenshot",
+                imageFile);
+
+        intent.putExtra(Intent.EXTRA_STREAM, photoURI);
         intent.setType("image/*");
         ctx.startActivity(Intent.createChooser(intent, "Share screenshot"));
     }
