@@ -114,6 +114,10 @@ public class PlayerDbHelper {
         return p;
     }
 
+    public static boolean isAttribute(Context ctx, String playerName, PreferenceAttributesHelper.PlayerAttribute attribute) {
+        return PreferenceAttributesHelper.getPlayerPreferences(ctx, playerName, attribute);
+    }
+
     public static boolean isGK(Context ctx, String playerName) {
         return PreferenceAttributesHelper.getPlayerPreferences(ctx, playerName, PreferenceAttributesHelper.PlayerAttribute.isGK);
     }

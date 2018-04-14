@@ -1,14 +1,13 @@
 package com.teampicker.drorfichman.teampicker.Controller;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.teampicker.drorfichman.teampicker.Controller.OptionalDivision;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 
@@ -17,7 +16,8 @@ import java.util.Random;
  */
 public class TeamDivision {
 
-    public static void dividePlayers(@NonNull List<Player> comingPlayers,
+    public static void dividePlayers(Context ctx,
+                                     @NonNull List<Player> comingPlayers,
                                      @NonNull List<Player> players1,
                                      @NonNull List<Player> players2) {
 
@@ -26,7 +26,7 @@ public class TeamDivision {
 
         Collections.sort(comingPlayers);
 
-        maxOptionsDivision(cloneList(comingPlayers), players1, players2);
+        maxOptionsDivision(ctx, cloneList(comingPlayers), players1, players2);
     }
 
     public static ArrayList<Player> cloneList(List<Player> players) {
@@ -35,11 +35,12 @@ public class TeamDivision {
         return clone;
     }
 
-    private static void maxOptionsDivision(@NonNull ArrayList<Player> comingPlayers,
+    private static void maxOptionsDivision(Context ctx,
+                                           @NonNull ArrayList<Player> comingPlayers,
                                            @NonNull List<Player> players1,
                                            @NonNull List<Player> players2) {
 
-        int OPTIONS = 20;
+        int OPTIONS = 0;
 
         List<Player> GKs = new ArrayList<>();
         List<Player> Defenders = new ArrayList<>();
@@ -69,9 +70,9 @@ public class TeamDivision {
             Others.remove(extraPlayer);
         }
 
-        OptionalDivision selected = getOption(cloneList(Others), cloneList(GKs), cloneList(Defenders), cloneList(Playmakers));
+        OptionalDivision selected = getOption(ctx, cloneList(Others), cloneList(GKs), cloneList(Defenders), cloneList(Playmakers));
         for (int option = 0; option < OPTIONS; ++option) {
-            OptionalDivision another = getOption(cloneList(Others), cloneList(GKs), cloneList(Defenders), cloneList(Playmakers));
+            OptionalDivision another = getOption(ctx, cloneList(Others), cloneList(GKs), cloneList(Defenders), cloneList(Playmakers));
             if (another.score() < selected.score()) {
                 selected = another;
             }
@@ -86,15 +87,35 @@ public class TeamDivision {
         }
     }
 
-    private static TeamData getNext(OptionalDivision option) {
-        if (option.players1.getCount() > option.players2.getCount()) {
+    static ArrayList<PreferenceAttributesHelper.PlayerAttribute> specials =
+            new ArrayList<PreferenceAttributesHelper.PlayerAttribute>() {{
+        add(PreferenceAttributesHelper.PlayerAttribute.isDefender);
+        add(PreferenceAttributesHelper.PlayerAttribute.isGK);
+    }};
+
+    private static TeamData getNextTeam(Context ctx,
+                                        OptionalDivision option,
+                                        PreferenceAttributesHelper.PlayerAttribute attribute) {
+
+        int team1Players = option.players1.getCount(ctx, attribute);
+        int team2Players = option.players2.getCount(ctx, attribute);
+        if (team1Players > team2Players) {
             return option.players2;
-        } else {
+        } else if (team2Players > team1Players) {
             return option.players1;
+        } else {
+            int team1Specials = option.players1.getCount(ctx, specials);
+            int team2Specials = option.players2.getCount(ctx, specials);
+            if (team1Specials > team2Specials) {
+                return option.players2;
+            } else {
+                return option.players1;
+            }
         }
     }
 
-    private static OptionalDivision getOption(ArrayList<Player> others,
+    private static OptionalDivision getOption(Context ctx,
+                                              ArrayList<Player> others,
                                               ArrayList<Player> GKs,
                                               ArrayList<Player> Defenders,
                                               ArrayList<Player> Playmakers) {
@@ -104,25 +125,25 @@ public class TeamDivision {
 
         while (GKs.size() > 0) {
             int a = r.nextInt(GKs.size());
-            getNext(option).players.add(GKs.get(a));
+            getNextTeam(ctx, option, PreferenceAttributesHelper.PlayerAttribute.isGK).players.add(GKs.get(a));
             GKs.remove(a);
         }
 
         while (Defenders.size() > 0) {
             int a = r.nextInt(Defenders.size());
-            getNext(option).players.add(Defenders.get(a));
+            getNextTeam(ctx, option, PreferenceAttributesHelper.PlayerAttribute.isDefender).players.add(Defenders.get(a));
             Defenders.remove(a);
         }
 
         while (Playmakers.size() > 0) {
             int a = r.nextInt(Playmakers.size());
-            getNext(option).players.add(Playmakers.get(a));
+            getNextTeam(ctx, option, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker).players.add(Playmakers.get(a));
             Playmakers.remove(a);
         }
 
         while (others.size() > 0) {
             int a = r.nextInt(others.size());
-            getNext(option).players.add(others.get(a));
+            getNextTeam(ctx, option, null).players.add(others.get(a));
             others.remove(a);
         }
 

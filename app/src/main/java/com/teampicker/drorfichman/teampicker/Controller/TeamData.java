@@ -1,6 +1,10 @@
 package com.teampicker.drorfichman.teampicker.Controller;
 
+import android.content.Context;
+
+import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -36,6 +40,33 @@ public class TeamData {
 
     public int getCount() {
         return players.size();
+    }
+
+    public int getCount(Context ctx, List<PreferenceAttributesHelper.PlayerAttribute> attributes) {
+        int count = 0;
+        for (Player player : players) {
+            for (PreferenceAttributesHelper.PlayerAttribute att : attributes) {
+                if (PlayerDbHelper.isAttribute(ctx, player.mName, att)) {
+                    count++;
+                    break;
+                }
+            }
+        }
+        return count;
+    }
+
+    public int getCount(Context ctx, PreferenceAttributesHelper.PlayerAttribute attribute) {
+        if (attribute == null) {
+            return getCount();
+        }
+
+        int count = 0;
+        for (Player player : players) {
+            if (PlayerDbHelper.isAttribute(ctx, player.mName, attribute)) {
+                count++;
+            }
+        }
+        return count;
     }
 
     private double getVariance() {

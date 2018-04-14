@@ -289,7 +289,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
             Toast.makeText(this, "Why you wanna play alone?!?", Toast.LENGTH_LONG).show();
         }
 
-        TeamDivision.dividePlayers(comingPlayers, players1, players2);
+        TeamDivision.dividePlayers(this, comingPlayers, players1, players2);
 
         scramble();
 
