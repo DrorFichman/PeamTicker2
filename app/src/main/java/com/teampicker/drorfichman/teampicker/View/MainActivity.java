@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        setActivityTitle();
+
         final FloatingActionsMenu fab = (FloatingActionsMenu) findViewById(R.id.fab);
 
         FloatingActionButton makeTeamsButton = new FloatingActionButton(this);
@@ -229,5 +231,9 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void setActivityTitle() {
+        setTitle(String.format("PeamTicker (%d)", DbHelper.getComingPlayersCount(this)));
     }
 }

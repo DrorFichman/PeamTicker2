@@ -27,6 +27,31 @@ public class PlayerDbHelper {
         return SQL_CREATE_PLAYERS;
     }
 
+    public static int getComingPlayersCount(SQLiteDatabase db) {
+        String[] projection = {
+                PlayerContract.PlayerEntry.ID,
+                PlayerContract.PlayerEntry.IS_COMING
+        };
+
+        String where = PlayerContract.PlayerEntry.IS_COMING + " = ? ";
+        String[] whereArgs = new String[]{"1"};
+
+        Cursor c = db.query(
+                PlayerContract.PlayerEntry.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                where,                                // The columns for the WHERE clause
+                whereArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+        int count = c.getCount();
+        c.close();
+
+        return count;
+    }
+
     public static
     @NonNull
     ArrayList<Player> getComingPlayers(Context context, SQLiteDatabase db) {

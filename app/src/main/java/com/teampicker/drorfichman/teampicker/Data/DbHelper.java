@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
+import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
 
@@ -104,8 +105,8 @@ public class DbHelper extends SQLiteOpenHelper {
         return writableDatabase;
     }
 
-    public static void updatePlayerComing(Context context, String name, boolean coming) {
-        PlayerDbHelper.updatePlayerComing(getSqLiteDatabase(context), name, coming);
+    public static void updatePlayerComing(Context context, String name, boolean isComing) {
+        PlayerDbHelper.updatePlayerComing(getSqLiteDatabase(context), name, isComing);
     }
 
     public static void updatePlayer(Context context, String name, int grade) {
@@ -138,9 +139,11 @@ public class DbHelper extends SQLiteOpenHelper {
         return PlayerDbHelper.getPlayers(context, getSqLiteDatabase(context));
     }
 
-    public static
-    @NonNull
-    ArrayList<Player> getComingPlayers(Context context, int countLastGames) {
+    public static int getComingPlayersCount(Context context) {
+        return PlayerDbHelper.getComingPlayersCount(getSqLiteDatabase(context));
+    }
+
+    public static ArrayList<Player> getComingPlayers(Context context, int countLastGames) {
         ArrayList<Player> comingPlayers = PlayerDbHelper.getComingPlayers(context, getSqLiteDatabase(context));
         addLastGameStats(context, countLastGames, comingPlayers);
         return comingPlayers;

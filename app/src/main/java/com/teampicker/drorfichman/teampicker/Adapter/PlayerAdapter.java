@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.View.MainActivity;
 
 import java.util.List;
 
@@ -53,6 +54,10 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
                 Log.d("DB", "Player clicked checkbox");
                 p.isComing = vComing.isChecked();
                 DbHelper.updatePlayerComing(context, p.mName, vComing.isChecked());
+
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).setActivityTitle();
+                }
             }
         });
 
