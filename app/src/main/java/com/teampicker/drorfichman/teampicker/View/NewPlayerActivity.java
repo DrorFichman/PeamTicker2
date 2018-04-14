@@ -68,9 +68,9 @@ public class NewPlayerActivity extends AppCompatActivity {
             vName.setEnabled(false);
             vGrade.setHint(String.valueOf(pPlayer.mGrade));
             vResults.setText(pPlayer.getResults());
-        }
 
-        initPlayerAttributes();
+            initPlayerAttributes();
+        }
 
         findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override

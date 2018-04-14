@@ -177,6 +177,7 @@ public class MainActivity extends AppCompatActivity
             case R.id.clear_all:
                 DbHelper.clearComingPlayers(this);
                 refreshPlayers();
+                setActivityTitle();
                 break;
             case R.id.action_status:
                 ArrayList<Player> players = DbHelper.getComingPlayers(this, 0);
