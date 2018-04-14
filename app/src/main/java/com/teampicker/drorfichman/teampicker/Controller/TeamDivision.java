@@ -40,7 +40,7 @@ public class TeamDivision {
                                            @NonNull List<Player> players1,
                                            @NonNull List<Player> players2) {
 
-        int OPTIONS = 0;
+        int OPTIONS = 20;
 
         List<Player> GKs = new ArrayList<>();
         List<Player> Defenders = new ArrayList<>();
