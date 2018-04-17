@@ -24,6 +24,7 @@ import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerAdapter;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.DBUtils;
 
 import java.util.ArrayList;
 
@@ -136,12 +137,14 @@ public class MainActivity extends AppCompatActivity
         refreshPlayers();
     }
 
-    private void refreshPlayers() {
+    public void refreshPlayers() {
         ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext());
 
         // Attach cursor adapter to the ListView
         playersAdapter.clear();
         playersAdapter.addAll(players);
+
+        setActivityTitle();
     }
 
     @Override
@@ -220,13 +223,16 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
 
         if (id == R.id.nav_games) {
             startActivity(new Intent(this, GamesActivity.class));
         } else if (id == R.id.nav_stats) {
             startActivity(new Intent(this, StatisticsActivity.class));
+        } else if (id == R.id.nav_save_snapshot) {
+            DBUtils.takeDBSnapshot(this);
+        } else if (id == R.id.nav_import_snapshot) {
+            DBUtils.importDBSnapshot(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

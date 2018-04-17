@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
@@ -33,7 +34,9 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(PlayerGamesDbHelper.getSqlCreate());
         db.execSQL(GameDbHelper.getSqlCreate());
 
+        Log.d("IMPORT", "No new data");
         // TODO debug data
+        /*
         PlayerDbHelper.insertPlayer(db, "הדר יוסיפון", 88);
         PlayerDbHelper.insertPlayer(db, "אורי ש", 88);
         PlayerDbHelper.insertPlayer(db, "גלעד ב.א.", 88);
@@ -71,6 +74,7 @@ public class DbHelper extends SQLiteOpenHelper {
         PlayerDbHelper.insertPlayer(db, "ערן", 73);
         PlayerDbHelper.insertPlayer(db, "שרון ב", 73);
         PlayerDbHelper.insertPlayer(db, "שרון ר", 73);
+        */
 
         /*
         PlayerDbHelper.insertPlayer(db, "דרור", 85);

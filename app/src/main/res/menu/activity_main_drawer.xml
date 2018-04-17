@@ -10,6 +10,14 @@
             android:id="@+id/nav_stats"
             android:icon="@drawable/stats"
             android:title="Statistics"/>
+        <item
+            android:id="@+id/nav_save_snapshot"
+            android:visible="true"
+            android:title="Export Data"/>
+        <item
+            android:id="@+id/nav_import_snapshot"
+            android:visible="true"
+            android:title="Import Data (delete existing)"/>
     </group>
 
 </menu>
