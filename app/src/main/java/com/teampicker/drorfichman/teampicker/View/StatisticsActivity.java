@@ -52,7 +52,7 @@ public class StatisticsActivity extends AppCompatActivity {
         playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = NewPlayerActivity.getEditPlayerIntent(StatisticsActivity.this, (String) view.getTag(R.id.player_id));
+                Intent intent = EditPlayerActivity.getEditPlayerIntent(StatisticsActivity.this, (String) view.getTag(R.id.player_id));
                 startActivityForResult(intent, 1);
             }
         });

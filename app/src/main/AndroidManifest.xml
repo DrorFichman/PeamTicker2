@@ -47,6 +47,12 @@
 
         <activity
             android:name=".View.NewPlayerActivity"
+            android:label="New player details"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+
+        <activity
+            android:name=".View.EditPlayerActivity"
             android:label="Edit player details"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>

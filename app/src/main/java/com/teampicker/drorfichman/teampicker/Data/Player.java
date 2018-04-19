@@ -41,7 +41,7 @@ public class Player implements Serializable, Comparable {
         return mName;
     }
 
-    // TODO remove
+    // TODO improve
     public String getResults() {
         String s = "";
         for (ResultEnum r : results) {

@@ -24,7 +24,7 @@ import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerAdapter;
 import com.teampicker.drorfichman.teampicker.R;
-import com.teampicker.drorfichman.teampicker.tools.DBUtils;
+import com.teampicker.drorfichman.teampicker.tools.DBSnapshotUtils;
 
 import java.util.ArrayList;
 
@@ -65,8 +65,19 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        FloatingActionButton addPlayerButton = new FloatingActionButton(this);
+        addPlayerButton.setTitle("New Player");
+        addPlayerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fab.collapse();
+                startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), 1);
+            }
+        });
+
         fab.addButton(makeTeamsButton);
         fab.addButton(enterResultsButton);
+        fab.addButton(addPlayerButton);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -86,7 +97,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Player p = (Player) view.getTag();
-                Intent intent = NewPlayerActivity.getEditPlayerIntent(MainActivity.this, p.mName);
+                Intent intent = EditPlayerActivity.getEditPlayerIntent(MainActivity.this, p.mName);
                 startActivityForResult(intent, 1);
             }
         });
@@ -133,6 +144,13 @@ public class MainActivity extends AppCompatActivity
 //                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
 //                                .setAction("Action", null).show();
         }
+
+        refreshPlayers();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
 
         refreshPlayers();
     }
@@ -230,9 +248,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_stats) {
             startActivity(new Intent(this, StatisticsActivity.class));
         } else if (id == R.id.nav_save_snapshot) {
-            DBUtils.takeDBSnapshot(this);
+            DBSnapshotUtils.takeDBSnapshot(this);
         } else if (id == R.id.nav_import_snapshot) {
-            DBUtils.importDBSnapshot(this);
+            DBSnapshotUtils.importDBSnapshot(this);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

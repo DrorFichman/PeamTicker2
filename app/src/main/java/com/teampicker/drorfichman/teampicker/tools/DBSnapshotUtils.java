@@ -3,9 +3,12 @@ package com.teampicker.drorfichman.teampicker.tools;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -20,9 +23,10 @@ import java.util.ArrayList;
 /**
  * Created by drorfichman on 4/14/18.
  */
-public class DBUtils {
+public class DBSnapshotUtils {
 
-    private static final String SNAPSHOT = "peamticker_snapshot.xls";
+    private static final String SNAPSHOT_FILE_NAME = "peamticker_snapshot.xls";
+    public static final String EXPORT_PATH = "/TeamPicker/DBs/";
 
     public static void takeDBSnapshot(Activity activity) {
 
@@ -36,13 +40,13 @@ public class DBUtils {
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         } else {
-            takeDBSnapshotPermitted(activity, SNAPSHOT);
+            takeDBSnapshotPermitted(activity);
         }
     }
 
-    private static void takeDBSnapshotPermitted(final Context ctx, String outputFileName) {
+    private static void takeDBSnapshotPermitted(final Context ctx) {
 
-        File dbs = new File(Environment.getExternalStorageDirectory().toString() + "/TeamPicker/DBs/");
+        final File dbs = new File(Environment.getExternalStorageDirectory().toString() + EXPORT_PATH);
         dbs.mkdirs();
 
         ArrayList<String> tables = new ArrayList<>(3);
@@ -51,7 +55,7 @@ public class DBUtils {
         tables.add("player_game");
 
         SQLiteToExcel sqliteToExcel = new SQLiteToExcel(ctx, DbHelper.DATABASE_NAME, dbs.getAbsolutePath());
-        sqliteToExcel.exportSpecificTables(tables, outputFileName, new SQLiteToExcel.ExportListener() {
+        sqliteToExcel.exportSpecificTables(tables, SNAPSHOT_FILE_NAME, new SQLiteToExcel.ExportListener() {
             @Override
             public void onStart() {
                 Toast.makeText(ctx, "Export Started", Toast.LENGTH_SHORT).show();
@@ -60,6 +64,9 @@ public class DBUtils {
             @Override
             public void onCompleted(String filePath) {
                 Toast.makeText(ctx, "Export Completed " + filePath, Toast.LENGTH_SHORT).show();
+
+                // TODO allow user to share the snapshot?
+                // sendSnapshot(ctx, new File(dbs, SNAPSHOT_FILE_NAME));
             }
 
             @Override
@@ -68,6 +75,18 @@ public class DBUtils {
                 Log.e("IMPORT", "Failed export", e);
             }
         });
+    }
+
+    private static void sendSnapshot(Context ctx, File snapshotFile) {
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        Uri snapshotURI = FileProvider.getUriForFile(ctx,
+                ctx.getApplicationContext().getPackageName() + ".team.picker.share.screenshot",
+                snapshotFile);
+
+        intent.putExtra(Intent.EXTRA_STREAM, snapshotURI);
+        intent.setType("*/*");
+        ctx.startActivity(Intent.createChooser(intent, "Send snapshot"));
     }
 
     public static void importDBSnapshot(Activity activity) {
@@ -88,7 +107,9 @@ public class DBUtils {
 
     private static void importDBSnapshotPermitted(final Context ctx) {
 
-        String path = Environment.getExternalStorageDirectory().toString() + "/TeamPicker/DBs/" + SNAPSHOT;
+        // TODO import snapshot from user selected path?
+
+        String path = Environment.getExternalStorageDirectory().toString() + EXPORT_PATH + SNAPSHOT_FILE_NAME;
 
         Log.d("IMPORT", "Import from " + path);
 
