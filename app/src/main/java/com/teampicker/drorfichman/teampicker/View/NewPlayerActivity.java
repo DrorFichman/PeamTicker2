@@ -49,20 +49,20 @@ public class NewPlayerActivity extends AppCompatActivity {
 
                 String stringGrade = vGrade.getText().toString();
                 if (TextUtils.isEmpty(stringGrade)) {
-                    Toast.makeText(getApplicationContext(), "Fill player's score", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Fill player's grade", Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 Integer newGrade = Integer.valueOf(stringGrade);
 
                 if (newGrade > 99 || newGrade < 0) {
-                    Toast.makeText(getApplicationContext(), "Score must be between 0-99", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Grade must be between 0-99", Toast.LENGTH_LONG).show();
                     return;
                 }
 
                 String newName = vName.getText().toString().trim();
                 if (TextUtils.isEmpty(newName)) {
-                    Toast.makeText(getApplicationContext(), "Fill player name", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Fill player's name", Toast.LENGTH_LONG).show();
                     return;
                 }
 
@@ -87,11 +87,11 @@ public class NewPlayerActivity extends AppCompatActivity {
         });
     }
 
-    private boolean createNewPlayer(String name, int grade, boolean isGK, boolean isDefender, boolean isPlaymeker) {
+    private boolean createNewPlayer(String name, int grade, boolean isGK, boolean isDefender, boolean isPlaymaker) {
         boolean inserted = DbHelper.insertPlayer(NewPlayerActivity.this, name, grade);
         if (inserted) {
             PlayerDbHelper.setIsGK(NewPlayerActivity.this, name, isGK);
-            PlayerDbHelper.setIsPlaymaker(NewPlayerActivity.this, name, isPlaymeker);
+            PlayerDbHelper.setIsPlaymaker(NewPlayerActivity.this, name, isPlaymaker);
             PlayerDbHelper.setIsDefender(NewPlayerActivity.this, name, isDefender);
         }
         return inserted;

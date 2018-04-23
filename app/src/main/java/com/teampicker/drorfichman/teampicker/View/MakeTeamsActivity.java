@@ -363,8 +363,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
             team2Stats = players;
         }
 
-        updateTeamData(teamData1, team1Stats);
-        updateTeamData(teamData2, team2Stats);
+        updateTeamData(teamData1, team1Stats, players1.size());
+        updateTeamData(teamData2, team2Stats, players2.size());
     }
 
     private void scramble() {
@@ -376,10 +376,10 @@ public class MakeTeamsActivity extends AppCompatActivity {
         }
     }
 
-    private void updateTeamData(TextView view, List<Player> players) {
+    private void updateTeamData(TextView view, List<Player> players, int playersActualCount) {
         TeamData teamData = new TeamData(players);
         view.setText(getString(R.string.team_data,
-                String.valueOf(teamData.getCount()),
+                String.valueOf(playersActualCount),
                 String.valueOf(teamData.getSum()),
                 String.valueOf(teamData.getAverage()),
                 String.valueOf(teamData.getSuccess()),
