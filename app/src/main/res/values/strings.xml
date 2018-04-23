@@ -14,7 +14,6 @@
     <string name="add_player">Add player</string>
     <string name="make_teams">Make teams</string>
     <string name="enter_results">Enter Results</string>
-    <string name="action_status">Arriving status</string>
     <string name="team_data">" Count: %1$s \n Sum : %2$s \n Average: %3$s \n Success : %4$s \n StdDev: %5$s "</string>
     <string name="delete">Delete</string>
     <string name="win_rate">Win rate</string>

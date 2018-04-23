@@ -200,33 +200,6 @@ public class MainActivity extends AppCompatActivity
                 refreshPlayers();
                 setActivityTitle();
                 break;
-            case R.id.action_status:
-                ArrayList<Player> players = DbHelper.getComingPlayers(this, 0);
-
-                if (players.size() == 0) {
-                    Toast.makeText(MainActivity.this, "No one is playing!??", Toast.LENGTH_LONG).show();
-                    return true;
-                }
-
-                int sum = 0;
-                for (Player p : players) {
-                    sum += p.mGrade;
-                }
-
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-                alertDialogBuilder.setTitle("Status");
-                alertDialogBuilder
-                        .setMessage("Players : " + players.size() + " \n" +
-                                "Average score : " + (sum / players.size()))
-                        .setCancelable(false)
-                        .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                            }
-                        });
-                alertDialogBuilder.create().show();
-
-                return true;
         }
 
         return super.onOptionsItemSelected(item);

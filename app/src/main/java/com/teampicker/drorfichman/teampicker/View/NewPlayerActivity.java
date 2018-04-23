@@ -35,6 +35,10 @@ public class NewPlayerActivity extends AppCompatActivity {
         isDefender = (CheckBox) findViewById(R.id.player_is_defender);
         isPlaymaker = (CheckBox) findViewById(R.id.player_is_playmaker);
 
+        isGK.setVisibility(View.GONE);
+        isDefender.setVisibility(View.GONE);
+        isPlaymaker.setVisibility(View.GONE);
+
         // TODO change to stars
         // TODO plus/minus ratio
 
@@ -56,7 +60,6 @@ public class NewPlayerActivity extends AppCompatActivity {
                     return;
                 }
 
-
                 String newName = vName.getText().toString().trim();
                 if (TextUtils.isEmpty(newName)) {
                     Toast.makeText(getApplicationContext(), "Fill player name", Toast.LENGTH_LONG).show();
@@ -76,7 +79,7 @@ public class NewPlayerActivity extends AppCompatActivity {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
-        findViewById(R.id.cancel).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 finishNow(0);
@@ -85,7 +88,7 @@ public class NewPlayerActivity extends AppCompatActivity {
     }
 
     private boolean createNewPlayer(String name, int grade, boolean isGK, boolean isDefender, boolean isPlaymeker) {
-        boolean inserted = DbHelper.insertPlayer(getApplicationContext(), name, grade);
+        boolean inserted = DbHelper.insertPlayer(NewPlayerActivity.this, name, grade);
         if (inserted) {
             PlayerDbHelper.setIsGK(NewPlayerActivity.this, name, isGK);
             PlayerDbHelper.setIsPlaymaker(NewPlayerActivity.this, name, isPlaymeker);
@@ -115,20 +118,5 @@ public class NewPlayerActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_status) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 }

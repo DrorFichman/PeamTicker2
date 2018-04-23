@@ -17,8 +17,4 @@
         android:id="@+id/enter_results"
         android:title="@string/enter_results"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_status"
-        android:title="@string/action_status"
-        app:showAsAction="never" />
 </menu>
