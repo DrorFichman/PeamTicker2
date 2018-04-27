@@ -2,28 +2,34 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/nav_players"
-            android:icon="@drawable/player"
-            android:title="Players"/>
-        <item
-            android:id="@+id/nav_games"
-            android:icon="@drawable/games"
-            android:title="Games History"/>
-        <item
-            android:id="@+id/nav_stats"
-            android:icon="@drawable/stats"
-            android:title="Statistics"/>
-        <item
-            android:id="@+id/nav_save_snapshot"
-            android:visible="true"
-            android:icon="@android:drawable/ic_menu_save"
-            android:title="Backup Data"/>
-        <item
-            android:id="@+id/nav_import_snapshot"
-            android:icon="@android:drawable/ic_menu_upload"
-            android:visible="true"
-            android:title="Import Data"/>
+        <group
+            android:id="@+id/menu_top"
+            android:checkableBehavior="single">
+            <item
+                android:id="@+id/nav_players"
+                android:icon="@drawable/player"
+                android:title="Players" />
+            <item
+                android:id="@+id/nav_games"
+                android:icon="@drawable/games"
+                android:title="Games History" />
+            <item
+                android:id="@+id/nav_stats"
+                android:icon="@drawable/stats"
+                android:title="Statistics" />
+        </group>
+        <group>
+            <item
+                android:id="@+id/nav_save_snapshot"
+                android:icon="@android:drawable/ic_menu_save"
+                android:title="Backup Data"
+                android:visible="true" />
+            <item
+                android:id="@+id/nav_import_snapshot"
+                android:icon="@android:drawable/ic_menu_upload"
+                android:title="Import Data"
+                android:visible="true" />
+        </group>
     </group>
 
 </menu>

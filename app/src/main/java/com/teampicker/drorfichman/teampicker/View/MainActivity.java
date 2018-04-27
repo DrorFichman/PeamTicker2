@@ -216,7 +216,9 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.nav_games) {
+        if (id == R.id.nav_players) {
+            // nothing
+        } else if (id == R.id.nav_games) {
             startActivity(new Intent(this, GamesActivity.class));
         } else if (id == R.id.nav_stats) {
             startActivity(new Intent(this, StatisticsActivity.class));
