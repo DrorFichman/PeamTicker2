@@ -22,6 +22,9 @@ public class GameDbHelper {
                     PlayerContract.GameEntry.TEAM1_SCORE + " INTEGER, " +
                     PlayerContract.GameEntry.TEAM2_SCORE + " INTEGER )";
 
+    public static final String SQL_DROP_GAMES_TABLE =
+            "DELETE FROM " + PlayerContract.GameEntry.TABLE_NAME;
+
     public static String getSqlCreate() {
         return SQL_CREATE_GAMES;
     }

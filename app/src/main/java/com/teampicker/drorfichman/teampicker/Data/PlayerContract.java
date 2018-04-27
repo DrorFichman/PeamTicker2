@@ -1,11 +1,25 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
+import android.support.annotation.NonNull;
+
+import java.util.ArrayList;
+
 /**
  * Created by drorfichman on 7/30/16.
  */
 public final class PlayerContract {
     public PlayerContract() {
     }
+
+    @NonNull
+    public static ArrayList<String> getTables() {
+        ArrayList<String> tables = new ArrayList<>(3);
+        tables.add(PlayerContract.PlayerEntry.TABLE_NAME);
+        tables.add(PlayerContract.GameEntry.TABLE_NAME);
+        tables.add(PlayerContract.PlayerGameEntry.TABLE_NAME);
+        return tables;
+    }
+
 
     public static abstract class PlayerEntry {
         public static final String TABLE_NAME = "player";

@@ -23,6 +23,9 @@ public class PlayerDbHelper {
                     PlayerContract.PlayerEntry.GRADE + " INTEGER, " +
                     PlayerContract.PlayerEntry.IS_COMING + " INTEGER )";
 
+    public static final String SQL_DROP_PLAYER_TABLE =
+            "DELETE FROM " + PlayerContract.PlayerEntry.TABLE_NAME;
+
     public static String getSqlCreate() {
         return SQL_CREATE_PLAYERS;
     }

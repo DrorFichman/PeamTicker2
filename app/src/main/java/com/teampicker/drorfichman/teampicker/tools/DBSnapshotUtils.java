@@ -3,19 +3,17 @@ package com.teampicker.drorfichman.teampicker.tools;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.ajts.androidmads.library.ExcelToSQLite;
 import com.ajts.androidmads.library.SQLiteToExcel;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
-import com.teampicker.drorfichman.teampicker.View.MainActivity;
+import com.teampicker.drorfichman.teampicker.Data.PlayerContract;
+import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -26,9 +24,22 @@ import java.util.ArrayList;
 public class DBSnapshotUtils {
 
     private static final String SNAPSHOT_FILE_NAME = "peamticker_snapshot.xls";
-    public static final String EXPORT_PATH = "/TeamPicker/DBs/";
+    private static final String EXPORT_PATH = "/TeamPicker/DBs/";
 
-    public static void takeDBSnapshot(Activity activity) {
+    public interface ExportListener {
+        void exportStarted();
+        void exportCompleted(File filePath);
+        void exportError(String msg);
+    }
+
+    public interface ImportListener {
+        void preImport();
+        void importStarted();
+        void importCompleted();
+        void importError(String msg);
+    }
+
+    public static void takeDBSnapshot(Activity activity, ExportListener listener) {
 
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -40,100 +51,63 @@ public class DBSnapshotUtils {
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
                             Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         } else {
-            takeDBSnapshotPermitted(activity);
+
+            takeDBSnapshotPermitted(activity, listener);
         }
     }
 
-    private static void takeDBSnapshotPermitted(final Context ctx) {
+    private static void takeDBSnapshotPermitted(final Context ctx, final ExportListener listener) {
 
         final File dbs = new File(Environment.getExternalStorageDirectory().toString() + EXPORT_PATH);
         dbs.mkdirs();
 
-        ArrayList<String> tables = new ArrayList<>(3);
-        tables.add("player");
-        tables.add("game");
-        tables.add("player_game");
-
         SQLiteToExcel sqliteToExcel = new SQLiteToExcel(ctx, DbHelper.DATABASE_NAME, dbs.getAbsolutePath());
-        sqliteToExcel.exportSpecificTables(tables, SNAPSHOT_FILE_NAME, new SQLiteToExcel.ExportListener() {
+        sqliteToExcel.exportSpecificTables(PlayerContract.getTables(), SNAPSHOT_FILE_NAME,
+                new SQLiteToExcel.ExportListener() {
             @Override
             public void onStart() {
-                Toast.makeText(ctx, "Export Started", Toast.LENGTH_SHORT).show();
+                listener.exportStarted();
             }
 
             @Override
             public void onCompleted(String filePath) {
-                Toast.makeText(ctx, "Export Completed " + filePath, Toast.LENGTH_SHORT).show();
-
-                // TODO allow user to share the snapshot?
-                // sendSnapshot(ctx, new File(dbs, SNAPSHOT_FILE_NAME));
+                listener.exportCompleted(new File(dbs, SNAPSHOT_FILE_NAME));
             }
 
             @Override
             public void onError(Exception e) {
-                Toast.makeText(ctx, "Import Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                Log.e("IMPORT", "Failed export", e);
+                listener.exportError(e.getMessage());
+                Log.e("EXPORT", "Failed export", e);
             }
         });
     }
 
-    private static void sendSnapshot(Context ctx, File snapshotFile) {
+    public static void importDBSnapshotSelected(final Context ctx, String snapshotPath,
+                                                final ImportListener listener) {
 
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        Uri snapshotURI = FileProvider.getUriForFile(ctx,
-                ctx.getApplicationContext().getPackageName() + ".team.picker.share.screenshot",
-                snapshotFile);
+        Log.d("IMPORT", "Import from " + snapshotPath);
 
-        intent.putExtra(Intent.EXTRA_STREAM, snapshotURI);
-        intent.setType("*/*");
-        ctx.startActivity(Intent.createChooser(intent, "Send snapshot"));
-    }
+        // Remove all existing DB content
+        DbHelper.deleteTableContents(ctx);
 
-    public static void importDBSnapshot(Activity activity) {
-
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
-
-        } else {
-            importDBSnapshotPermitted(activity);
-        }
-    }
-
-    private static void importDBSnapshotPermitted(final Context ctx) {
-
-        // TODO import snapshot from user selected path?
-
-        String path = Environment.getExternalStorageDirectory().toString() + EXPORT_PATH + SNAPSHOT_FILE_NAME;
-
-        Log.d("IMPORT", "Import from " + path);
-
-        DbHelper.deletePlayer(ctx, "דרור");
+        listener.preImport();
 
         ExcelToSQLite excelToSQLite = new ExcelToSQLite(ctx.getApplicationContext(), DbHelper.DATABASE_NAME, false);
-        excelToSQLite.importFromFile(path, new ExcelToSQLite.ImportListener() {
+        excelToSQLite.importFromFile(snapshotPath, new ExcelToSQLite.ImportListener() {
             @Override
             public void onStart() {
-                Toast.makeText(ctx, "Import Started", Toast.LENGTH_SHORT).show();
+                listener.importStarted();
             }
 
             @Override
             public void onCompleted(String dbName) {
-                Toast.makeText(ctx, "Import Completed " + dbName, Toast.LENGTH_SHORT).show();
-                if (ctx instanceof MainActivity) {
-                    ((MainActivity) ctx).refreshPlayers();
-                }
+                listener.importCompleted();
             }
 
             @Override
             public void onError(Exception e) {
-                Toast.makeText(ctx, "Import Failed " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 Log.e("IMPORT", "Failed import", e);
+                listener.importError(e.getMessage());
             }
         });
     }

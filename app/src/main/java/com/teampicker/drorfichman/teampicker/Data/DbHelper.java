@@ -109,6 +109,12 @@ public class DbHelper extends SQLiteOpenHelper {
         return writableDatabase;
     }
 
+    public static void deleteTableContents(Context context) {
+        getSqLiteDatabase(context).execSQL(GameDbHelper.SQL_DROP_GAMES_TABLE);
+        getSqLiteDatabase(context).execSQL(PlayerDbHelper.SQL_DROP_PLAYER_TABLE);
+        getSqLiteDatabase(context).execSQL(PlayerGamesDbHelper.SQL_DROP_PLAYER_GAMES_TABLE);
+    }
+
     public static void updatePlayerComing(Context context, String name, boolean isComing) {
         PlayerDbHelper.updatePlayerComing(getSqLiteDatabase(context), name, isComing);
     }

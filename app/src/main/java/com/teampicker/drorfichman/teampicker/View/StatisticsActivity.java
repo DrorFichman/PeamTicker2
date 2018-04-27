@@ -32,6 +32,8 @@ public class StatisticsActivity extends AppCompatActivity {
     TextView gradeTitle;
     private int games = -1;
 
+    private static final int ACTIVITY_RESULT_PLAYER = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +55,7 @@ public class StatisticsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = EditPlayerActivity.getEditPlayerIntent(StatisticsActivity.this, (String) view.getTag(R.id.player_id));
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, ACTIVITY_RESULT_PLAYER);
             }
         });
 
@@ -157,7 +159,7 @@ public class StatisticsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (resultCode == 1) {
+        if (requestCode == ACTIVITY_RESULT_PLAYER) {
             Log.d("TEAMS", "TODO : refresh statistics list on result?");
             refreshList(games);
         }

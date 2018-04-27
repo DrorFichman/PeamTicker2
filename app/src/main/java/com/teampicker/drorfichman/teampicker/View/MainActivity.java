@@ -1,8 +1,16 @@
 package com.teampicker.drorfichman.teampicker.View;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
@@ -25,7 +33,9 @@ import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerAdapter;
 import com.teampicker.drorfichman.teampicker.R;
 import com.teampicker.drorfichman.teampicker.tools.DBSnapshotUtils;
+import com.teampicker.drorfichman.teampicker.tools.FileHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
@@ -33,6 +43,9 @@ public class MainActivity extends AppCompatActivity
 
     private ListView playersList;
     private PlayerAdapter playersAdapter;
+
+    private static final int ACTIVITY_RESULT_PLAYER = 1;
+    private static final int ACTIVITY_RESULT_IMPORT_FILE_SELECTED = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +84,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 fab.collapse();
-                startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), 1);
+                startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), ACTIVITY_RESULT_PLAYER);
             }
         });
 
@@ -88,6 +101,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        navigationView.setItemIconTintList(ColorStateList.valueOf(Color.BLUE));
+        navigationView.setItemTextColor(null);
+
         playersList = (ListView) findViewById(R.id.players_list);
 
         ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext());
@@ -98,7 +114,7 @@ public class MainActivity extends AppCompatActivity
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Player p = (Player) view.getTag();
                 Intent intent = EditPlayerActivity.getEditPlayerIntent(MainActivity.this, p.mName);
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, ACTIVITY_RESULT_PLAYER);
             }
         });
 
@@ -113,39 +129,17 @@ public class MainActivity extends AppCompatActivity
         playersList.setAdapter(playersAdapter);
     }
 
-    private void checkPlayerDeletion(final Player player) {
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-        alertDialogBuilder.setTitle("Delete");
-
-        // set dialog message
-        alertDialogBuilder
-                .setMessage("Do you want to remove this player?")
-                .setCancelable(true)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        DbHelper.deletePlayer(MainActivity.this, player.mName);
-                        refreshPlayers();
-                        dialog.dismiss();
-                    }
-                });
-
-        alertDialogBuilder.create().show();
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         Log.d("onActivityResult", "Result " + resultCode);
 
-        if (resultCode == 1) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                                .setAction("Action", null).show();
-        }
+        if (requestCode == ACTIVITY_RESULT_IMPORT_FILE_SELECTED && resultCode == RESULT_OK &&
+                data != null && data.getData() != null) {
 
-        refreshPlayers();
+            checkImportApproved(getImportListener(), FileHelper.getPath(this, data.getData()));
+        }
     }
 
     @Override
@@ -153,16 +147,6 @@ public class MainActivity extends AppCompatActivity
         super.onResume();
 
         refreshPlayers();
-    }
-
-    public void refreshPlayers() {
-        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext());
-
-        // Attach cursor adapter to the ListView
-        playersAdapter.clear();
-        playersAdapter.addAll(players);
-
-        setActivityTitle();
     }
 
     @Override
@@ -193,7 +177,7 @@ public class MainActivity extends AppCompatActivity
                 startEnterResultActivity();
                 break;
             case R.id.add_player :
-                startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), 1);
+                startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), ACTIVITY_RESULT_PLAYER);
                 break;
             case R.id.clear_all:
                 DbHelper.clearComingPlayers(this);
@@ -205,13 +189,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void startEnterResultActivity() {
-        Intent intent = new Intent(MainActivity.this, MakeTeamsActivity.class);
-        intent.putExtra(MakeTeamsActivity.INTENT_SET_RESULT, true);
-        startActivity(intent);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -223,9 +200,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_stats) {
             startActivity(new Intent(this, StatisticsActivity.class));
         } else if (id == R.id.nav_save_snapshot) {
-            DBSnapshotUtils.takeDBSnapshot(this);
+            DBSnapshotUtils.takeDBSnapshot(this, getExportListener());
         } else if (id == R.id.nav_import_snapshot) {
-            DBSnapshotUtils.importDBSnapshot(this);
+            selectFileForImport();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -233,7 +210,148 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    public void refreshPlayers() {
+        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext());
+
+        // Attach cursor adapter to the ListView
+        playersAdapter.clear();
+        playersAdapter.addAll(players);
+
+        setActivityTitle();
+    }
+
+    private void startEnterResultActivity() {
+        Intent intent = new Intent(MainActivity.this, MakeTeamsActivity.class);
+        intent.putExtra(MakeTeamsActivity.INTENT_SET_RESULT, true);
+        startActivity(intent);
+    }
+
+    private void checkPlayerDeletion(final Player player) {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        alertDialogBuilder.setTitle("Delete");
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage("Do you want to remove this player?")
+                .setCancelable(true)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        DbHelper.deletePlayer(MainActivity.this, player.mName);
+                        refreshPlayers();
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialogBuilder.create().show();
+    }
+
     public void setActivityTitle() {
         setTitle(String.format("PeamTicker (%d)", DbHelper.getComingPlayersCount(this)));
     }
+
+    //region snapshot
+    private DBSnapshotUtils.ImportListener getImportListener() {
+        return new DBSnapshotUtils.ImportListener() {
+            @Override
+            public void preImport() {
+                refreshPlayers();
+            }
+
+            @Override
+            public void importStarted() {
+                Toast.makeText(MainActivity.this, "Import Started", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void importCompleted() {
+                Toast.makeText(MainActivity.this, "Import Completed", Toast.LENGTH_SHORT).show();
+                refreshPlayers();
+            }
+
+            @Override
+            public void importError(String msg) {
+                Toast.makeText(MainActivity.this, "Import Failed " + msg, Toast.LENGTH_SHORT).show();
+            }
+        };
+    }
+
+    private DBSnapshotUtils.ExportListener getExportListener() {
+        return new DBSnapshotUtils.ExportListener() {
+
+            @Override
+            public void exportStarted() {
+                Toast.makeText(MainActivity.this, "Export Started", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void exportCompleted(File snapshot) {
+                Toast.makeText(MainActivity.this, "Export Completed " + snapshot, Toast.LENGTH_SHORT).show();
+
+                sendSnapshot(snapshot);
+            }
+
+            @Override
+            public void exportError(String msg) {
+                Toast.makeText(MainActivity.this, "Data export failed " + msg, Toast.LENGTH_SHORT).show();
+            }
+        };
+    }
+
+    private void sendSnapshot(File snapshotFile) {
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        Uri snapshotURI = FileProvider.getUriForFile(this,
+                this.getApplicationContext().getPackageName() + ".team.picker.share.screenshot",
+                snapshotFile);
+
+        intent.putExtra(Intent.EXTRA_STREAM, snapshotURI);
+        intent.setType("*/*");
+        startActivity(Intent.createChooser(intent, "Send snapshot"));
+    }
+
+    private void checkImportApproved(final DBSnapshotUtils.ImportListener handler, final String importPath) {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        alertDialogBuilder.setTitle("Import Data Warning");
+
+        alertDialogBuilder
+                .setMessage("Delete local data and import selected file?")
+                .setCancelable(true)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        DBSnapshotUtils.importDBSnapshotSelected(MainActivity.this,importPath, handler);
+
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialogBuilder.create().show();
+    }
+
+    public void selectFileForImport() {
+
+        // Check if we have write permission
+        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            // We don't have permission so prompt the user
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
+
+        } else {
+            Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+            chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
+            chooseFile.setType("*/*"); // TODO xls?
+            startActivityForResult(
+                    Intent.createChooser(chooseFile, "Select xls snapshot file to import"),
+                    MainActivity.ACTIVITY_RESULT_IMPORT_FILE_SELECTED
+            );
+        }
+    }
+    //endregion
 }
