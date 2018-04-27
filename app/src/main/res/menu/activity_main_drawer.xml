@@ -3,8 +3,12 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_players"
+            android:icon="@drawable/player"
+            android:title="Players"/>
+        <item
             android:id="@+id/nav_games"
-            android:icon="@drawable/football"
+            android:icon="@drawable/games"
             android:title="Games History"/>
         <item
             android:id="@+id/nav_stats"
@@ -13,11 +17,13 @@
         <item
             android:id="@+id/nav_save_snapshot"
             android:visible="true"
-            android:title="Export Data"/>
+            android:icon="@android:drawable/ic_menu_save"
+            android:title="Backup Data"/>
         <item
             android:id="@+id/nav_import_snapshot"
+            android:icon="@android:drawable/ic_menu_upload"
             android:visible="true"
-            android:title="Import Data (delete existing)"/>
+            android:title="Import Data"/>
     </group>
 
 </menu>
