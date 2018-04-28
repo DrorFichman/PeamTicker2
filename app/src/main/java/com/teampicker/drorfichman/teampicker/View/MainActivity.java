@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity
     private ListView playersList;
     private PlayerAdapter playersAdapter;
 
+    FloatingActionsMenu fab;
+
     private static final int ACTIVITY_RESULT_PLAYER = 1;
     private static final int ACTIVITY_RESULT_IMPORT_FILE_SELECTED = 2;
 
@@ -56,17 +58,7 @@ public class MainActivity extends AppCompatActivity
 
         setActivityTitle();
 
-        final FloatingActionsMenu fab = (FloatingActionsMenu) findViewById(R.id.fab);
-
-        FloatingActionButton makeTeamsButton = new FloatingActionButton(this);
-        makeTeamsButton.setTitle("Teams");
-        makeTeamsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fab.collapse();
-                startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
-            }
-        });
+        fab = (FloatingActionsMenu) findViewById(R.id.fab);
 
         FloatingActionButton enterResultsButton = new FloatingActionButton(this);
         enterResultsButton.setTitle("Results");
@@ -75,6 +67,16 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v) {
                 fab.collapse();
                 startEnterResultActivity();
+            }
+        });
+
+        FloatingActionButton makeTeamsButton = new FloatingActionButton(this);
+        makeTeamsButton.setTitle("Teams");
+        makeTeamsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fab.collapse();
+                startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
             }
         });
 
@@ -88,8 +90,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        fab.addButton(makeTeamsButton);
         fab.addButton(enterResultsButton);
+        fab.addButton(makeTeamsButton);
         fab.addButton(addPlayerButton);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -127,6 +129,10 @@ public class MainActivity extends AppCompatActivity
         });
 
         playersList.setAdapter(playersAdapter);
+
+        if (players == null || players.size() == 0) {
+            showTutorialDialog();
+        }
     }
 
     @Override
@@ -203,6 +209,8 @@ public class MainActivity extends AppCompatActivity
             DBSnapshotUtils.takeDBSnapshot(this, getExportListener());
         } else if (id == R.id.nav_import_snapshot) {
             selectFileForImport();
+        } else if (id == R.id.nav_getting_started) {
+            showTutorialDialog();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -246,6 +254,32 @@ public class MainActivity extends AppCompatActivity
 
         alertDialogBuilder.create().show();
     }
+
+    private void showTutorialDialog() {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        alertDialogBuilder.setTitle("Getting Started");
+
+        alertDialogBuilder
+                .setMessage("Welcome! \n" +
+                        "1. Use the \"+\" New player - to create players \n" +
+                        "2. Mark the arriving players \n" +
+                        "3. Use the \"+\" Teams - to divide your teams \n" +
+                        "4. Use the \"+\" Results - once the game is over \n" +
+                        "\n" +
+                        "And don't forget to be awesome :)")
+                .setCancelable(true)
+                .setPositiveButton("Got it", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        fab.expand();
+                        dialog.dismiss();
+                    }
+                });
+
+        alertDialogBuilder.create().show();
+    }
+
 
     public void setActivityTitle() {
         setTitle(String.format("PeamTicker (%d)", DbHelper.getComingPlayersCount(this)));

@@ -18,7 +18,9 @@
                 android:icon="@drawable/stats"
                 android:title="Statistics" />
         </group>
-        <group>
+        <group
+            android:id="@+id/menu_snapshot"
+            android:checkableBehavior="single">
             <item
                 android:id="@+id/nav_save_snapshot"
                 android:icon="@android:drawable/ic_menu_save"
@@ -28,6 +30,15 @@
                 android:id="@+id/nav_import_snapshot"
                 android:icon="@android:drawable/ic_menu_upload"
                 android:title="Import Data"
+                android:visible="true" />
+        </group>
+        <group
+            android:id="@+id/menu_help"
+            android:checkableBehavior="single">
+            <item
+                android:id="@+id/nav_getting_started"
+                android:icon="@drawable/help"
+                android:title="Getting Started"
                 android:visible="true" />
         </group>
     </group>
