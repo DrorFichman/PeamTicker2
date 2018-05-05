@@ -100,9 +100,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/ic_move_toggle"
             android:textOff=""
-            android:textOn=""
-            android:background="@drawable/ic_move_toggle" />
+            android:textOn="" />
 
         <ImageView
             android:id="@+id/send"
@@ -118,6 +118,23 @@
             android:layout_weight="1"
             android:src="@drawable/save"
             android:visibility="gone" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="10dp"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/move_mode_how_to_exit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="invisible"
+            android:lines="2"
+            android:text="* Click the players you want to move \n* Click the blue icon to exit move mode" />
 
     </LinearLayout>
 

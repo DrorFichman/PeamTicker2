@@ -49,6 +49,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private View sendView;
     private ToggleButton moveView;
     private View shuffleView;
+    private View moveViewDescription;
 
     private Button team1Score;
     private Button team2Score;
@@ -69,10 +70,14 @@ public class MakeTeamsActivity extends AppCompatActivity {
         list1 = (ListView) findViewById(R.id.team_1);
         list2 = (ListView) findViewById(R.id.team_2);
 
+        moveViewDescription = findViewById(R.id.move_mode_how_to_exit);
         moveView = (ToggleButton) findViewById(R.id.move);
         moveView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                moveViewDescription.setVisibility(moveView.isChecked() ? View.VISIBLE : View.INVISIBLE);
+
                 hideSelection();
             }
         });
