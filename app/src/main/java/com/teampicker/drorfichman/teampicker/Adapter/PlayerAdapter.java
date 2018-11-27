@@ -1,6 +1,7 @@
 package com.teampicker.drorfichman.teampicker.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,24 +37,27 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
         TextView name = (TextView) view.findViewById(R.id.player_name);
         TextView grade = (TextView) view.findViewById(R.id.player_grade);
         final CheckBox vComing = (CheckBox) view.findViewById(R.id.player_coming);
+        TextView recentPerformance = (TextView) view.findViewById(R.id.player_recent_performance);
 
-        final Player p = mPlayers.get(position);
-        name.setText(p.mName);
-        grade.setText(String.valueOf(p.mGrade));
-        vComing.setChecked(p.isComing);
+        final Player player = mPlayers.get(position);
+        name.setText(player.mName);
+        grade.setText(String.valueOf(player.mGrade));
+        vComing.setChecked(player.isComing);
 
-        view.findViewById(R.id.player_gk).setVisibility(p.isGK ? View.VISIBLE : View.INVISIBLE);
-        view.findViewById(R.id.player_d).setVisibility(p.isDefender ? View.VISIBLE : View.INVISIBLE);
-        view.findViewById(R.id.player_pm).setVisibility(p.isPlaymaker ? View.VISIBLE : View.INVISIBLE);
+        setPlayerRecentPerformance(recentPerformance, player);
 
-        view.setTag(p);
+        view.findViewById(R.id.player_gk).setVisibility(player.isGK ? View.VISIBLE : View.INVISIBLE);
+        view.findViewById(R.id.player_d).setVisibility(player.isDefender ? View.VISIBLE : View.INVISIBLE);
+        view.findViewById(R.id.player_pm).setVisibility(player.isPlaymaker ? View.VISIBLE : View.INVISIBLE);
+
+        view.setTag(player);
 
         vComing.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("DB", "Player clicked checkbox");
-                p.isComing = vComing.isChecked();
-                DbHelper.updatePlayerComing(context, p.mName, vComing.isChecked());
+                player.isComing = vComing.isChecked();
+                DbHelper.updatePlayerComing(context, player.mName, vComing.isChecked());
 
                 if (context instanceof MainActivity) {
                     ((MainActivity) context).setActivityTitle();
@@ -62,5 +66,20 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
         });
 
         return view;
+    }
+
+    private void setPlayerRecentPerformance(TextView recentPerformance, Player player) {
+        int performance = player.getSuccess();
+        if (performance > 0) {
+            recentPerformance.setText(String.valueOf("+" + performance));
+            recentPerformance.setTextColor(Color.GREEN);
+            recentPerformance.setVisibility(View.VISIBLE);
+        } else if (performance < 0) {
+            recentPerformance.setText(String.valueOf(performance));
+            recentPerformance.setTextColor(Color.RED);
+            recentPerformance.setVisibility(View.VISIBLE);
+        } else {
+            recentPerformance.setVisibility(View.INVISIBLE);
+        }
     }
 }

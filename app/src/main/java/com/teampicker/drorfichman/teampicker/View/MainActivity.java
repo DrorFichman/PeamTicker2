@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity
     private static final int ACTIVITY_RESULT_PLAYER = 1;
     private static final int ACTIVITY_RESULT_IMPORT_FILE_SELECTED = 2;
 
+    private static final int GAMES_COUNT = 10;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,7 +110,7 @@ public class MainActivity extends AppCompatActivity
 
         playersList = (ListView) findViewById(R.id.players_list);
 
-        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext());
+        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), GAMES_COUNT);
         playersAdapter = new PlayerAdapter(this, players);
 
         playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -219,7 +221,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void refreshPlayers() {
-        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext());
+        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), GAMES_COUNT);
 
         // Attach cursor adapter to the ListView
         playersAdapter.clear();

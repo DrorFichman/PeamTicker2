@@ -145,8 +145,10 @@ public class DbHelper extends SQLiteOpenHelper {
         return null;
     }
 
-    public static ArrayList<Player> getPlayers(Context context) {
-        return PlayerDbHelper.getPlayers(context, getSqLiteDatabase(context));
+    public static ArrayList<Player> getPlayers(Context context, int gamesCount) {
+        ArrayList<Player> players = PlayerDbHelper.getPlayers(context, getSqLiteDatabase(context));
+        DbHelper.addLastGameStats(context, gamesCount, players);
+        return players;
     }
 
     public static int getComingPlayersCount(Context context) {
