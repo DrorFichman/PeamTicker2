@@ -119,9 +119,9 @@ public class PlayerGamesDbHelper {
         Log.d("teams", "deleted games players " + n);
     }
 
-    public static ArrayList<ResultEnum> getPlayerLastGames(SQLiteDatabase db, Player player, int countLastGames) {
+    public static ArrayList<PlayerGameStat> getPlayerLastGames(SQLiteDatabase db, Player player, int countLastGames) {
 
-        ArrayList<ResultEnum> results = new ArrayList<>();
+        ArrayList<PlayerGameStat> results = new ArrayList<>();
         if (countLastGames == 0) {
             return results;
         }
@@ -129,7 +129,8 @@ public class PlayerGamesDbHelper {
         String[] projection = {
                 PlayerContract.PlayerGameEntry.NAME,
                 PlayerContract.PlayerGameEntry.GAME,
-                PlayerContract.PlayerGameEntry.PLAYER_RESULT
+                PlayerContract.PlayerGameEntry.PLAYER_RESULT,
+                PlayerContract.PlayerGameEntry.PLAYER_GRADE
         };
 
         // How you want the results sorted in the resulting Cursor
@@ -154,7 +155,10 @@ public class PlayerGamesDbHelper {
                 int i = 0;
                 do {
                     int res = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT));
-                    results.add(ResultEnum.getResultFromOrdinal(res));
+                    int grade = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_GRADE));
+                    PlayerGameStat stat = new PlayerGameStat(ResultEnum.getResultFromOrdinal(res), grade);
+
+                    results.add(stat);
                     i++;
                 } while (c.moveToNext() && (i < countLastGames || countLastGames == -1));
             }

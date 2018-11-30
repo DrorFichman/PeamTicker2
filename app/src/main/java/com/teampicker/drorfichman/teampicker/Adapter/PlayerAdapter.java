@@ -69,12 +69,14 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
     }
 
     private void setPlayerRecentPerformance(TextView recentPerformance, Player player) {
-        int performance = player.getSuccess();
-        if (performance > 0) {
-            recentPerformance.setText(String.valueOf("+" + performance));
+        int lastGrade = player.results.get(0).grade;
+        int suggestedGrade = lastGrade + player.getSuccess();
+        int performance = Math.max(Math.min(suggestedGrade, 99), 1);
+        if (performance > player.mGrade) {
+            recentPerformance.setText(String.valueOf(performance));
             recentPerformance.setTextColor(Color.GREEN);
             recentPerformance.setVisibility(View.VISIBLE);
-        } else if (performance < 0) {
+        } else if (performance < player.mGrade) {
             recentPerformance.setText(String.valueOf(performance));
             recentPerformance.setTextColor(Color.RED);
             recentPerformance.setVisibility(View.VISIBLE);

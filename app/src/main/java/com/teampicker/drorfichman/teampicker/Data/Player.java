@@ -16,7 +16,7 @@ public class Player implements Serializable, Comparable {
     private boolean isMoved;
     private boolean isMissed;
 
-    public ArrayList<ResultEnum> results = new ArrayList<>();
+    public ArrayList<PlayerGameStat> results = new ArrayList<>();
     public StatisticsData statistics;
     public boolean isGK;
     public boolean isDefender;
@@ -44,9 +44,14 @@ public class Player implements Serializable, Comparable {
     // TODO improve
     public String getResults() {
         String s = "";
-        for (ResultEnum r : results) {
+        int grade = 0;
+        for (PlayerGameStat r : results) {
             if (r != null) {
-                s += r.getChar() + " ";
+                if (r.grade != grade) {
+                    grade = r.grade;
+                    s += "[" + String.valueOf(grade) + "] ";
+                }
+                s += r.result.getChar() + " ";
             }
         }
         return s;
@@ -54,9 +59,9 @@ public class Player implements Serializable, Comparable {
 
     public int getSuccess() {
         int value = 0;
-        for (ResultEnum r : results) {
+        for (PlayerGameStat r : results) {
             if (r != null) {
-                value += r.getValue();
+                value += r.result.getValue();
             }
         }
         return value;

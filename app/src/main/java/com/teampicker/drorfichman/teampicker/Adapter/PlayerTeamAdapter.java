@@ -55,7 +55,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         }
 
         for (int r = 0; r < player.results.size() && r < starView.size(); ++r) {
-            ResultEnum res = player.results.get(r);
+            ResultEnum res = player.results.get(r).result;
             if (res == ResultEnum.Win) {
                 starView.get(r).setImageResource(R.drawable.circle_win);
             } else if (res == ResultEnum.Lose) {
