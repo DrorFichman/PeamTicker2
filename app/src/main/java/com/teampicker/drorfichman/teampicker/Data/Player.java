@@ -41,17 +41,49 @@ public class Player implements Serializable, Comparable {
         return mName;
     }
 
+    public int getSuggestedGrade() {
+        int suggestedGrade = getAverageGrade() + getSuccess();
+        return Math.max(Math.min(suggestedGrade, 99), 1);
+    }
+
+    public String getSuggestedChange() {
+        int suggest = getSuggestedGrade();
+        if (suggest > mGrade) {
+            return "+" + (suggest - mGrade);
+        } else if (suggest < mGrade) {
+            return "-" + (mGrade - suggest);
+        } else {
+            return "";
+        }
+    }
+
+    private int getAverageGrade() {
+        if (results != null && results.size() > 0) {
+            int historicGrade = 0;
+            for (PlayerGameStat r : results) {
+                if (r != null) {
+                    historicGrade += r.grade;
+                }
+            }
+            return historicGrade / results.size();
+        } else {
+            return mGrade;
+        }
+    }
+
     // TODO improve
     public String getResults() {
         String s = "";
         int grade = 0;
-        for (PlayerGameStat r : results) {
-            if (r != null) {
-                if (r.grade != grade) {
-                    grade = r.grade;
-                    s += "[" + String.valueOf(grade) + "] ";
+        if (results != null) {
+            for (PlayerGameStat r : results) {
+                if (r != null) {
+                    if (r.grade != grade) {
+                        grade = r.grade;
+                        s += "[" + String.valueOf(grade) + "->] ";
+                    }
+                    s += r.result.getChar() + " ";
                 }
-                s += r.result.getChar() + " ";
             }
         }
         return s;

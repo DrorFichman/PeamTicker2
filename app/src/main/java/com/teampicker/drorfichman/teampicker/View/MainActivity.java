@@ -78,7 +78,12 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 fab.collapse();
-                startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
+                ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(MainActivity.this, 0);
+                if (comingPlayers.size() == 0) {
+                    Toast.makeText(MainActivity.this, "Why you wanna play alone?!?", Toast.LENGTH_LONG).show();
+                } else {
+                    startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
+                }
             }
         });
 
