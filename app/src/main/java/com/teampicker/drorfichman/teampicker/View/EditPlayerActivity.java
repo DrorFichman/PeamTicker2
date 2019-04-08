@@ -28,6 +28,7 @@ public class EditPlayerActivity extends AppCompatActivity {
     private EditText vGrade;
     private EditText vName;
     private TextView vResults;
+    private TextView vResultsSummary;
     private CheckBox isGK;
     private CheckBox isDefender;
     private CheckBox isPlaymaker;
@@ -52,6 +53,7 @@ public class EditPlayerActivity extends AppCompatActivity {
         vName = (EditText) findViewById(R.id.edit_player_name);
         vGrade = (EditText) findViewById(R.id.edit_player_grade);
         vResults = (TextView) findViewById(R.id.player_results);
+        vResultsSummary = (TextView) findViewById(R.id.player_results_summary);
         isGK = (CheckBox) findViewById(R.id.player_is_gk);
         isDefender = (CheckBox) findViewById(R.id.player_is_defender);
         isPlaymaker = (CheckBox) findViewById(R.id.player_is_playmaker);
@@ -64,6 +66,13 @@ public class EditPlayerActivity extends AppCompatActivity {
         vGrade.setHint(String.valueOf(pPlayer.mGrade));
 
         vResults.setText(pPlayer.getResults());
+
+        if (pPlayer.statistics != null) {
+            vResultsSummary.setText(
+                    getString(R.string.player_stat,
+                            String.valueOf(pPlayer.statistics.gamesCount),
+                            String.valueOf(pPlayer.statistics.wins)));
+        }
 
         initPlayerAttributes();
 

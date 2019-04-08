@@ -4,10 +4,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
 
@@ -131,7 +129,7 @@ public class DbHelper extends SQLiteOpenHelper {
         final Player player = PlayerDbHelper.getPlayer(context, getSqLiteDatabase(context), name);
         if (player != null) {
             ArrayList<Player> players = new ArrayList<>(Arrays.asList(player));
-            addLastGameStats(context, -1, players);
+            addLastGameStats(context, -1, players, true);
         }
         return player;
     }
@@ -140,14 +138,9 @@ public class DbHelper extends SQLiteOpenHelper {
         return PlayerGamesDbHelper.getPlayersStatistics(context, getSqLiteDatabase(context), games);
     }
 
-    public static Player getPlayerStatistics(Context context, String name) {
-        // TODO
-        return null;
-    }
-
     public static ArrayList<Player> getPlayers(Context context, int gamesCount) {
         ArrayList<Player> players = PlayerDbHelper.getPlayers(context, getSqLiteDatabase(context));
-        DbHelper.addLastGameStats(context, gamesCount, players);
+        DbHelper.addLastGameStats(context, gamesCount, players, false);
         return players;
     }
 
@@ -157,7 +150,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static ArrayList<Player> getComingPlayers(Context context, int countLastGames) {
         ArrayList<Player> comingPlayers = PlayerDbHelper.getComingPlayers(context, getSqLiteDatabase(context));
-        addLastGameStats(context, countLastGames, comingPlayers);
+        addLastGameStats(context, countLastGames, comingPlayers, false);
         return comingPlayers;
     }
 
@@ -177,15 +170,18 @@ public class DbHelper extends SQLiteOpenHelper {
     public static ArrayList<Player> getCurrTeam(Context context, int currGame, TeamEnum team, int countLastGames) {
         ArrayList<Player> currTeam = PlayerGamesDbHelper.getCurrTeam(context, getSqLiteDatabase(context), currGame, team);
 
-        addLastGameStats(context, countLastGames, currTeam);
+        addLastGameStats(context, countLastGames, currTeam, false);
 
         return currTeam;
     }
 
-    private static void addLastGameStats(Context context, int countLastGames, ArrayList<Player> currTeam) {
+    private static void addLastGameStats(Context context, int countLastGames, ArrayList<Player> currTeam, boolean statistics) {
 
         for (Player p : currTeam) {
             p.results = PlayerGamesDbHelper.getPlayerLastGames(getSqLiteDatabase(context), p, countLastGames);
+            if (statistics) {
+                p.statistics = PlayerGamesDbHelper.getPlayerStatistics(context, getSqLiteDatabase(context), countLastGames, p.mName);
+            }
         }
     }
 

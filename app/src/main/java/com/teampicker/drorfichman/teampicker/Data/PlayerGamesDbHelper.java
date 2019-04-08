@@ -205,11 +205,30 @@ public class PlayerGamesDbHelper {
     }
 
     public static ArrayList<Player> getPlayersStatistics(Context context, SQLiteDatabase db, int gameCount) {
+        return getStatistics(context, db, gameCount, null);
+    }
+
+    public static StatisticsData getPlayerStatistics(Context context, SQLiteDatabase db, int gameCount, String name) {
+        ArrayList<Player> playersStatistics = getStatistics(context, db, gameCount, name);
+        if (playersStatistics.size() > 0) {
+            return playersStatistics.get(0).statistics;
+        } else {
+            Log.e("STAT", "Can't find player " + name);
+            return null;
+        }
+    }
+
+    private static ArrayList<Player> getStatistics(Context context, SQLiteDatabase db, int gameCount, String name) {
 
         String limitGamesCount = "";
         Log.d("teams", "Game count " + gameCount);
         if (gameCount > 0) {
             limitGamesCount = " AND game in (select game_index from game order by game_index DESC LIMIT " + gameCount + " ) ";
+        }
+
+        String nameFilter = "";
+        if (name != null) {
+            nameFilter = " AND player.name =  \"" + name + "\"";
         }
 
         Cursor c = db.rawQuery("select player.name as player_name, player.grade as player_grade, " +
@@ -218,7 +237,7 @@ public class PlayerGamesDbHelper {
                         " count(result) as results_count " +
                         " from player_game, player " +
                         " where " +
-                        " player.name = player_game.name " +
+                        " player.name = player_game.name " + nameFilter +
                         " AND result NOT IN ( " +
                         PlayerGamesDbHelper.EMPTY_RESULT + ", " +
                         PlayerGamesDbHelper.MISSED_GAME + " ) " +
