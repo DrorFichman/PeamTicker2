@@ -61,7 +61,7 @@ public class EditPlayerActivity extends AppCompatActivity {
 
         vName.setText(pPlayer.mName);
         vName.setEnabled(false);
-        vGrade.setHint(String.valueOf(pPlayer.mGrade) + pPlayer.getSuggestedChange());
+        vGrade.setHint(String.valueOf(pPlayer.mGrade));
 
         vResults.setText(pPlayer.getResults());
 

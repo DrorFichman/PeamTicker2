@@ -22,6 +22,8 @@ public class Player implements Serializable, Comparable {
     public boolean isDefender;
     public boolean isPlaymaker;
 
+    private static final int RECENT_GAMES_COUNT = 10;
+
     public Player(String name, int grade) {
         mName = name;
         mGrade = grade;
@@ -59,13 +61,18 @@ public class Player implements Serializable, Comparable {
 
     private int getAverageGrade() {
         if (results != null && results.size() > 0) {
+            int gameCount = 0;
             int historicGrade = 0;
             for (PlayerGameStat r : results) {
                 if (r != null) {
                     historicGrade += r.grade;
+                    gameCount++;
+                }
+                if (gameCount > RECENT_GAMES_COUNT) {
+                    break;
                 }
             }
-            return historicGrade / results.size();
+            return historicGrade / gameCount;
         } else {
             return mGrade;
         }
@@ -90,10 +97,18 @@ public class Player implements Serializable, Comparable {
     }
 
     public int getSuccess() {
+        int gameCount = 0;
         int value = 0;
         for (PlayerGameStat r : results) {
             if (r != null) {
-                value += r.result.getValue();
+                int val = r.result.getValue();
+                if (val <= 1 && val >= -1) {
+                    value += r.result.getValue();
+                    gameCount++;
+                }
+            }
+            if (gameCount > RECENT_GAMES_COUNT) {
+                break;
             }
         }
         return value;

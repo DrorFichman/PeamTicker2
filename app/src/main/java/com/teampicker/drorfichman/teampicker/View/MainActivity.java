@@ -1,7 +1,6 @@
 package com.teampicker.drorfichman.teampicker.View;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -49,7 +48,7 @@ public class MainActivity extends AppCompatActivity
     private static final int ACTIVITY_RESULT_PLAYER = 1;
     private static final int ACTIVITY_RESULT_IMPORT_FILE_SELECTED = 2;
 
-    private static final int GAMES_COUNT = 10;
+    private static final int RECENT_GAMES_COUNT = 10;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,7 +114,7 @@ public class MainActivity extends AppCompatActivity
 
         playersList = (ListView) findViewById(R.id.players_list);
 
-        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), GAMES_COUNT);
+        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT);
         playersAdapter = new PlayerAdapter(this, players);
 
         playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -226,7 +225,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void refreshPlayers() {
-        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), GAMES_COUNT);
+        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT);
 
         // Attach cursor adapter to the ListView
         playersAdapter.clear();
