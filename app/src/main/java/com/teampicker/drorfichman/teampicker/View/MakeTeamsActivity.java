@@ -228,12 +228,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 Log.e("TEAMS", "Unable to find teams for curr game " + currGame);
                 initialDivision();
             }
-
-            // TODO no need for this message?
-//            if (!mSetResult) {
-//                Toast.makeText(this, "Displaying saved teams, \n" +
-//                        "Reshuffle if needed", Toast.LENGTH_LONG).show();
-//            }
         }
     }
 

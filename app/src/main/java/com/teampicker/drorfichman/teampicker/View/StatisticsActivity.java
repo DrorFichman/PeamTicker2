@@ -159,8 +159,8 @@ public class StatisticsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == ACTIVITY_RESULT_PLAYER) {
-            Log.d("TEAMS", "TODO : refresh statistics list on result?");
+        if (requestCode == ACTIVITY_RESULT_PLAYER && resultCode > 0) {
+            Log.d("TEAMS", "refresh statistics list on save");
             refreshList(games);
         }
     }

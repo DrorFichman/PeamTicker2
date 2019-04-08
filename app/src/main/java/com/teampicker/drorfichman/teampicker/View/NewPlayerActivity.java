@@ -39,9 +39,6 @@ public class NewPlayerActivity extends AppCompatActivity {
         isDefender.setVisibility(View.GONE);
         isPlaymaker.setVisibility(View.GONE);
 
-        // TODO change to stars
-        // TODO plus/minus ratio
-
         findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
