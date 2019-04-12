@@ -78,7 +78,9 @@ public class StatisticsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_send_statistics:
 
-                enterSendMode();
+                Toast.makeText(this, "Not supported", Toast.LENGTH_SHORT).show();
+
+                /*enterSendMode();
 
                 final Runnable r = new Runnable() {
                     public void run() {
@@ -89,22 +91,22 @@ public class StatisticsActivity extends AppCompatActivity {
                 };
 
                 new Handler().postDelayed(r, 400);
+                */
 
                 break;
 
             case R.id.action_last_10_games:
                 games = 10;
+                refreshList(games);
                 break;
             case R.id.action_last_50_games:
                 games = 50;
+                refreshList(games);
                 break;
             case R.id.action_no_limit:
                 games = -1;
+                refreshList(games);
                 break;
-        }
-
-        if (games != 0) {
-            refreshList(games);
         }
 
         return super.onOptionsItemSelected(item);
