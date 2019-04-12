@@ -11,6 +11,9 @@
     <string name="new_score">New score</string>
     <string name="yes">yes</string>
     <string name="clear_all_coming">Clear all</string>
+    <string name="sort_name">Sort name</string>
+    <string name="sort_grade">Sort grade</string>
+    <string name="sort_coming">Sort coming</string>
     <string name="add_player">Add player</string>
     <string name="make_teams">Make teams</string>
     <string name="enter_results">Enter Results</string>

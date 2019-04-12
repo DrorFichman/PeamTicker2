@@ -36,6 +36,8 @@ import com.teampicker.drorfichman.teampicker.tools.FileHelper;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -154,12 +156,13 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        refreshPlayers();
-    }
+//    TODO remove
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//
+//        refreshPlayers();
+//    }
 
     @Override
     public void onBackPressed() {
@@ -182,6 +185,15 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+            case R.id.sort_grade:
+                refreshPlayers(sortType.grade);
+                break;
+            case R.id.sort_name :
+                refreshPlayers(sortType.name);
+                break;
+            case R.id.sort_coming :
+                refreshPlayers(sortType.coming);
+                break;
             case R.id.make_teams :
                 startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
                 break;
@@ -225,7 +237,32 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void refreshPlayers() {
+        refreshPlayers(sortType.coming);
+    }
+
+    enum sortType {
+        name,
+        grade,
+        coming
+    }
+
+    public void refreshPlayers(final sortType sortType) {
         ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT);
+
+        Collections.sort(players, new Comparator<Player>() {
+            @Override
+            public int compare(Player p1, Player p2) {
+                if (sortType.equals(MainActivity.sortType.grade)) {
+                    return Integer.compare(p2.mGrade, p1.mGrade);
+                } else if (sortType.equals(MainActivity.sortType.name)) {
+                    return p1.mName.compareTo(p2.mName);
+                } else {
+                    int i = Boolean.compare(p2.isComing, p1.isComing);
+                    return (i != 0) ? i : p1.mName.compareTo(p2.mName);
+                }
+            }
+        });
+
 
         // Attach cursor adapter to the ListView
         playersAdapter.clear();
