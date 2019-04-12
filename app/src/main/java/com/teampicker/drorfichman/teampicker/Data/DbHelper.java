@@ -8,7 +8,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
-import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
+import com.teampicker.drorfichman.teampicker.View.MakeTeamsActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -222,5 +222,13 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static void clearComingPlayers(Context context) {
         PlayerDbHelper.clearAllComing(getSqLiteDatabase(context));
+    }
+
+    public static int getMaxGame(Context context) {
+        return PlayerGamesDbHelper.getMaxGame(getSqLiteDatabase(context));
+    }
+
+    public static int getActiveGame(Context context) {
+        return PlayerGamesDbHelper.getActiveGame(getSqLiteDatabase(context));
     }
 }

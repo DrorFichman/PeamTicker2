@@ -51,24 +51,4 @@ public class PreferenceHelper {
     static SharedPreferences getSharedPreference(Context context){
         return context.getSharedPreferences(PREF_FILE, 0);
     }
-
-    public static int getCurrGame(Context context){
-        return PreferenceHelper.getSharedPreference(context).getInt(PreferenceHelper.PREF_CURR_GAME_INDEX, -1);
-    }
-
-    public static void setCurrGame(Context context, int curr){
-        PreferenceHelper.setSharedPreferenceInt(context, PreferenceHelper.PREF_CURR_GAME_INDEX, curr);
-    }
-
-    public static void clearCurrGame(Context context){
-        PreferenceHelper.setSharedPreferenceInt(context, PreferenceHelper.PREF_CURR_GAME_INDEX, -1);
-    }
-
-    public static int getMaxGame(Context context){
-        return PreferenceHelper.getSharedPreference(context).getInt(PreferenceHelper.PREF_MAX_GAME_INDEX, 0);
-    }
-
-    public static void setMaxGame(Context context, int max){
-        PreferenceHelper.setSharedPreferenceInt(context, PreferenceHelper.PREF_MAX_GAME_INDEX, max);
-    }
 }

@@ -94,7 +94,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
                     ResultEnum newResult = player.isMissed() ? ResultEnum.NA : ResultEnum.Missed;
                     player.switchMissed();
 
-                    DbHelper.updatePlayerResult(MakeTeamsActivity.this, PreferenceHelper.getCurrGame(MakeTeamsActivity.this), player.mName, newResult);
+                    DbHelper.updatePlayerResult(MakeTeamsActivity.this, DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, newResult);
                     updateLists();
 
                 } else if (moveView.isChecked()) { // Moving
@@ -149,7 +149,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         // TODO curr game might not be needed since we're always saving teams - never auto-reshuffle
         if (getIntent().getBooleanExtra(INTENT_SET_RESULT, false)) {
-            if (PreferenceHelper.getCurrGame(this) > 0) {
+            if (DbHelper.getActiveGame(this) > 0) {
                 setResultInit();
             } else {
                 Toast.makeText(this, "No saved teams found, \n" +
@@ -161,22 +161,11 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void saveResults() {
-        int currGame = getCurrGame();
+        int currGame = DbHelper.getActiveGame(this);
         DbHelper.insertGame(this, currGame, getScoreValue(team1Score), getScoreValue(team2Score));
-        clearCurrGame();
 
         Toast.makeText(this, "Results saved", Toast.LENGTH_LONG).show();
         finish();
-    }
-
-    private int getCurrGame() {
-        // TODO add activity parameter to change another game results, add if
-        return PreferenceHelper.getCurrGame(this);
-    }
-
-    void clearCurrGame() {
-        // TODO add activity parameter to change another game results, add if
-        PreferenceHelper.clearCurrGame(this);
     }
 
     private void setResultInit() {
@@ -213,11 +202,13 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void initialData() {
 
-        int currGame = PreferenceHelper.getCurrGame(this);
+        int currGame = DbHelper.getActiveGame(this);
         if (currGame < 0) {
-            Log.d("teams", "Initial data curr game = 0 - so shuffling");
+            Toast.makeText(this,"Initial teams " + currGame, Toast.LENGTH_SHORT).show();
+            Log.d("teams", "Initial data curr game < 0 - so shuffling");
             initialDivision();
         } else {
+            Toast.makeText(this,"Saved teams " + currGame, Toast.LENGTH_SHORT).show();
             Log.d("teams", "Initial data curr game > 0 - so getting from DB");
             players1 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team1, STARS_COUNT);
             players2 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team2, STARS_COUNT);
@@ -235,9 +226,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         DbHelper.clearOldGameTeams(this);
 
-        int currGame = PreferenceHelper.getMaxGame(this) + 1;
-        PreferenceHelper.setMaxGame(this, currGame);
-        PreferenceHelper.setCurrGame(this, currGame);
+        int currGame = DbHelper.getMaxGame(this) + 1;
 
         for (Player a : players1) {
             DbHelper.insertPlayerGame(this, a, currGame, TeamEnum.Team1);
@@ -276,8 +265,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         players1.clear();
         players2.clear();
-
-        PreferenceHelper.clearCurrGame(this);
 
         ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, STARS_COUNT);
         int totalPlayers = comingPlayers.size();

@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
+import com.teampicker.drorfichman.teampicker.View.MakeTeamsActivity;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -138,7 +139,7 @@ public class PlayerGamesDbHelper {
         };
 
         // How you want the results sorted in the resulting Cursor
-        String sortOrder = PlayerContract.PlayerGameEntry.GAME + " DESC";
+        String sortOrder = PlayerContract.PlayerGameEntry.ID + " DESC";
 
         String where = PlayerContract.PlayerGameEntry.NAME + " = ? AND "
                 + PlayerContract.PlayerGameEntry.PLAYER_RESULT + " > ? ";
@@ -227,7 +228,7 @@ public class PlayerGamesDbHelper {
         String limitGamesCount = "";
         Log.d("teams", "Game count " + gameCount);
         if (gameCount > 0) {
-            limitGamesCount = " AND game in (select game_index from game order by game_index DESC LIMIT " + gameCount + " ) ";
+            limitGamesCount = " AND game in (select game_index from game order by date DESC LIMIT " + gameCount + " ) ";
         }
 
         String nameFilter = "";
@@ -295,7 +296,7 @@ public class PlayerGamesDbHelper {
 
         String limitGamesCount = "";
         if (gameCount > 0) {
-            limitGamesCount = " AND game in (select game_index from game order by game_index DESC LIMIT " + gameCount + " ) ";
+            limitGamesCount = " AND game in (select game_index from game order by date DESC LIMIT " + gameCount + " ) ";
         }
 
         Cursor c = db.rawQuery("select player.name as player_name, " +
@@ -369,5 +370,41 @@ public class PlayerGamesDbHelper {
         ArrayList<PlayerParticipation> res = new ArrayList<>();
         res.addAll(result.values());
         return res;
+    }
+
+    public static int getActiveGame(SQLiteDatabase db) {
+
+        Cursor c = db.rawQuery("select game " +
+                        " from player_game " +
+                        " where " +
+                        " result = " + PlayerGamesDbHelper.EMPTY_RESULT + " order by game DESC ",
+                null, null);
+
+        try {
+            if (c.moveToFirst()) {
+                return c.getInt(c.getColumnIndex("game"));
+            }
+        } finally {
+            c.close();
+        }
+
+        return -1;
+    }
+
+    public static int getMaxGame(SQLiteDatabase db) {
+
+        Cursor c = db.rawQuery("select max(game) as curr_game " +
+                        " from player_game ",
+                null, null);
+
+        try {
+            if (c.moveToFirst()) {
+                return c.getInt(c.getColumnIndex("curr_game"));
+            }
+        } finally {
+            c.close();
+        }
+
+        return 1;
     }
 }
