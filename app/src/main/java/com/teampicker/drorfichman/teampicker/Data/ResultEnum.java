@@ -39,4 +39,8 @@ public enum ResultEnum {
         }
         return null;
     }
+
+    public static boolean isActive(int gameResult) {
+        return gameResult >= -1 && gameResult <= 1;
+    }
 }

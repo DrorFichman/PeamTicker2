@@ -8,7 +8,10 @@ import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 /**
  * Created by drorfichman on 10/3/16.
@@ -98,6 +101,7 @@ public class PlayerGamesDbHelper {
                     if (ResultEnum.Missed.getValue() == res) {
                         p.switchMissed();
                     }
+                    p.gameResult = res;
                     players.add(p);
                 } while (c.moveToNext());
             }
@@ -273,5 +277,97 @@ public class PlayerGamesDbHelper {
                 PlayerContract.PlayerGameEntry.GAME + " = ? ",
                 new String[]{gameId});
         Log.d("TEAMS", delete + " game players were deleted");
+    }
+
+    private static PlayerParticipation getPlayer(HashMap<String, PlayerParticipation> result, String currName) {
+
+        PlayerParticipation p = result.get(currName);
+        if (p == null) {
+            p = new PlayerParticipation();
+            p.mName = currName;
+            result.put(currName, p);
+        }
+
+        return p;
+    }
+
+    public static ArrayList<PlayerParticipation> getPartiticipationStatistics(Context context, SQLiteDatabase db, int gameCount, String name) {
+
+        String limitGamesCount = "";
+        if (gameCount > 0) {
+            limitGamesCount = " AND game in (select game_index from game order by game_index DESC LIMIT " + gameCount + " ) ";
+        }
+
+        Cursor c = db.rawQuery("select player.name as player_name, " +
+                        " game, team, result, did_win " +
+                        " from player_game, player " +
+                        " where " +
+                        " player.name = player_game.name AND player.name =  \"" + name + "\"" +
+                        " AND result NOT IN ( " +
+                        PlayerGamesDbHelper.EMPTY_RESULT + ", " +
+                        PlayerGamesDbHelper.MISSED_GAME + " ) " +
+                        limitGamesCount,
+                null, null);
+
+        HashMap<String, PlayerParticipation> result = new HashMap();
+
+        // Get teams based on player active games, aggregate player wins with and against teammates
+        try {
+            if (c.moveToFirst()) {
+                do {
+                    int currGame = c.getInt(c.getColumnIndex("game"));
+                    boolean didWin = c.getInt(c.getColumnIndex("did_win")) == 1;
+                    int currTeam = c.getInt(c.getColumnIndex("team"));
+
+                    ArrayList<Player> team1 = getCurrTeam(context, db, currGame, TeamEnum.Team1);
+                    ArrayList<Player> team2 = getCurrTeam(context, db, currGame, TeamEnum.Team2);
+
+                    if (TeamEnum.Team1.ordinal() == currTeam) {
+                        for (Player p1 : team1) {
+                            PlayerParticipation player = getPlayer(result, p1.mName);
+                            if (ResultEnum.isActive(p1.gameResult)) {
+                                player.statisticsWith.gamesCount++;
+                                if (didWin) player.statisticsWith.wins++;
+                            }
+                        }
+                        for (Player p2 : team2) {
+                            PlayerParticipation player = getPlayer(result, p2.mName);
+                            if (ResultEnum.isActive(p2.gameResult)) {
+                                player.statisticsVs.gamesCount++;
+                                if (didWin) player.statisticsVs.wins++;
+
+                            }
+                        }
+                    }
+
+                    if (TeamEnum.Team2.ordinal() == currTeam) {
+                        for (Player p2 : team2) {
+                            PlayerParticipation player = getPlayer(result, p2.mName);
+                            if (ResultEnum.isActive(p2.gameResult)) {
+                                player.statisticsWith.gamesCount++;
+                                if (didWin) player.statisticsWith.wins++;
+                            }
+                        }
+                        for (Player p1 : team1) {
+                            PlayerParticipation player = getPlayer(result, p1.mName);
+                            if (ResultEnum.isActive(p1.gameResult)) {
+                                player.statisticsVs.gamesCount++;
+                                if (didWin) player.statisticsVs.wins++;
+                            }
+                        }
+                    }
+
+                } while (c.moveToNext());
+            }
+        } finally {
+            c.close();
+        }
+
+        // Remove the actual player
+        result.remove(name);
+
+        ArrayList<PlayerParticipation> res = new ArrayList<>();
+        res.addAll(result.values());
+        return res;
     }
 }

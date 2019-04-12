@@ -1,0 +1,190 @@
+package com.teampicker.drorfichman.teampicker.View;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.teampicker.drorfichman.teampicker.Adapter.PlayerParticipationAdapter;
+import com.teampicker.drorfichman.teampicker.Controller.ScreenshotHelper;
+import com.teampicker.drorfichman.teampicker.Data.DbHelper;
+import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
+import com.teampicker.drorfichman.teampicker.R;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
+public class PlayerParticipationActivity extends AppCompatActivity {
+
+    private ListView playersList;
+    private PlayerParticipationAdapter playersAdapter;
+
+    private static final String PLAYER = "PLAYER";
+    private int games = -1;
+    private Player pPlayer;
+
+    @NonNull
+    public static Intent getPlayerParticipationActivity(Context context, String playerName) {
+        Intent intent = new Intent(context, PlayerParticipationActivity.class);
+        intent.putExtra(PlayerParticipationActivity.PLAYER, playerName);
+        return intent;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.layout_participation_activity);
+
+        Intent intent = getIntent();
+        if (intent.hasExtra(PLAYER)) {
+            pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(PLAYER));
+        }
+
+        ((TextView) findViewById(R.id.player_name)).setText(pPlayer.mName + " + ");
+
+        ((TextView) findViewById(R.id.part_games_count_with)).setText("Games\nWith");
+        ((TextView) findViewById(R.id.part_wins_percentage_with)).setText("Win %\nWith");
+
+        ((TextView) findViewById(R.id.part_games_count_against)).setText("Games\nVs");
+        ((TextView) findViewById(R.id.part_wins_percentage_against)).setText("Win %\nVs");
+
+        playersList = (ListView) findViewById(R.id.players_participation_list);
+
+        refreshList();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.statisctics_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_send_statistics:
+                final Runnable r = new Runnable() {
+                    public void run() {
+                        ScreenshotHelper.takeScreenShot(PlayerParticipationActivity.this);
+                    }
+                };
+                new Handler().postDelayed(r, 200);
+                break;
+            case R.id.action_last_10_games:
+                games = 10;
+                refreshList();
+                break;
+            case R.id.action_last_50_games:
+                games = 50;
+                refreshList();
+                break;
+            case R.id.action_no_limit:
+                games = -1;
+                refreshList();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void refreshList() {
+
+        ArrayList<PlayerParticipation> players = DbHelper.getPlayersParticipationsStatistics(getApplicationContext(), games, pPlayer.mName);
+
+        updateList(players);
+
+        sortByNameHandler(players);
+        sortByGamesHandler(players);
+        sortByWinRateHandler(players);
+    }
+
+    private void updateList(ArrayList<PlayerParticipation> players) {
+        playersAdapter = new PlayerParticipationAdapter(PlayerParticipationActivity.this, players);
+        playersList.setAdapter(playersAdapter);
+    }
+
+    private void sortByWinRateHandler(final ArrayList<PlayerParticipation> players) {
+        View.OnClickListener sort = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Collections.sort(players, new Comparator<PlayerParticipation>() {
+                    @Override
+                    public int compare(PlayerParticipation p1, PlayerParticipation p2) {
+                        return (Float.valueOf(p2.statisticsWith.getWinRate()).compareTo(Float.valueOf(p1.statisticsWith.getWinRate())));
+                    }
+                });
+                updateList(players);
+            }
+        };
+        findViewById(R.id.part_wins_percentage_with).setOnClickListener(sort);
+
+        View.OnClickListener sortVs = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Collections.sort(players, new Comparator<PlayerParticipation>() {
+                    @Override
+                    public int compare(PlayerParticipation p1, PlayerParticipation p2) {
+                        return (Float.valueOf(p2.statisticsVs.getWinRate()).compareTo(Float.valueOf(p1.statisticsVs.getWinRate())));
+                    }
+                });
+                updateList(players);
+            }
+        };
+        findViewById(R.id.part_wins_percentage_against).setOnClickListener(sortVs);
+    }
+
+    private void sortByGamesHandler(final ArrayList<PlayerParticipation> players) {
+        View.OnClickListener sort = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Collections.sort(players, new Comparator<PlayerParticipation>() {
+                    @Override
+                    public int compare(PlayerParticipation p1, PlayerParticipation p2) {
+                        return ((Integer) p2.statisticsWith.gamesCount).compareTo(p1.statisticsWith.gamesCount);
+                    }
+                });
+                updateList(players);
+            }
+        };
+        findViewById(R.id.part_games_count_with).setOnClickListener(sort);
+
+        View.OnClickListener sortVs = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Collections.sort(players, new Comparator<PlayerParticipation>() {
+                    @Override
+                    public int compare(PlayerParticipation p1, PlayerParticipation p2) {
+                        return ((Integer) p2.statisticsVs.gamesCount).compareTo(p1.statisticsVs.gamesCount);
+                    }
+                });
+                updateList(players);
+            }
+        };
+        findViewById(R.id.part_games_count_against).setOnClickListener(sortVs);
+    }
+
+    private void sortByNameHandler(final ArrayList<PlayerParticipation> players) {
+        View.OnClickListener sort = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Collections.sort(players, new Comparator<PlayerParticipation>() {
+                    @Override
+                    public int compare(PlayerParticipation p1, PlayerParticipation p2) {
+                        return p1.mName.compareTo(p2.mName);
+                    }
+                });
+                updateList(players);
+            }
+        };
+        findViewById(R.id.player_name).setOnClickListener(sort);
+    }
+}

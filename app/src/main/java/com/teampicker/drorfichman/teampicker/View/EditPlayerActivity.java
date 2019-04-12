@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
+import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
 import com.teampicker.drorfichman.teampicker.R;
 
 public class EditPlayerActivity extends AppCompatActivity {
@@ -95,6 +96,17 @@ public class EditPlayerActivity extends AppCompatActivity {
                 }
 
                 finishNow(1);
+            }
+        });
+
+        findViewById(R.id.player_participation_btn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(vGrade.getWindowToken(), 0);
+
+                Intent intent = PlayerParticipationActivity.getPlayerParticipationActivity(EditPlayerActivity.this, pPlayer.mName);
+                startActivity(intent);
             }
         });
 

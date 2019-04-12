@@ -12,6 +12,9 @@ public class StatisticsData {
     public int gamesCount;
     public int successRate;
 
+    public StatisticsData() {
+    }
+
     public StatisticsData(int games, int success, int wins) {
         this.gamesCount = games;
         this.successRate = success;

@@ -63,6 +63,12 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
+        <activity
+            android:name=".View.PlayerParticipationActivity"
+            android:label="Player's success with/vs teammates"
+            android:theme="@style/Theme.AppCompat.Light">
+        </activity>
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

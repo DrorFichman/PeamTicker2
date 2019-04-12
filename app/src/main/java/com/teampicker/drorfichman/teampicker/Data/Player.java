@@ -24,6 +24,8 @@ public class Player implements Serializable, Comparable {
 
     private static final int RECENT_GAMES_COUNT = 10;
 
+    public int gameResult;
+
     public Player(String name, int grade) {
         mName = name;
         mGrade = grade;

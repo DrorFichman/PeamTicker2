@@ -8,6 +8,7 @@ import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
+import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -136,6 +137,10 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static ArrayList<Player> getPlayersStatistics(Context context, int games) {
         return PlayerGamesDbHelper.getPlayersStatistics(context, getSqLiteDatabase(context), games);
+    }
+
+    public static ArrayList<PlayerParticipation> getPlayersParticipationsStatistics(Context context, int games, String name) {
+        return PlayerGamesDbHelper.getPartiticipationStatistics(context, getSqLiteDatabase(context), games, name);
     }
 
     public static ArrayList<Player> getPlayers(Context context, int gamesCount) {
