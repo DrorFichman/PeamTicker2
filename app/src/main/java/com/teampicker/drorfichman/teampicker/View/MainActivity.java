@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity
     private static final int ACTIVITY_RESULT_IMPORT_FILE_SELECTED = 2;
 
     private static final int RECENT_GAMES_COUNT = 10;
+    private sortType sort = sortType.grade;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,13 +157,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-//    TODO remove
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//
-//        refreshPlayers();
-//    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        refreshPlayers();
+    }
 
     @Override
     public void onBackPressed() {
@@ -186,12 +186,15 @@ public class MainActivity extends AppCompatActivity
 
         switch (item.getItemId()) {
             case R.id.sort_grade:
+                sort = sortType.grade;
                 refreshPlayers(sortType.grade);
                 break;
             case R.id.sort_name :
+                sort = sortType.name;
                 refreshPlayers(sortType.name);
                 break;
             case R.id.sort_coming :
+                sort = sortType.coming;
                 refreshPlayers(sortType.coming);
                 break;
             case R.id.make_teams :
@@ -237,7 +240,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void refreshPlayers() {
-        refreshPlayers(sortType.coming);
+        refreshPlayers(sort);
     }
 
     enum sortType {
