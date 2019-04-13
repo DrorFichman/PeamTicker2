@@ -39,6 +39,8 @@ public class NewPlayerActivity extends AppCompatActivity {
         isDefender.setVisibility(View.GONE);
         isPlaymaker.setVisibility(View.GONE);
 
+        findViewById(R.id.player_participation_btn).setVisibility(View.INVISIBLE);
+
         findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

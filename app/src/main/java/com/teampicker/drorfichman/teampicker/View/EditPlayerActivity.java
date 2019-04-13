@@ -68,7 +68,7 @@ public class EditPlayerActivity extends AppCompatActivity {
 
         vResults.setText(pPlayer.getResults());
 
-        if (pPlayer.statistics != null) {
+        if (pPlayer != null && pPlayer.statistics != null) {
             vResultsSummary.setText(
                     getString(R.string.player_stat,
                             String.valueOf(pPlayer.statistics.gamesCount),
