@@ -44,10 +44,10 @@ public class PlayerParticipationAdapter extends ArrayAdapter<PlayerParticipation
         name.setText(p.mName);
 
         countWith.setText(String.valueOf(p.statisticsWith.gamesCount));
-        winRateWith.setText(String.valueOf(p.statisticsWith.getWinRate()));
+        winRateWith.setText(String.valueOf(p.statisticsWith.getWinRateDisplay()));
 
         countVs.setText(String.valueOf(p.statisticsVs.gamesCount));
-        winRateVs.setText(String.valueOf(p.statisticsVs.getWinRate()));
+        winRateVs.setText(String.valueOf(p.statisticsVs.getWinRateDisplay()));
 
         view.setTag(R.id.player_id, p.mName);
 

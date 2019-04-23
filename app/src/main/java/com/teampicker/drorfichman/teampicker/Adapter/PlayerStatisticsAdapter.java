@@ -55,7 +55,7 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
         if (p.statistics != null) {
             success.setText(String.valueOf(p.statistics.successRate));
             count.setText(String.valueOf(p.statistics.gamesCount));
-            winRate.setText(String.valueOf(p.statistics.getWinRate()));
+            winRate.setText(String.valueOf(p.statistics.getWinRateDisplay()));
         }
 
         view.setTag(R.id.player_id, p.mName);

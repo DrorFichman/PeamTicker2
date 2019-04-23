@@ -119,7 +119,8 @@ public class PlayerParticipationActivity extends AppCompatActivity {
                 Collections.sort(players, new Comparator<PlayerParticipation>() {
                     @Override
                     public int compare(PlayerParticipation p1, PlayerParticipation p2) {
-                        return (Float.valueOf(p2.statisticsWith.getWinRate()).compareTo(Float.valueOf(p1.statisticsWith.getWinRate())));
+                        // sort by success (instead of win percentage)
+                        return (Float.compare(p2.statisticsWith.getWinRate(), p1.statisticsWith.getWinRate()));
                     }
                 });
                 updateList(players);
@@ -133,7 +134,8 @@ public class PlayerParticipationActivity extends AppCompatActivity {
                 Collections.sort(players, new Comparator<PlayerParticipation>() {
                     @Override
                     public int compare(PlayerParticipation p1, PlayerParticipation p2) {
-                        return (Float.valueOf(p2.statisticsVs.getWinRate()).compareTo(Float.valueOf(p1.statisticsVs.getWinRate())));
+                        // sort by success (instead of win percentage)
+                        return (Float.compare(p2.statisticsVs.getWinRate(), p1.statisticsVs.getWinRate()));
                     }
                 });
                 updateList(players);

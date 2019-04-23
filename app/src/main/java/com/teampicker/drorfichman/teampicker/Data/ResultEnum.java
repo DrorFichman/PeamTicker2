@@ -40,6 +40,10 @@ public enum ResultEnum {
         return null;
     }
 
+    public static boolean isActive(ResultEnum res) {
+        return res.value >= -1 && res.value <= 1;
+    }
+
     public static boolean isActive(int gameResult) {
         return gameResult >= -1 && gameResult <= 1;
     }

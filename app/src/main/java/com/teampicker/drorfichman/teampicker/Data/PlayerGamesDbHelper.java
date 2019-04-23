@@ -7,12 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
-import com.teampicker.drorfichman.teampicker.View.MakeTeamsActivity;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
 
 /**
  * Created by drorfichman on 10/3/16.
@@ -280,19 +277,21 @@ public class PlayerGamesDbHelper {
         Log.d("TEAMS", delete + " game players were deleted");
     }
 
-    private static PlayerParticipation getPlayer(HashMap<String, PlayerParticipation> result, String currName) {
+    private static PlayerParticipation getPlayer(HashMap<String, PlayerParticipation> result,
+                                                 String currName, String collaborator) {
 
         PlayerParticipation p = result.get(currName);
         if (p == null) {
             p = new PlayerParticipation();
             p.mName = currName;
+            p.mParticipatedWith = collaborator;
             result.put(currName, p);
         }
 
         return p;
     }
 
-    public static ArrayList<PlayerParticipation> getPartiticipationStatistics(Context context, SQLiteDatabase db, int gameCount, String name) {
+    public static ArrayList<PlayerParticipation> getParticipationStatistics(Context context, SQLiteDatabase db, int gameCount, String name) {
 
         String limitGamesCount = "";
         if (gameCount > 0) {
@@ -317,44 +316,32 @@ public class PlayerGamesDbHelper {
             if (c.moveToFirst()) {
                 do {
                     int currGame = c.getInt(c.getColumnIndex("game"));
-                    boolean didWin = c.getInt(c.getColumnIndex("did_win")) == 1;
-                    int currTeam = c.getInt(c.getColumnIndex("team"));
+                    boolean didWin = c.getInt(c.getColumnIndex("did_win")) == 1; // TODO unused
+                    ResultEnum gameResult = ResultEnum.getResultFromOrdinal(c.getInt(c.getColumnIndex("result")));
+                    int collaboratorTeam = c.getInt(c.getColumnIndex("team"));
 
                     ArrayList<Player> team1 = getCurrTeam(context, db, currGame, TeamEnum.Team1);
                     ArrayList<Player> team2 = getCurrTeam(context, db, currGame, TeamEnum.Team2);
 
-                    if (TeamEnum.Team1.ordinal() == currTeam) {
-                        for (Player p1 : team1) {
-                            PlayerParticipation player = getPlayer(result, p1.mName);
-                            if (ResultEnum.isActive(p1.gameResult)) {
-                                player.statisticsWith.gamesCount++;
-                                if (didWin) player.statisticsWith.wins++;
-                            }
+                    if (TeamEnum.Team1.ordinal() == collaboratorTeam) {
+                        for (Player p1 : team1) { // same team
+                            PlayerParticipation player = getPlayer(result, p1.mName, name);
+                            addResult(player.statisticsWith, gameResult, ResultEnum.getResultFromOrdinal(p1.gameResult));
                         }
-                        for (Player p2 : team2) {
-                            PlayerParticipation player = getPlayer(result, p2.mName);
-                            if (ResultEnum.isActive(p2.gameResult)) {
-                                player.statisticsVs.gamesCount++;
-                                if (didWin) player.statisticsVs.wins++;
-
-                            }
+                        for (Player p2 : team2) { // opposite team
+                            PlayerParticipation player = getPlayer(result, p2.mName, name);
+                            addResult(player.statisticsVs, gameResult, ResultEnum.getResultFromOrdinal(p2.gameResult));
                         }
                     }
 
-                    if (TeamEnum.Team2.ordinal() == currTeam) {
-                        for (Player p2 : team2) {
-                            PlayerParticipation player = getPlayer(result, p2.mName);
-                            if (ResultEnum.isActive(p2.gameResult)) {
-                                player.statisticsWith.gamesCount++;
-                                if (didWin) player.statisticsWith.wins++;
-                            }
+                    if (TeamEnum.Team2.ordinal() == collaboratorTeam) {
+                        for (Player p2 : team2) { // same team
+                            PlayerParticipation player = getPlayer(result, p2.mName, name);
+                            addResult(player.statisticsWith, gameResult, ResultEnum.getResultFromOrdinal(p2.gameResult));
                         }
-                        for (Player p1 : team1) {
-                            PlayerParticipation player = getPlayer(result, p1.mName);
-                            if (ResultEnum.isActive(p1.gameResult)) {
-                                player.statisticsVs.gamesCount++;
-                                if (didWin) player.statisticsVs.wins++;
-                            }
+                        for (Player p1 : team1) { // opposite team
+                            PlayerParticipation player = getPlayer(result, p1.mName, name);
+                            addResult(player.statisticsVs, gameResult, ResultEnum.getResultFromOrdinal(p1.gameResult));
                         }
                     }
 
@@ -370,6 +357,21 @@ public class PlayerGamesDbHelper {
         ArrayList<PlayerParticipation> res = new ArrayList<>();
         res.addAll(result.values());
         return res;
+    }
+
+    private static void addResult(StatisticsData playerStatistics,
+                                  ResultEnum collaboratorRes, ResultEnum playerRes) {
+        if (!ResultEnum.isActive(playerRes))
+            return;
+
+        playerStatistics.gamesCount++;
+        if (ResultEnum.Win.equals(collaboratorRes)) {
+            playerStatistics.wins++;
+            playerStatistics.successRate++;
+        }
+        if (ResultEnum.Lose.equals(collaboratorRes)) {
+            playerStatistics.successRate--;
+        }
     }
 
     public static int getActiveGame(SQLiteDatabase db) {

@@ -21,10 +21,17 @@ public class StatisticsData {
         this.wins = wins;
     }
 
-    public String getWinRate() {
+    public int getWinRate() {
         if (gamesCount > 0) {
-            return new BigDecimal((float) wins * 100 / (float) gamesCount).round(new MathContext(3)).toString();
+            return (wins * 100 / gamesCount);
         }
-        return "0";
+        return 0;
+    }
+
+    public String getWinRateDisplay() {
+        if (gamesCount > 0) {
+            return String.valueOf(getWinRate()) + "%";
+        }
+        return "-";
     }
 }
