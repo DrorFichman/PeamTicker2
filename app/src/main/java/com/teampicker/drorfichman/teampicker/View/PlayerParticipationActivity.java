@@ -22,6 +22,7 @@ import com.teampicker.drorfichman.teampicker.R;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 
 public class PlayerParticipationActivity extends AppCompatActivity {
 
@@ -98,7 +99,9 @@ public class PlayerParticipationActivity extends AppCompatActivity {
 
     private void refreshList() {
 
-        ArrayList<PlayerParticipation> players = DbHelper.getPlayersParticipationsStatistics(getApplicationContext(), games, pPlayer.mName);
+        HashMap<String, PlayerParticipation> result = DbHelper.getPlayersParticipationsStatistics(getApplicationContext(), games, pPlayer.mName);
+        ArrayList<PlayerParticipation> players = new ArrayList<>();
+        players.addAll(result.values());
 
         updateList(players);
 
@@ -120,7 +123,10 @@ public class PlayerParticipationActivity extends AppCompatActivity {
                     @Override
                     public int compare(PlayerParticipation p1, PlayerParticipation p2) {
                         // sort by success (instead of win percentage)
-                        return (Float.compare(p2.statisticsWith.getWinRate(), p1.statisticsWith.getWinRate()));
+                        if (p2.statisticsWith.successRate != p1.statisticsWith.successRate)
+                            return Integer.compare(p2.statisticsWith.successRate, p1.statisticsWith.successRate);
+                        else
+                            return Integer.compare(p2.statisticsWith.gamesCount, p1.statisticsWith.gamesCount);
                     }
                 });
                 updateList(players);
@@ -135,7 +141,10 @@ public class PlayerParticipationActivity extends AppCompatActivity {
                     @Override
                     public int compare(PlayerParticipation p1, PlayerParticipation p2) {
                         // sort by success (instead of win percentage)
-                        return (Float.compare(p2.statisticsVs.getWinRate(), p1.statisticsVs.getWinRate()));
+                        if (p2.statisticsVs.successRate != p1.statisticsVs.successRate)
+                            return Integer.compare(p2.statisticsVs.successRate, p1.statisticsVs.successRate);
+                        else
+                            return Integer.compare(p2.statisticsVs.gamesCount, p1.statisticsVs.gamesCount);
                     }
                 });
                 updateList(players);
@@ -151,7 +160,7 @@ public class PlayerParticipationActivity extends AppCompatActivity {
                 Collections.sort(players, new Comparator<PlayerParticipation>() {
                     @Override
                     public int compare(PlayerParticipation p1, PlayerParticipation p2) {
-                        return ((Integer) p2.statisticsWith.gamesCount).compareTo(p1.statisticsWith.gamesCount);
+                        return Integer.compare(p2.statisticsWith.gamesCount, p1.statisticsWith.gamesCount);
                     }
                 });
                 updateList(players);
@@ -165,7 +174,7 @@ public class PlayerParticipationActivity extends AppCompatActivity {
                 Collections.sort(players, new Comparator<PlayerParticipation>() {
                     @Override
                     public int compare(PlayerParticipation p1, PlayerParticipation p2) {
-                        return ((Integer) p2.statisticsVs.gamesCount).compareTo(p1.statisticsVs.gamesCount);
+                        return Integer.compare(p2.statisticsVs.gamesCount, p1.statisticsVs.gamesCount);
                     }
                 });
                 updateList(players);

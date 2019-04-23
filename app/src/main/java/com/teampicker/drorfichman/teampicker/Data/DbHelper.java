@@ -11,6 +11,7 @@ import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelp
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * Created by drorfichman on 7/30/16.
@@ -138,7 +139,7 @@ public class DbHelper extends SQLiteOpenHelper {
         return PlayerGamesDbHelper.getPlayersStatistics(context, getSqLiteDatabase(context), games);
     }
 
-    public static ArrayList<PlayerParticipation> getPlayersParticipationsStatistics(Context context, int games, String name) {
+    public static HashMap<String, PlayerParticipation> getPlayersParticipationsStatistics(Context context, int games, String name) {
         return PlayerGamesDbHelper.getParticipationStatistics(context, getSqLiteDatabase(context), games, name);
     }
 

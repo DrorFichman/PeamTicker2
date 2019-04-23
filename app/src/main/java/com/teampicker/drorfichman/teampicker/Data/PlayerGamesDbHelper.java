@@ -291,7 +291,7 @@ public class PlayerGamesDbHelper {
         return p;
     }
 
-    public static ArrayList<PlayerParticipation> getParticipationStatistics(Context context, SQLiteDatabase db, int gameCount, String name) {
+    public static HashMap<String, PlayerParticipation> getParticipationStatistics(Context context, SQLiteDatabase db, int gameCount, String name) {
 
         String limitGamesCount = "";
         if (gameCount > 0) {
@@ -354,9 +354,7 @@ public class PlayerGamesDbHelper {
         // Remove the actual player
         result.remove(name);
 
-        ArrayList<PlayerParticipation> res = new ArrayList<>();
-        res.addAll(result.values());
-        return res;
+        return result;
     }
 
     private static void addResult(StatisticsData playerStatistics,
