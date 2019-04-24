@@ -30,7 +30,7 @@ public class PlayerParticipationActivity extends AppCompatActivity {
     private PlayerParticipationAdapter playersAdapter;
 
     private static final String PLAYER = "PLAYER";
-    private int games = -1;
+    private int games = 50;
     private Player pPlayer;
 
     @NonNull
@@ -53,10 +53,10 @@ public class PlayerParticipationActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.player_name)).setText(pPlayer.mName + " + ");
 
         ((TextView) findViewById(R.id.part_games_count_with)).setText("Games\nWith");
-        ((TextView) findViewById(R.id.part_wins_percentage_with)).setText("Win %\nWith");
+        ((TextView) findViewById(R.id.part_wins_percentage_with)).setText("Success\nWith");
 
         ((TextView) findViewById(R.id.part_games_count_against)).setText("Games\nVs");
-        ((TextView) findViewById(R.id.part_wins_percentage_against)).setText("Win %\nVs");
+        ((TextView) findViewById(R.id.part_wins_percentage_against)).setText("Success\nVs");
 
         playersList = (ListView) findViewById(R.id.players_participation_list);
 
@@ -103,6 +103,12 @@ public class PlayerParticipationActivity extends AppCompatActivity {
         ArrayList<PlayerParticipation> players = new ArrayList<>();
         players.addAll(result.values());
 
+        Collections.sort(players, new Comparator<PlayerParticipation>() {
+            @Override
+            public int compare(PlayerParticipation p1, PlayerParticipation p2) {
+                return Integer.compare(p2.statisticsWith.gamesCount, p1.statisticsWith.gamesCount);
+            }
+        });
         updateList(players);
 
         sortByNameHandler(players);

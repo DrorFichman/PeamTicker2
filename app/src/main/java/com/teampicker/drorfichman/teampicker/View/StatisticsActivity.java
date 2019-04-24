@@ -30,7 +30,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private PlayerStatisticsAdapter playersAdapter;
 
     TextView gradeTitle;
-    private int games = -1;
+    private int games = 50;
 
     private static final int ACTIVITY_RESULT_PLAYER = 1;
 
