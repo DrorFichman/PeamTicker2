@@ -46,8 +46,14 @@ public class Player implements Serializable, Comparable {
     }
 
     public int getSuggestedGrade() {
-        int suggestedGrade = getAverageGrade() + getSuccess();
-        return Math.max(Math.min(suggestedGrade, 99), 1);
+        if (results == null || results.size() < 5) {
+            return mGrade;
+        } else if (Math.abs(getAverageGrade() - mGrade) > 1) {
+            return mGrade;
+        } else {
+            int suggestedGrade = getAverageGrade() + getSuccess() / 2;
+            return Math.max(Math.min(suggestedGrade, 99), 1);
+        }
     }
 
     public String getSuggestedChange() {
