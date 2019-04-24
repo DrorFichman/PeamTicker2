@@ -80,7 +80,8 @@ public class StatisticsActivity extends AppCompatActivity {
 
                 Toast.makeText(this, "Not supported", Toast.LENGTH_SHORT).show();
 
-                /*enterSendMode();
+                /* TODO support sending?
+                enterSendMode();
 
                 final Runnable r = new Runnable() {
                     public void run() {

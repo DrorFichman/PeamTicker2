@@ -16,7 +16,6 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
-import com.teampicker.drorfichman.teampicker.Controller.PreferenceHelper;
 import com.teampicker.drorfichman.teampicker.Controller.ScreenshotHelper;
 import com.teampicker.drorfichman.teampicker.Controller.TeamData;
 import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
@@ -56,6 +55,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private View saveView;
 
     private boolean mSetResult;
+    private View teamsScreenArea;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,6 +115,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
             }
         });
 
+        teamsScreenArea = findViewById(R.id.teams_list_area);
+
         sendView = findViewById(R.id.send);
         sendView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,7 +128,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
                 final Runnable r = new Runnable() {
                     public void run() {
-                        ScreenshotHelper.takeScreenShot(MakeTeamsActivity.this);
+                        ScreenshotHelper.takeScreenShot(MakeTeamsActivity.this, teamsScreenArea);
                         Log.d("teams", "Exit send mode - Shot taken");
                         exitSendMode();
                     }
@@ -238,10 +240,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void enterSendMode() {
 
-        sendView.setVisibility(View.GONE);
-        moveView.setVisibility(View.GONE);
-        shuffleView.setVisibility(View.GONE);
-
         hideSelection();
         showGrade(false);
         showStats(false);
@@ -250,10 +248,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void exitSendMode() {
-
-        sendView.setVisibility(View.VISIBLE);
-        moveView.setVisibility(View.VISIBLE);
-        shuffleView.setVisibility(View.VISIBLE);
 
         showGrade(true);
         showStats(true);

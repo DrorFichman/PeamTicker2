@@ -75,7 +75,8 @@ public class PlayerParticipationActivity extends AppCompatActivity {
             case R.id.action_send_statistics:
                 final Runnable r = new Runnable() {
                     public void run() {
-                        ScreenshotHelper.takeScreenShot(PlayerParticipationActivity.this);
+                        ScreenshotHelper.takeScreenShot(PlayerParticipationActivity.this,
+                                getWindow().getDecorView().getRootView());
                     }
                 };
                 new Handler().postDelayed(r, 200);

@@ -299,7 +299,7 @@ public class PlayerGamesDbHelper {
         }
 
         Cursor c = db.rawQuery("select player.name as player_name, " +
-                        " game, team, result, did_win " +
+                        " game, team, result " +
                         " from player_game, player " +
                         " where " +
                         " player.name = player_game.name AND player.name =  \"" + name + "\"" +
@@ -316,7 +316,6 @@ public class PlayerGamesDbHelper {
             if (c.moveToFirst()) {
                 do {
                     int currGame = c.getInt(c.getColumnIndex("game"));
-                    boolean didWin = c.getInt(c.getColumnIndex("did_win")) == 1; // TODO unused
                     ResultEnum gameResult = ResultEnum.getResultFromOrdinal(c.getInt(c.getColumnIndex("result")));
                     int collaboratorTeam = c.getInt(c.getColumnIndex("team"));
 

@@ -23,7 +23,7 @@ import java.io.FileOutputStream;
  */
 public class ScreenshotHelper {
 
-    public static void takeScreenShot(Activity activity) {
+    public static void takeScreenShot(Activity activity, View view) {
 
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -34,16 +34,15 @@ public class ScreenshotHelper {
                     activity,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
         } else {
-            takeScreenshotPermitted(activity, DbHelper.getNow() + "-" + System.currentTimeMillis());
+            takeScreenshotPermitted(activity, view, DbHelper.getNow() + "-" + System.currentTimeMillis());
         }
     }
 
-    private static void takeScreenshotPermitted(Activity activity, String name) {
+    private static void takeScreenshotPermitted(Context activity, View v1, String name) {
 
         try {
 
             // create bitmap screen capture
-            View v1 = activity.getWindow().getDecorView().getRootView();
             v1.setDrawingCacheEnabled(true);
             Bitmap bitmap = Bitmap.createBitmap(v1.getDrawingCache());
             v1.setDrawingCacheEnabled(false);
