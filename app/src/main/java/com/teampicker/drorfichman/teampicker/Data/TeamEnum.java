@@ -41,4 +41,15 @@ public enum TeamEnum {
             return ResultEnum.NA;
         }
     }
+
+    public static ResultEnum getTeamResultInGame(Game game, int team) {
+        if (game.result == TeamEnum.Tie) {
+            return ResultEnum.Tie;
+        } else if (game.result == TeamEnum.Team1) {
+            return team == Team1.ordinal() ? ResultEnum.Win : ResultEnum.Lose;
+        } else if (game.result == Team2) {
+            return team == Team2.ordinal() ? ResultEnum.Win : ResultEnum.Lose;
+        }
+        return ResultEnum.Missed;
+    }
 }

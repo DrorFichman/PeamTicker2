@@ -39,7 +39,7 @@ public class GameAdapter extends ArrayAdapter<Game> {
         Game g = mGames.get(position);
 
         String date = g.date;
-        String gameId = String.valueOf(g.gameId);
+        int gameId = g.gameId;
         String team1 = String.valueOf(g.team1Score);
         String team2 = String.valueOf(g.team2Score);
 

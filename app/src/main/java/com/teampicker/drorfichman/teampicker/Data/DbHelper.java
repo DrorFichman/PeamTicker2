@@ -199,8 +199,33 @@ public class DbHelper extends SQLiteOpenHelper {
         PlayerGamesDbHelper.setPlayerGameResult(getSqLiteDatabase(context), gameId, TeamEnum.getResult(score1, score2));
     }
 
-    public static void updatePlayerResult(Context context, int gameId, String name, ResultEnum res) {
-        PlayerGamesDbHelper.updatePlayerResult(getSqLiteDatabase(context), gameId, name, res);
+    public static void setPlayerResult(Context context, int gameId, String name, ResultEnum res) {
+        PlayerGamesDbHelper.updatePlayerResult(getSqLiteDatabase(context), gameId, name, res, -1);
+    }
+
+    public static void modifyPlayerResult(Context context, int gameId, String name) {
+        PlayerGamesDbHelper.PlayerGame pg = PlayerGamesDbHelper.getPlayerResult(getSqLiteDatabase(context), gameId, name);
+
+        ResultEnum newRes = ResultEnum.Missed;
+        int newTeam = -1;
+
+        if (pg.result == ResultEnum.Missed) {
+
+            // TODO move this option to another place
+            Game game = GameDbHelper.getGame(getSqLiteDatabase(context), gameId);
+            newRes = TeamEnum.getTeamResultInGame(game, pg.team);
+
+        } else {
+
+            if (pg.result == ResultEnum.Tie) newRes = ResultEnum.Tie;
+            if (pg.result == ResultEnum.Win) newRes = ResultEnum.Lose;
+            if (pg.result == ResultEnum.Lose) newRes = ResultEnum.Win;
+
+            if (pg.team == 1) newTeam = 0;
+            if (pg.team == 0) newTeam = 1;
+        }
+
+        PlayerGamesDbHelper.updatePlayerResult(getSqLiteDatabase(context), gameId, name, newRes, newTeam);
     }
 
     public static String getNow() {

@@ -96,7 +96,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
                     ResultEnum newResult = player.isMissed() ? ResultEnum.NA : ResultEnum.Missed;
                     player.switchMissed();
 
-                    DbHelper.updatePlayerResult(MakeTeamsActivity.this, DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, newResult);
+                    DbHelper.setPlayerResult(MakeTeamsActivity.this, DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, newResult);
                     updateLists();
 
                 } else if (moveView.isChecked()) { // Moving
@@ -208,7 +208,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         int currGame = DbHelper.getActiveGame(this);
         if (currGame < 0) {
-            Toast.makeText(this,"Initial teams " + currGame, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Initial teams", Toast.LENGTH_SHORT).show();
             Log.d("teams", "Initial shuffled teams");
             initialDivision();
         } else {

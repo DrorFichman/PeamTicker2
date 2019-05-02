@@ -37,10 +37,10 @@ public class GamesActivity extends AppCompatActivity {
         gamesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ArrayList<Player> team1 = DbHelper.getCurrTeam(GamesActivity.this, Integer.valueOf((String) view.getTag(R.id.game_id)), TeamEnum.Team1, 0);
-                ArrayList<Player> team2 = DbHelper.getCurrTeam(GamesActivity.this, Integer.valueOf((String) view.getTag(R.id.game_id)), TeamEnum.Team2, 0);
+                ArrayList<Player> team1 = DbHelper.getCurrTeam(GamesActivity.this, (Integer) view.getTag(R.id.game_id), TeamEnum.Team1, 0);
+                ArrayList<Player> team2 = DbHelper.getCurrTeam(GamesActivity.this, (Integer) view.getTag(R.id.game_id), TeamEnum.Team2, 0);
                 String details = (String) view.getTag(R.id.game_details);
-                String gameId = (String) view.getTag(R.id.game_id);
+                int gameId = (int) view.getTag(R.id.game_id);
                 showTeamsDialog(team1, team2, gameId, details);
             }
         });
@@ -57,11 +57,11 @@ public class GamesActivity extends AppCompatActivity {
     }
 
     private void showTeamsDialog(ArrayList<Player> team1, ArrayList<Player> team2,
-                                 String gameId, String details) {
+                                 int gameId, String details) {
 
         // Create and show the dialog.
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        DialogFragment newFragment = GameDetailsDialogFragment.newInstance(team1, team2, gameId, details);
+        DialogFragment newFragment = GameDetailsDialogFragment.newInstance(this, team1, team2, gameId, details);
         newFragment.show(ft, "game_dialog");
     }
 

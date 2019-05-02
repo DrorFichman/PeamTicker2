@@ -177,9 +177,53 @@ public class PlayerGamesDbHelper {
         updateTeamGameResult(db, gameId, TeamEnum.Team2, TeamEnum.getTeam2Result(winningTeam));
     }
 
-    public static void updatePlayerResult(SQLiteDatabase db, int gameId, String name, ResultEnum res) {
+    static class PlayerGame {
+        int team;
+        ResultEnum result;
+        PlayerGame(int t, ResultEnum r) {team = t; result = r;}
+    }
+
+    public static PlayerGame getPlayerResult(SQLiteDatabase db, int gameId, String name) {
+
+        String[] projection = {
+                PlayerContract.PlayerGameEntry.PLAYER_RESULT,
+                PlayerContract.PlayerGameEntry.TEAM
+        };
+
+        String where = PlayerContract.PlayerGameEntry.NAME + " = ? AND "
+                + PlayerContract.PlayerGameEntry.GAME + " = ? ";
+        String[] whereArgs = new String[]{name, String.valueOf(gameId)};
+
+        Cursor c = db.query(
+                PlayerContract.PlayerGameEntry.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                where,                                // The columns for the WHERE clause
+                whereArgs,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                null                                 // The sort order
+        );
+
+        try {
+            if (c.moveToFirst()) {
+                int team = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.TEAM));
+                int res = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT));
+                ResultEnum r = ResultEnum.getResultFromOrdinal(res);
+                PlayerGame pg = new PlayerGame(team, r);
+                return pg;
+            }
+        } finally {
+            c.close();
+        }
+
+        return null;
+    }
+
+    public static void updatePlayerResult(SQLiteDatabase db, int gameId, String name, ResultEnum res, int newTeam) {
         ContentValues values = new ContentValues();
         values.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, res.getValue());
+        values.put(PlayerContract.PlayerGameEntry.DID_WIN, res == ResultEnum.Win ? 1 : 0);
+        if (newTeam >= 0) values.put(PlayerContract.PlayerGameEntry.TEAM, newTeam);
 
         String where = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
                 PlayerContract.PlayerGameEntry.NAME + " = ? ";
@@ -200,7 +244,7 @@ public class PlayerGamesDbHelper {
                 PlayerContract.PlayerGameEntry.PLAYER_RESULT + " != ? ";
         String[] whereArgs = new String[]{String.valueOf(gameId),
                 String.valueOf(team.ordinal()),
-                String.valueOf(ResultEnum.Missed.getValue())};
+                String.valueOf(ResultEnum.Missed.getValue())}; // avoid overwrite 'missed'
 
         // Update the new row, returning the primary key value of the new row
         DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerGameEntry.TABLE_NAME);

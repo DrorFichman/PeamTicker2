@@ -47,6 +47,35 @@ public class GameDbHelper {
                 values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
+    public static Game getGame(SQLiteDatabase db, int gameId) {
+
+        String[] projection = {
+                PlayerContract.GameEntry.ID,
+                PlayerContract.GameEntry.GAME,
+                PlayerContract.GameEntry.DATE,
+                PlayerContract.GameEntry.TEAM_RESULT,
+                PlayerContract.GameEntry.TEAM1_SCORE,
+                PlayerContract.GameEntry.TEAM2_SCORE,
+        };
+
+        String where = PlayerContract.GameEntry.GAME + " = ? ";
+        String[] whereArgs = new String[]{String.valueOf(gameId)};
+
+        String sortOrder = PlayerContract.GameEntry.ID + " DESC";
+
+        Cursor c = db.query(
+                PlayerContract.GameEntry.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                where,                                // The columns for the WHERE clause
+                whereArgs,                            // The values for the WHERE clause
+                null,
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+        return getGames(c, -1).get(0);
+    }
+
     public static ArrayList<Game> getGames(SQLiteDatabase db) {
 
         // Define a projection that specifies which columns from the database
