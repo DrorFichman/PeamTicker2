@@ -269,7 +269,7 @@ public class PlayerGamesDbHelper {
         String limitGamesCount = "";
         Log.d("teams", "Game count " + gameCount);
         if (gameCount > 0) {
-            limitGamesCount = " AND game in (select game_index from game order by date DESC LIMIT " + gameCount + " ) ";
+            limitGamesCount = " AND game in (select game_index from game order by game_index DESC LIMIT " + gameCount + " ) ";
         }
 
         String nameFilter = "";
@@ -339,7 +339,7 @@ public class PlayerGamesDbHelper {
 
         String limitGamesCount = "";
         if (gameCount > 0) {
-            limitGamesCount = " AND game in (select game_index from game order by date DESC LIMIT " + gameCount + " ) ";
+            limitGamesCount = " AND game in (select game_index from game order by game_index DESC LIMIT " + gameCount + " ) ";
         }
 
         Cursor c = db.rawQuery("select player.name as player_name, " +

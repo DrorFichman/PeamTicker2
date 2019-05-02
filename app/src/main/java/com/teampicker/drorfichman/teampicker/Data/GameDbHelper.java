@@ -17,7 +17,7 @@ public class GameDbHelper {
             "CREATE TABLE " + PlayerContract.GameEntry.TABLE_NAME + " (" +
                     PlayerContract.GameEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     PlayerContract.GameEntry.GAME + " INTEGER, " +
-                    PlayerContract.GameEntry.DATE + " TEXT, " +
+                    PlayerContract.GameEntry.DATE + " TEXT, " + // TODO change to date (sortable)
                     PlayerContract.GameEntry.TEAM_RESULT + " INTEGER DEFAULT -1, " +
                     PlayerContract.GameEntry.TEAM1_SCORE + " INTEGER, " +
                     PlayerContract.GameEntry.TEAM2_SCORE + " INTEGER )";
