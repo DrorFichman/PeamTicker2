@@ -28,6 +28,8 @@ import com.teampicker.drorfichman.teampicker.R;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -207,21 +209,63 @@ public class MakeTeamsActivity extends AppCompatActivity {
         int currGame = DbHelper.getActiveGame(this);
         if (currGame < 0) {
             Toast.makeText(this,"Initial teams " + currGame, Toast.LENGTH_SHORT).show();
-            Log.d("teams", "Initial data curr game < 0 - so shuffling");
+            Log.d("teams", "Initial shuffled teams");
             initialDivision();
         } else {
-            Toast.makeText(this,"Saved teams " + currGame, Toast.LENGTH_SHORT).show();
+            // Toast.makeText(this,"Saved teams", Toast.LENGTH_SHORT).show();
             Log.d("teams", "Initial data curr game > 0 - so getting from DB");
             players1 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team1, STARS_COUNT);
             players2 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team2, STARS_COUNT);
 
+            ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, STARS_COUNT);
+
             if (players1 != null && players1.size() > 0 && players2 != null && players2.size() > 0) {
+                boolean changed = handleComingChanges(comingPlayers, players1, players2);
                 updateLists();
+                if (changed) Toast.makeText(this, "Changes in coming players applied", Toast.LENGTH_SHORT).show();
             } else {
                 Log.e("TEAMS", "Unable to find teams for curr game " + currGame);
                 initialDivision();
             }
         }
+    }
+
+    private boolean handleComingChanges(ArrayList<Player> comingPlayers,
+                                        ArrayList<Player> players1, ArrayList<Player> players2) {
+        // TODO + toast
+        Log.d("COMING", "coming " + comingPlayers.size() +
+                " 1=" + players1.size() +
+                " 2=" + players2.size());
+
+        boolean isChanged = false;
+
+        HashMap<String, Player> all = new HashMap<>();
+        for (Player coming : comingPlayers) {
+            all.put(coming.mName, coming);
+        }
+
+        isChanged = removeNonComingPlayers(players1, all) || isChanged;
+        isChanged = removeNonComingPlayers(players2, all) || isChanged;
+
+        isChanged = isChanged || all.values().size() > 0;
+        players1.addAll(all.values());
+
+        return isChanged;
+    }
+
+    private boolean removeNonComingPlayers(ArrayList<Player> players, HashMap<String, Player> all) {
+        boolean isChanged = false;
+        Iterator<Player> i = players.iterator();
+        while (i.hasNext()) {
+            Player p = i.next();
+            if (all.containsKey(p.mName)) {
+                all.remove(p.mName); // remove from coming player
+            } else {
+                i.remove(); // remove from team
+                isChanged = true;
+            }
+        }
+        return isChanged;
     }
 
     private void saveTeams() {
