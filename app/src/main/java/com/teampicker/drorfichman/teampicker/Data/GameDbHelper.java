@@ -154,10 +154,10 @@ public class GameDbHelper {
         return games;
     }
 
-    public static void deleteGame(SQLiteDatabase db, String gameId) {
+    public static void deleteGame(SQLiteDatabase db, int gameId) {
         int delete = db.delete(PlayerContract.GameEntry.TABLE_NAME,
                 PlayerContract.GameEntry.GAME + " = ? ",
-                new String[]{gameId});
+                new String[]{String.valueOf(gameId)});
         Log.d("TEAMS", delete + " game was deleted");
     }
 }

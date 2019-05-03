@@ -243,7 +243,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 where, whereArgs, SQLiteDatabase.CONFLICT_IGNORE);
     }
 
-    public static void deleteGame(Context context, String game) {
+    public static void deleteGame(Context context, int game) {
 
         GameDbHelper.deleteGame(getSqLiteDatabase(context), game);
         PlayerGamesDbHelper.deleteGame(getSqLiteDatabase(context), game);

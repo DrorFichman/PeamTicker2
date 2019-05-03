@@ -314,10 +314,10 @@ public class PlayerGamesDbHelper {
         return players;
     }
 
-    public static void deleteGame(SQLiteDatabase db, String gameId) {
+    public static void deleteGame(SQLiteDatabase db, int gameId) {
         int delete = db.delete(PlayerContract.PlayerGameEntry.TABLE_NAME,
                 PlayerContract.PlayerGameEntry.GAME + " = ? ",
-                new String[]{gameId});
+                new String[]{String.valueOf(gameId)});
         Log.d("TEAMS", delete + " game players were deleted");
     }
 

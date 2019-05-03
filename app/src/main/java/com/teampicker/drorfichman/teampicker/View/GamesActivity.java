@@ -64,7 +64,7 @@ public class GamesActivity extends AppCompatActivity {
         gamesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                checkGameDeletion((String) view.getTag(R.id.game_id));
+                checkGameDeletion((Integer) view.getTag(R.id.game_id));
                 return true;
             }
         });
@@ -90,7 +90,7 @@ public class GamesActivity extends AppCompatActivity {
         newFragment.show(ft, "game_dialog");
     }
 
-    private void checkGameDeletion(final String game) {
+    private void checkGameDeletion(final int game) {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
