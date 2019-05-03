@@ -76,6 +76,27 @@ public class GameDbHelper {
         return getGames(c, -1).get(0);
     }
 
+    public static ArrayList<Game> getGames(SQLiteDatabase db, String name) {
+
+        ArrayList<Game> results = new ArrayList<>();
+
+        Cursor c = db.rawQuery("select " +
+                PlayerContract.GameEntry.ID + ", " +
+                PlayerContract.GameEntry.GAME + ", " +
+                        PlayerContract.GameEntry.DATE + ", " +
+                        " res."  + PlayerContract.PlayerGameEntry.PLAYER_RESULT + " as " + PlayerContract.PlayerGameEntry.PLAYER_RESULT + ", " +
+                        " res."  + PlayerContract.PlayerGameEntry.PLAYER_GRADE + " as " + PlayerContract.PlayerGameEntry.PLAYER_GRADE + ", " +
+                        PlayerContract.GameEntry.TEAM1_SCORE + ", " +
+                        PlayerContract.GameEntry.TEAM2_SCORE +
+                        " from " + PlayerContract.GameEntry.TABLE_NAME +
+                        " , (select game, result, player_grade from player_game where name = ?) as res " +
+                        " where " + PlayerContract.GameEntry.GAME + " = res.game " +
+                        " order by " + PlayerContract.GameEntry.GAME + " DESC ",
+                new String[]{name}, null);
+
+        return getGames(c, -1);
+    }
+
     public static ArrayList<Game> getGames(SQLiteDatabase db) {
 
         // Define a projection that specifies which columns from the database
@@ -84,7 +105,6 @@ public class GameDbHelper {
                 PlayerContract.GameEntry.ID,
                 PlayerContract.GameEntry.GAME,
                 PlayerContract.GameEntry.DATE,
-                PlayerContract.GameEntry.TEAM_RESULT,
                 PlayerContract.GameEntry.TEAM1_SCORE,
                 PlayerContract.GameEntry.TEAM2_SCORE,
         };
@@ -105,35 +125,6 @@ public class GameDbHelper {
         return getGames(c, -1);
     }
 
-    public static ArrayList<Game> getLastGames(SQLiteDatabase db, int count) {
-
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
-        String[] projection = {
-                PlayerContract.GameEntry.ID,
-                PlayerContract.GameEntry.GAME,
-                PlayerContract.GameEntry.DATE,
-                PlayerContract.GameEntry.TEAM_RESULT,
-                PlayerContract.GameEntry.TEAM1_SCORE,
-                PlayerContract.GameEntry.TEAM2_SCORE,
-        };
-
-        // How you want the results sorted in the resulting Cursor
-        String sortOrder = PlayerContract.GameEntry.ID + " DESC";
-
-        Cursor c = db.query(
-                PlayerContract.GameEntry.TABLE_NAME,  // The table to query
-                projection,                               // The columns to return
-                null,                                // The columns for the WHERE clause
-                null,                            // The values for the WHERE clause
-                null,
-                null,                                     // don't filter by row groups
-                sortOrder                                 // The sort order
-        );
-
-        return getGames(c, count);
-    }
-
     @NonNull
     private static ArrayList<Game> getGames(Cursor c, int count) {
 
@@ -146,7 +137,13 @@ public class GameDbHelper {
                             c.getString(c.getColumnIndex(PlayerContract.GameEntry.DATE)));
                     g.team1Score = c.getInt(c.getColumnIndex(PlayerContract.GameEntry.TEAM1_SCORE));
                     g.team2Score = c.getInt(c.getColumnIndex(PlayerContract.GameEntry.TEAM2_SCORE));
-                    g.result = TeamEnum.getResult(g.team1Score, g.team2Score);
+                    g.winningTeam = TeamEnum.getResult(g.team1Score, g.team2Score);
+
+                    if (c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT) > 0)
+                        g.playerResult = ResultEnum.getResultFromOrdinal(c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT)));
+                    if (c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_GRADE) > 0)
+                        g.playerGrade = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_GRADE));
+
                     games.add(g);
                     i++;
                 } while (c.moveToNext() && (i < count || count == -1));

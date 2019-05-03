@@ -194,6 +194,10 @@ public class DbHelper extends SQLiteOpenHelper {
         return GameDbHelper.getGames(getSqLiteDatabase(context));
     }
 
+    public static ArrayList<Game> getGames(Context context, String name) {
+        return GameDbHelper.getGames(getSqLiteDatabase(context), name);
+    }
+
     public static void insertGame(Context context, int gameId, int score1, int score2) {
         GameDbHelper.insertGameResults(getSqLiteDatabase(context), gameId, score1, score2);
         PlayerGamesDbHelper.setPlayerGameResult(getSqLiteDatabase(context), gameId, TeamEnum.getResult(score1, score2));

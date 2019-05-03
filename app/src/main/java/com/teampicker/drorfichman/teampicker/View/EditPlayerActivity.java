@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.teampicker.drorfichman.teampicker.Adapter.GameAdapter;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
@@ -67,6 +68,13 @@ public class EditPlayerActivity extends AppCompatActivity {
         vGrade.setHint(String.valueOf(pPlayer.mGrade));
 
         vResults.setText(pPlayer.getResults());
+        vResults.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hideKeyboard();
+                startActivity(GamesActivity.getGameActivityIntent(EditPlayerActivity.this, pPlayer.mName));
+            }
+        });
 
         if (pPlayer != null && pPlayer.statistics != null) {
             vResultsSummary.setText(
@@ -102,8 +110,7 @@ public class EditPlayerActivity extends AppCompatActivity {
         findViewById(R.id.player_participation_btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(vGrade.getWindowToken(), 0);
+                hideKeyboard();
 
                 Intent intent = PlayerParticipationActivity.getPlayerParticipationActivity(EditPlayerActivity.this, pPlayer.mName);
                 startActivity(intent);
@@ -119,6 +126,11 @@ public class EditPlayerActivity extends AppCompatActivity {
                 finishNow(0);
             }
         });
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(vGrade.getWindowToken(), 0);
     }
 
     private void initPlayerAttributes() {
@@ -160,8 +172,7 @@ public class EditPlayerActivity extends AppCompatActivity {
     }
 
     private void finishNow(int result) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(vGrade.getWindowToken(), 0);
+        hideKeyboard();
 
         setResult(result);
         finish();

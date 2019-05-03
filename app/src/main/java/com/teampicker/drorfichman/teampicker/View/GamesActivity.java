@@ -2,8 +2,11 @@ package com.teampicker.drorfichman.teampicker.View;
 
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -21,27 +24,40 @@ import java.util.ArrayList;
 
 public class GamesActivity extends AppCompatActivity {
 
+    private static final String PLAYER = "PLAYER";
+
     private ListView gamesList;
     private GameAdapter gamesAdapter;
+    private Player pPlayer;
+
+    @NonNull
+    public static Intent getGameActivityIntent(Context context, String playerName) {
+        Intent intent = new Intent(context, GamesActivity.class);
+        intent.putExtra(GamesActivity.PLAYER, playerName);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_games_activity);
 
-        gamesList = (ListView) findViewById(R.id.games_list);
+        Intent intent = getIntent();
+        if (intent.hasExtra(PLAYER) && intent.getStringExtra(PLAYER) != null) {
+            pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(PLAYER));
+        }
 
-        ArrayList<Game> games = DbHelper.getGames(getApplicationContext());
+        ArrayList<Game> games = getGames();
         gamesAdapter = new GameAdapter(this, games);
+
+        gamesList = (ListView) findViewById(R.id.games_list);
 
         gamesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ArrayList<Player> team1 = DbHelper.getCurrTeam(GamesActivity.this, (Integer) view.getTag(R.id.game_id), TeamEnum.Team1, 0);
-                ArrayList<Player> team2 = DbHelper.getCurrTeam(GamesActivity.this, (Integer) view.getTag(R.id.game_id), TeamEnum.Team2, 0);
                 String details = (String) view.getTag(R.id.game_details);
                 int gameId = (int) view.getTag(R.id.game_id);
-                showTeamsDialog(team1, team2, gameId, details);
+                showTeamsDialog(gameId, details);
             }
         });
 
@@ -56,12 +72,21 @@ public class GamesActivity extends AppCompatActivity {
         gamesList.setAdapter(gamesAdapter);
     }
 
-    private void showTeamsDialog(ArrayList<Player> team1, ArrayList<Player> team2,
-                                 int gameId, String details) {
+    @NonNull
+    private ArrayList<Game> getGames() {
+
+        if (pPlayer != null) {
+            return DbHelper.getGames(this, pPlayer.mName);
+        } else {
+            return DbHelper.getGames(this);
+        }
+    }
+
+    private void showTeamsDialog(int gameId, String details) {
 
         // Create and show the dialog.
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        DialogFragment newFragment = GameDetailsDialogFragment.newInstance(this, team1, team2, gameId, details);
+        DialogFragment newFragment = GameDetailsDialogFragment.newInstance(this, gameId, details);
         newFragment.show(ft, "game_dialog");
     }
 
@@ -88,7 +113,7 @@ public class GamesActivity extends AppCompatActivity {
     }
 
     private void refreshGames() {
-        ArrayList<Game> games = DbHelper.getGames(getApplicationContext());
+        ArrayList<Game> games = getGames();
 
         // Attach cursor adapter to the ListView
         gamesList.setAdapter(new GameAdapter(this, games));

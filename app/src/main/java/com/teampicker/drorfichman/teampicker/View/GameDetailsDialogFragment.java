@@ -32,8 +32,6 @@ public class GameDetailsDialogFragment extends DialogFragment {
     private String mDetails;
     private int mGameId;
 
-    private static final String PARAM_TEAM1 = "team1";
-    private static final String PARAM_TEAM2 = "team2";
     private static final String PARAM_DETAILS = "details";
     private static final String PARAM_GAME_ID = "game_id";
 
@@ -42,15 +40,12 @@ public class GameDetailsDialogFragment extends DialogFragment {
     private PlayerTeamAdapter adapter2;
 
     static GameDetailsDialogFragment newInstance(Context context,
-                                                 ArrayList<Player> team1, ArrayList<Player> team2,
                                                  int gameId, String details) {
 
         GameDetailsDialogFragment f = new GameDetailsDialogFragment();
         ctx = context;
 
         Bundle args = new Bundle();
-        args.putSerializable(PARAM_TEAM1, team1);
-        args.putSerializable(PARAM_TEAM2, team2);
         args.putSerializable(PARAM_DETAILS, details);
         args.putInt(PARAM_GAME_ID, gameId);
         f.setArguments(args);
@@ -62,8 +57,6 @@ public class GameDetailsDialogFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mTeam1 = (ArrayList<Player>) getArguments().getSerializable(PARAM_TEAM1);
-        mTeam2 = (ArrayList<Player>) getArguments().getSerializable(PARAM_TEAM2);
         mDetails = getArguments().getString(PARAM_DETAILS);
         mGameId = getArguments().getInt(PARAM_GAME_ID);
     }
@@ -77,10 +70,11 @@ public class GameDetailsDialogFragment extends DialogFragment {
         ListView team1List = (ListView) view.findViewById(R.id.game_details_team1);
         ListView team2List = (ListView) view.findViewById(R.id.game_details_team2);
 
-        adapter1 = new PlayerTeamAdapter(getActivity(), mTeam1);
-        team1List.setAdapter(adapter1);
+        adapter1 = new PlayerTeamAdapter(getActivity(), new ArrayList<Player>());
+        adapter2 = new PlayerTeamAdapter(getActivity(), new ArrayList<Player>());
+        refreshTeams();
 
-        adapter2 = new PlayerTeamAdapter(getActivity(), mTeam2);
+        team1List.setAdapter(adapter1);
         team2List.setAdapter(adapter2);
 
         onPlayerClick = new AdapterView.OnItemLongClickListener() {
@@ -111,7 +105,7 @@ public class GameDetailsDialogFragment extends DialogFragment {
 
         // set dialog message
         alertDialogBuilder
-                .setMessage("Do you want to move this player to the other team?")
+                .setMessage("Do you want to modify this player attendance?")
                 .setCancelable(true)
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -126,6 +120,11 @@ public class GameDetailsDialogFragment extends DialogFragment {
     private void movePlayer(Player player) {
 
         DbHelper.modifyPlayerResult(ctx, mGameId, player.mName);
+
+        refreshTeams();
+    }
+
+    private void refreshTeams() {
 
         mTeam1 = DbHelper.getCurrTeam(ctx, mGameId, TeamEnum.Team1, 0);
         mTeam2 = DbHelper.getCurrTeam(ctx, mGameId, TeamEnum.Team2, 0);
