@@ -22,7 +22,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
@@ -61,6 +63,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         setActivityTitle();
+        setPlayerTitle();
 
         fab = (FloatingActionsMenu) findViewById(R.id.fab);
 
@@ -142,6 +145,48 @@ public class MainActivity extends AppCompatActivity
         if (players == null || players.size() == 0) {
             showTutorialDialog();
         }
+    }
+
+    private void setPlayerTitle() {
+        ((TextView) findViewById(R.id.player_name)).setText("Name");
+        findViewById(R.id.player_name).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sort = sortType.name;
+                refreshPlayers();
+            }
+        });
+
+        ((TextView) findViewById(R.id.player_age)).setText("Age");
+        findViewById(R.id.player_age).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sort = sortType.age;
+                refreshPlayers();
+            }
+        });
+        ((TextView) findViewById(R.id.player_d)).setText("D");
+        ((TextView) findViewById(R.id.player_gk)).setText("GK");
+        ((TextView) findViewById(R.id.player_pm)).setText("PM");
+        ((TextView) findViewById(R.id.player_recent_performance)).setText("+/-");
+        ((TextView) findViewById(R.id.player_grade)).setText("Grade");
+        findViewById(R.id.player_grade).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sort = sortType.grade;
+                refreshPlayers();
+            }
+        });
+
+        ((CheckBox)findViewById(R.id.player_coming)).setTextColor(Color.BLACK);
+        findViewById(R.id.player_coming).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((CheckBox)view).setChecked(true);
+                sort = sortType.coming;
+                refreshPlayers();
+            }
+        });
     }
 
     @Override
@@ -246,7 +291,8 @@ public class MainActivity extends AppCompatActivity
     enum sortType {
         name,
         grade,
-        coming
+        coming,
+        age
     }
 
     public void refreshPlayers(final sortType sortType) {
@@ -259,6 +305,8 @@ public class MainActivity extends AppCompatActivity
                     return Integer.compare(p2.mGrade, p1.mGrade);
                 } else if (sortType.equals(MainActivity.sortType.name)) {
                     return p1.mName.compareTo(p2.mName);
+                } else if (sortType.equals(MainActivity.sortType.age)) {
+                    return Integer.compare(p2.getAge(), p1.getAge());
                 } else {
                     int i = Boolean.compare(p2.isComing, p1.isComing);
                     return (i != 0) ? i : p1.mName.compareTo(p2.mName);

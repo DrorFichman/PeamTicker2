@@ -23,7 +23,6 @@
     <string name="win_rate">Win rate</string>
     <string name="player_stat">"Games: %1$s \nWins: %2$s"</string>
     <string name="player_wins_participation">"%1$s (%2$s)"</string>
-    <string name="player_age">"(%1$s)"</string>
 
     <string name="action_statistics_10">Last 10 games</string>
     <string name="action_statistics_50">Last 50 games</string>

@@ -75,7 +75,7 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
         int age = player.getAge();
         TextView ageView = (TextView) view.findViewById(R.id.player_age);
         if (age > 0) {
-            ageView.setText(context.getString(R.string.player_age, String.valueOf(age)));
+            ageView.setText(String.valueOf(age));
             ageView.setVisibility(View.VISIBLE);
         } else {
             ageView.setVisibility(View.INVISIBLE);
