@@ -44,11 +44,14 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
         grade.setText(String.valueOf(player.mGrade));
         vComing.setChecked(player.isComing);
 
+        setAge(view, player);
+
         setPlayerRecentPerformance(recentPerformance, player);
 
         view.findViewById(R.id.player_gk).setVisibility(player.isGK ? View.VISIBLE : View.INVISIBLE);
         view.findViewById(R.id.player_d).setVisibility(player.isDefender ? View.VISIBLE : View.INVISIBLE);
         view.findViewById(R.id.player_pm).setVisibility(player.isPlaymaker ? View.VISIBLE : View.INVISIBLE);
+
 
         view.setTag(player);
 
@@ -66,6 +69,17 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
         });
 
         return view;
+    }
+
+    private void setAge(View view, Player player) {
+        int age = player.getAge();
+        TextView ageView = (TextView) view.findViewById(R.id.player_age);
+        if (age > 0) {
+            ageView.setText(context.getString(R.string.player_age, String.valueOf(age)));
+            ageView.setVisibility(View.VISIBLE);
+        } else {
+            ageView.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void setPlayerRecentPerformance(TextView recentPerformance, Player player) {

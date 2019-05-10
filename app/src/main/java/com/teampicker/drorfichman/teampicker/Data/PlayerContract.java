@@ -27,6 +27,8 @@ public final class PlayerContract {
         public static final String NAME = "name";
         public static final String GRADE = "grade";
         public static final String IS_COMING = "is_coming";
+        public static final String BIRTH_YEAR = "birth_year";
+        public static final String BIRTH_MONTH = "birth_month";
     }
 
     public static abstract class PlayerGameEntry {
@@ -36,6 +38,7 @@ public final class PlayerContract {
         public static final String GAME = "game";
         public static final String DATE = "date";
         public static final String PLAYER_GRADE = "player_grade";
+        public static final String PLAYER_AGE = "age";
         public static final String GAME_GRADE = "game_grade";
         public static final String TEAM = "team";
         public static final String GOALS = "goals";

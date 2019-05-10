@@ -33,8 +33,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="6dp"
-        android:textColor="@android:color/holo_green_light"
+        android:text="99"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/holo_green_light"
         android:textSize="14sp" />
 
     <TextView
@@ -66,6 +67,17 @@
         android:text="PM"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/player_age"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="3dp"
+        android:layout_marginRight="3dp"
+        android:gravity="right"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="14sp"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/player_name"

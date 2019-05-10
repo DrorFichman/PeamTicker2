@@ -102,4 +102,21 @@ public class TeamData {
             return BigDecimal.valueOf(0);
         }
     }
+
+    public int getAge() {
+        int sum = 0;
+        int count = 0;
+        for (Player p : players) {
+            int age = p.getAge();
+            if (age > 0) {
+                sum += age;
+                count++;
+            }
+        }
+        if (count > 0) {
+            return sum / count;
+        } else {
+            return -1;
+        }
+    }
 }

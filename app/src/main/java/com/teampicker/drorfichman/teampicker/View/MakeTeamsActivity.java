@@ -407,7 +407,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 String.valueOf(teamData.getSum()),
                 String.valueOf(teamData.getAverage()),
                 String.valueOf(teamData.getSuccess()),
-                String.valueOf(teamData.getStdDev())));
+                String.valueOf(teamData.getStdDev()),
+                String.valueOf(teamData.getAge())));
     }
 
     private void sortPlayerNames(ArrayList<Player> playersList) {

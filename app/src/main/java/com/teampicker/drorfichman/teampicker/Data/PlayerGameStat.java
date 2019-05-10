@@ -1,7 +1,5 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
-import java.util.ArrayList;
-
 public class PlayerGameStat {
 
     public PlayerGameStat(ResultEnum res, int currGrade) {

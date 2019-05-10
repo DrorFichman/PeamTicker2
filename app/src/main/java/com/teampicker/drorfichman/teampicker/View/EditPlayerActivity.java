@@ -1,34 +1,38 @@
 package com.teampicker.drorfichman.teampicker.View;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.teampicker.drorfichman.teampicker.Adapter.GameAdapter;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
-import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
 import com.teampicker.drorfichman.teampicker.R;
+
+import java.util.Calendar;
 
 public class EditPlayerActivity extends AppCompatActivity {
 
     public static final String PLAYER = "player";
 
     private Player pPlayer;
-    private EditText vGrade;
     private EditText vName;
+    private EditText vGrade;
+    private Button vBirth;
     private TextView vResults;
     private TextView vResultsSummary;
     private CheckBox isGK;
@@ -54,6 +58,9 @@ public class EditPlayerActivity extends AppCompatActivity {
 
         vName = (EditText) findViewById(R.id.edit_player_name);
         vGrade = (EditText) findViewById(R.id.edit_player_grade);
+
+        vBirth = (Button) findViewById(R.id.edit_player_birthday);
+
         vResults = (TextView) findViewById(R.id.player_results);
         vResultsSummary = (TextView) findViewById(R.id.player_results_summary);
         isGK = (CheckBox) findViewById(R.id.player_is_gk);
@@ -66,6 +73,8 @@ public class EditPlayerActivity extends AppCompatActivity {
         vName.setText(pPlayer.mName);
         vName.setEnabled(false);
         vGrade.setHint(String.valueOf(pPlayer.mGrade));
+
+        if (pPlayer.mBirthYear > 0) setBirthday(pPlayer.mBirthYear, pPlayer.mBirthMonth);
 
         vResults.setText(pPlayer.getResults());
         vResults.setOnClickListener(new View.OnClickListener() {
@@ -89,6 +98,7 @@ public class EditPlayerActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 setResult(1);
+                boolean playerUpdated = false;
 
                 String stringGrade = vGrade.getText().toString();
                 if (!TextUtils.isEmpty(stringGrade)) {
@@ -98,10 +108,27 @@ public class EditPlayerActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Score must be between 0-99", Toast.LENGTH_LONG).show();
                         return;
                     }
-
-                    DbHelper.updatePlayer(getApplicationContext(), pPlayer.mName, newGrade);
-                    Toast.makeText(getApplicationContext(), "Player updated", Toast.LENGTH_LONG).show();
+                    DbHelper.updatePlayerGrade(getApplicationContext(), pPlayer.mName, newGrade);
+                    playerUpdated = true;
                 }
+
+                if (vBirth.getTag() != null) {
+                    String date = (String) vBirth.getTag();
+                    Integer newYear = Integer.valueOf(date.split("/")[1]);
+                    Integer newMonth = Integer.valueOf(date.split("/")[0]);
+
+                    if (newYear < 1900 || newYear > Calendar.getInstance().get(Calendar.YEAR)) {
+                        Toast.makeText(getApplicationContext(), "Year must be between 1900-now", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    Log.i("AGE", "Year " + newYear + " month " + newMonth);
+                    DbHelper.updatePlayerBirth(getApplicationContext(), pPlayer.mName, newYear, newMonth);
+                    playerUpdated = true;
+                }
+
+                if (playerUpdated)
+                    Toast.makeText(getApplicationContext(), "Player updated", Toast.LENGTH_LONG).show();
 
                 finishNow(1);
             }
@@ -183,5 +210,24 @@ public class EditPlayerActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    public void showDatePicker(View view) {
+        int year = pPlayer.mBirthYear > 0 ? pPlayer.mBirthYear : 2000;
+        int month = pPlayer.mBirthMonth > 0 ? pPlayer.mBirthMonth - 1 : 0;
+        DatePickerDialog d = new DatePickerDialog(this, 0, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker datePicker, int year, int month, int i2) {
+                month++; // starts at 0...
+                Log.i("AGE", "set year " + year + " month " + month);
+                setBirthday(year, month);
+            }
+        }, year , month, 1);
+        d.show();
+    }
+
+    private void setBirthday(int year, int month) {
+        vBirth.setText(month + "/" + year);
+        vBirth.setTag(month + "/" + year);
     }
 }

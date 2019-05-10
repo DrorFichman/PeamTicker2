@@ -3,6 +3,7 @@ package com.teampicker.drorfichman.teampicker.Data;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -19,7 +20,7 @@ import java.util.HashMap;
 public class DbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2; // TODO scheme changes
     public static final String DATABASE_NAME = "Players.db";
 
     private static SQLiteDatabase writableDatabase;
@@ -29,9 +30,13 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(PlayerDbHelper.getSqlCreate());
-        db.execSQL(PlayerGamesDbHelper.getSqlCreate());
-        db.execSQL(GameDbHelper.getSqlCreate());
+        try {
+            db.execSQL(PlayerDbHelper.getSqlCreate());
+            db.execSQL(PlayerGamesDbHelper.getSqlCreate());
+            db.execSQL(GameDbHelper.getSqlCreate());
+        } catch (SQLiteException e) {
+            Log.w("Create", "Tables already exist " + e.getMessage());
+        }
 
         Log.d("IMPORT", "No new data");
         // TODO debug data
@@ -88,10 +93,25 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // This database is only a cache for online data, so its upgrade policy is
-        // to simply to discard the data and start over
-        // TODO ? db.execSQL(SQL_DELETE_ENTRIES);
         onCreate(db);
+
+        addColumns(db);
+    }
+
+    private void addColumns(SQLiteDatabase db) {
+        addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.BIRTH_YEAR, "INTEGER", null);
+        addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.BIRTH_MONTH, "INTEGER", null);
+        addColumn(db, PlayerContract.PlayerGameEntry.TABLE_NAME, PlayerContract.PlayerGameEntry.PLAYER_AGE, "INTEGER", null);
+        // TODO add game index
+    }
+
+    private void addColumn(SQLiteDatabase db, String table, String column, String type, String def) {
+        try {
+            db.execSQL("ALTER TABLE " + table + " ADD COLUMN " + column + " " + type + " default " + def);
+            Log.i("Upgrade", "Altering " + table + ": " + column);
+        } catch (SQLiteException ex) {
+            Log.w("Upgrade", "Altering " + table + ": " + ex.getMessage());
+        }
     }
 
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -118,8 +138,12 @@ public class DbHelper extends SQLiteOpenHelper {
         PlayerDbHelper.updatePlayerComing(getSqLiteDatabase(context), name, isComing);
     }
 
-    public static void updatePlayer(Context context, String name, int grade) {
+    public static void updatePlayerGrade(Context context, String name, int grade) {
         PlayerDbHelper.updatePlayerGrade(getSqLiteDatabase(context), name, grade);
+    }
+
+    public static void updatePlayerBirth(Context context, String name, int year, int month) {
+        PlayerDbHelper.updatePlayerBirth(getSqLiteDatabase(context), name, year, month);
     }
 
     public static boolean insertPlayer(Context context, String name, int grade) {

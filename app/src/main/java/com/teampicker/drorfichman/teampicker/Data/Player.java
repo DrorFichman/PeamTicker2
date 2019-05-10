@@ -1,9 +1,13 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
+import android.util.Log;
+
 import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by drorfichman on 7/27/16.
@@ -11,6 +15,10 @@ import java.util.ArrayList;
 public class Player implements Serializable, Comparable {
     public String mName;
     public int mGrade;
+    public int mBirthYear;
+    public int mBirthMonth;
+    private int mAge;
+
     private boolean mIsGradeDisplayed;
     public boolean isComing;
     private boolean isMoved;
@@ -160,5 +168,22 @@ public class Player implements Serializable, Comparable {
         }
 
         return -1;
+    }
+
+    public int getAge() {
+        if (mAge > 0)
+            return mAge;
+        else if (mBirthYear > 0) {
+            int currYear = Calendar.getInstance().get(Calendar.YEAR);
+            int currMonth = Calendar.getInstance().get(Calendar.MONTH) + 1;
+
+            return (currYear - mBirthYear) + (currMonth > mBirthMonth ? 0 : -1);
+        } else {
+            return -1;
+        }
+    }
+
+    public void setAge(int age) {
+        mAge = age;
     }
 }

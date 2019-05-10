@@ -21,7 +21,10 @@ public class PlayerDbHelper {
                     PlayerContract.PlayerEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     PlayerContract.PlayerEntry.NAME + " TEXT, " +
                     PlayerContract.PlayerEntry.GRADE + " INTEGER, " +
-                    PlayerContract.PlayerEntry.IS_COMING + " INTEGER )";
+                    PlayerContract.PlayerEntry.IS_COMING + " INTEGER, " +
+                    PlayerContract.PlayerEntry.BIRTH_YEAR + " INTEGER, " +
+                    PlayerContract.PlayerEntry.BIRTH_MONTH + " INTEGER " +
+                    " )";
 
     public static final String SQL_DROP_PLAYER_TABLE =
             "DELETE FROM " + PlayerContract.PlayerEntry.TABLE_NAME;
@@ -65,6 +68,8 @@ public class PlayerDbHelper {
                 PlayerContract.PlayerEntry.ID,
                 PlayerContract.PlayerEntry.NAME,
                 PlayerContract.PlayerEntry.GRADE,
+                PlayerContract.PlayerEntry.BIRTH_YEAR,
+                PlayerContract.PlayerEntry.BIRTH_MONTH,
                 PlayerContract.PlayerEntry.IS_COMING
         };
 
@@ -95,7 +100,10 @@ public class PlayerDbHelper {
             if (c.moveToFirst()) {
                 do {
                     Player p = createPlayerFromCursor(c, ctx,
-                            PlayerContract.PlayerEntry.NAME, PlayerContract.PlayerEntry.GRADE,
+                            PlayerContract.PlayerEntry.NAME,
+                            PlayerContract.PlayerEntry.BIRTH_YEAR,
+                            PlayerContract.PlayerEntry.BIRTH_MONTH,
+                            PlayerContract.PlayerEntry.GRADE,
                             PlayerContract.PlayerEntry.IS_COMING);
                     players.add(p);
                 } while (c.moveToNext());
@@ -108,9 +116,17 @@ public class PlayerDbHelper {
     }
 
     @NonNull
-    public static Player createPlayerFromCursor(Cursor c, Context ctx, String player_name, String player_grade, String is_coming) {
+    public static Player createPlayerFromCursor(Cursor c, Context ctx,
+                                                String player_name,
+                                                String year,
+                                                String month,
+                                                String player_grade,
+                                                String is_coming) {
+
         Player p = new Player(c.getString(c.getColumnIndex(player_name)), c.getInt(c.getColumnIndex(player_grade)));
-        p.isComing = (is_coming != null) ? c.getInt(c.getColumnIndex(is_coming)) == 1 : true; // Check true;
+        p.isComing = (is_coming != null) ? c.getInt(c.getColumnIndex(is_coming)) == 1 : true;
+        p.mBirthYear = (year != null && c.getColumnIndex(year) > 0) ? c.getInt(c.getColumnIndex(year)) : 0;
+        p.mBirthMonth = (month != null && c.getColumnIndex(month) > 0) ? c.getInt(c.getColumnIndex(month)) : 0;
         p.isGK = isGK(ctx, p.mName);
         p.isDefender = isDefender(ctx, p.mName);
         p.isPlaymaker = isPlaymaker(ctx, p.mName);
@@ -164,6 +180,8 @@ public class PlayerDbHelper {
                 PlayerContract.PlayerEntry.ID,
                 PlayerContract.PlayerEntry.NAME,
                 PlayerContract.PlayerEntry.GRADE,
+                PlayerContract.PlayerEntry.BIRTH_YEAR,
+                PlayerContract.PlayerEntry.BIRTH_MONTH,
                 PlayerContract.PlayerEntry.IS_COMING
         };
 
@@ -218,29 +236,33 @@ public class PlayerDbHelper {
         return true;
     }
 
-    public static void updatePlayerGrade(SQLiteDatabase db, String name, int grade) {
-
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(PlayerContract.PlayerEntry.NAME, name);
-        values.put(PlayerContract.PlayerEntry.GRADE, grade);
-
-        String where = PlayerContract.PlayerEntry.NAME + " = ? ";
-        String[] whereArgs = new String[]{name};
-
-        // Insert the new row, returning the primary key value of the new row
-        DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerEntry.TABLE_NAME);
-    }
-
     public static void updatePlayerComing(SQLiteDatabase db, String name, boolean coming) {
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(PlayerContract.PlayerEntry.NAME, name);
         values.put(PlayerContract.PlayerEntry.IS_COMING, coming ? 1 : 0);
 
         Log.d("DB", " updated " + name + " coming " + coming);
 
+        updatePlayer(db, name, values);
+    }
+
+    public static void updatePlayerBirth(SQLiteDatabase db, String name, int year, int month) {
+        ContentValues values = new ContentValues();
+        if (year > 0) values.put(PlayerContract.PlayerEntry.BIRTH_YEAR, year);
+        if (month > 0) values.put(PlayerContract.PlayerEntry.BIRTH_MONTH, month);
+
+        updatePlayer(db, name, values);
+    }
+
+    public static void updatePlayerGrade(SQLiteDatabase db, String name, int grade) {
+        ContentValues values = new ContentValues();
+        values.put(PlayerContract.PlayerEntry.GRADE, grade);
+
+        updatePlayer(db, name, values);
+    }
+
+    private static void updatePlayer(SQLiteDatabase db, String name, ContentValues values) {
         String where = PlayerContract.PlayerEntry.NAME + " = ? ";
         String[] whereArgs = new String[]{name};
 
@@ -253,7 +275,9 @@ public class PlayerDbHelper {
                 PlayerContract.PlayerEntry.ID,
                 PlayerContract.PlayerEntry.NAME,
                 PlayerContract.PlayerEntry.GRADE,
-                PlayerContract.PlayerEntry.IS_COMING
+                PlayerContract.PlayerEntry.IS_COMING,
+                PlayerContract.PlayerEntry.BIRTH_YEAR,
+                PlayerContract.PlayerEntry.BIRTH_MONTH
         };
 
         String where = PlayerContract.PlayerEntry.NAME + " = ? ";
@@ -274,6 +298,8 @@ public class PlayerDbHelper {
             if (c.moveToFirst()) {
                 return createPlayerFromCursor(c, ctx,
                         PlayerContract.PlayerEntry.NAME,
+                        PlayerContract.PlayerEntry.BIRTH_YEAR,
+                        PlayerContract.PlayerEntry.BIRTH_MONTH,
                         PlayerContract.PlayerEntry.GRADE,
                         PlayerContract.PlayerEntry.IS_COMING);
             }

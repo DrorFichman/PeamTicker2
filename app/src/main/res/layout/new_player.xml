@@ -5,42 +5,68 @@
     android:layout_margin="10dp"
     android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/edit_player_name"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@android:color/transparent"
-        android:hint="@string/name" />
+        android:layout_marginTop="10dp">
 
-    <EditText
-        android:id="@+id/edit_player_grade"
+        <EditText
+            android:id="@+id/edit_player_grade"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:hint="@string/grade"
+            android:inputType="number" />
+
+        <Button
+            android:id="@+id/edit_player_birthday"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:background="@android:drawable/screen_background_light_transparent"
+            android:text="@string/set_birthday"
+            android:onClick="showDatePicker" />
+
+        <EditText
+            android:id="@+id/edit_player_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="3"
+            android:background="@android:color/transparent"
+            android:gravity="right|center"
+            android:hint="@string/name" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:hint="@string/grade"
-        android:inputType="number" />
+        android:layout_marginTop="10dp">
 
-    <CheckBox
-        android:id="@+id/player_is_gk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="Is GK" />
+        <CheckBox
+            android:id="@+id/player_is_gk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Is GK" />
 
-    <CheckBox
-        android:id="@+id/player_is_defender"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="Is Defender" />
+        <CheckBox
+            android:id="@+id/player_is_defender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Is Defender" />
 
-    <CheckBox
-        android:id="@+id/player_is_playmaker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="Is Play-Maker" />
+        <CheckBox
+            android:id="@+id/player_is_playmaker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Is Play-Maker" />
+    </LinearLayout>
+
 
     <TextView
         android:id="@+id/player_results"
