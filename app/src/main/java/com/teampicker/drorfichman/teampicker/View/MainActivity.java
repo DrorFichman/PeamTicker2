@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         setActivityTitle();
-        setPlayerTitle();
+        setHeadlines();
 
         fab = (FloatingActionsMenu) findViewById(R.id.fab);
 
@@ -147,36 +147,27 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setPlayerTitle() {
+    private void setHeadlines() {
         ((TextView) findViewById(R.id.player_name)).setText("Name");
-        findViewById(R.id.player_name).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sort = sortType.name;
-                refreshPlayers();
-            }
-        });
+        setHeadlineSorting(R.id.player_name, sortType.name);
 
         ((TextView) findViewById(R.id.player_age)).setText("Age");
-        findViewById(R.id.player_age).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sort = sortType.age;
-                refreshPlayers();
-            }
-        });
+        setHeadlineSorting(R.id.player_age, sortType.age);
+
         ((TextView) findViewById(R.id.player_d)).setText("D");
+        setHeadlineSorting(R.id.player_d, sortType.defender);
+
         ((TextView) findViewById(R.id.player_gk)).setText("GK");
+        setHeadlineSorting(R.id.player_gk, sortType.gk);
+
         ((TextView) findViewById(R.id.player_pm)).setText("PM");
+        setHeadlineSorting(R.id.player_pm, sortType.pm);
+
         ((TextView) findViewById(R.id.player_recent_performance)).setText("+/-");
+        setHeadlineSorting(R.id.player_recent_performance, sortType.suggestedGrade);
+
         ((TextView) findViewById(R.id.player_grade)).setText("Grade");
-        findViewById(R.id.player_grade).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sort = sortType.grade;
-                refreshPlayers();
-            }
-        });
+        setHeadlineSorting(R.id.player_grade, sortType.grade);
 
         ((CheckBox)findViewById(R.id.player_coming)).setTextColor(Color.BLACK);
         findViewById(R.id.player_coming).setOnClickListener(new View.OnClickListener() {
@@ -184,6 +175,16 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View view) {
                 ((CheckBox)view).setChecked(true);
                 sort = sortType.coming;
+                refreshPlayers();
+            }
+        });
+    }
+
+    private void setHeadlineSorting(int field, final sortType sorting) {
+        findViewById(field).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sort = sorting;
                 refreshPlayers();
             }
         });
@@ -230,18 +231,6 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.sort_grade:
-                sort = sortType.grade;
-                refreshPlayers(sortType.grade);
-                break;
-            case R.id.sort_name :
-                sort = sortType.name;
-                refreshPlayers(sortType.name);
-                break;
-            case R.id.sort_coming :
-                sort = sortType.coming;
-                refreshPlayers(sortType.coming);
-                break;
             case R.id.make_teams :
                 startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
                 break;
@@ -284,29 +273,37 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void refreshPlayers() {
-        refreshPlayers(sort);
-    }
-
     enum sortType {
         name,
         grade,
+        suggestedGrade,
         coming,
-        age
+        age,
+        gk,
+        defender,
+        pm
     }
 
-    public void refreshPlayers(final sortType sortType) {
+    public void refreshPlayers() {
         ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT);
 
         Collections.sort(players, new Comparator<Player>() {
             @Override
             public int compare(Player p1, Player p2) {
-                if (sortType.equals(MainActivity.sortType.grade)) {
+                if (sort.equals(sortType.grade)) {
                     return Integer.compare(p2.mGrade, p1.mGrade);
-                } else if (sortType.equals(MainActivity.sortType.name)) {
+                } else if (sort.equals(sortType.suggestedGrade)) {
+                    return Integer.compare(p2.getSuggestedGradeDiff(), p1.getSuggestedGradeDiff());
+                } else if (sort.equals(sortType.name)) {
                     return p1.mName.compareTo(p2.mName);
-                } else if (sortType.equals(MainActivity.sortType.age)) {
+                } else if (sort.equals(sortType.age)) {
                     return Integer.compare(p2.getAge(), p1.getAge());
+                } else if (sort.equals(sortType.gk)) {
+                    return Boolean.compare(p2.isGK, p1.isGK);
+                } else if (sort.equals(sortType.defender)) {
+                    return Boolean.compare(p2.isDefender, p1.isDefender);
+                } else if (sort.equals(sortType.pm)) {
+                    return Boolean.compare(p2.isPlaymaker, p1.isPlaymaker);
                 } else {
                     int i = Boolean.compare(p2.isComing, p1.isComing);
                     return (i != 0) ? i : p1.mName.compareTo(p2.mName);

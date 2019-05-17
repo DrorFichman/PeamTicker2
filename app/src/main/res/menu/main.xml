@@ -6,18 +6,6 @@
         android:title="@string/clear_all_coming"
         app:showAsAction="never" />
     <item
-        android:id="@+id/sort_name"
-        android:title="@string/sort_name"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/sort_coming"
-        android:title="@string/sort_coming"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/sort_grade"
-        android:title="@string/sort_grade"
-        app:showAsAction="never" />
-    <item
         android:id="@+id/add_player"
         android:title="@string/add_player"
         app:showAsAction="never" />

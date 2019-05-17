@@ -64,6 +64,10 @@ public class Player implements Serializable, Comparable {
         }
     }
 
+    public int getSuggestedGradeDiff() {
+        return getSuggestedGrade() - mGrade;
+    }
+
     public String getSuggestedChange() {
         int suggest = getSuggestedGrade();
         if (suggest > mGrade) {
