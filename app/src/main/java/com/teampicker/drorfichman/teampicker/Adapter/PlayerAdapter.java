@@ -48,10 +48,7 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
 
         setPlayerRecentPerformance(recentPerformance, player);
 
-        view.findViewById(R.id.player_gk).setVisibility(player.isGK ? View.VISIBLE : View.INVISIBLE);
-        view.findViewById(R.id.player_d).setVisibility(player.isDefender ? View.VISIBLE : View.INVISIBLE);
-        view.findViewById(R.id.player_pm).setVisibility(player.isPlaymaker ? View.VISIBLE : View.INVISIBLE);
-
+        setAttributes(player, (TextView) view.findViewById(R.id.player_attributes));
 
         view.setTag(player);
 
@@ -69,6 +66,11 @@ public class PlayerAdapter extends ArrayAdapter<Player> {
         });
 
         return view;
+    }
+
+    private void setAttributes(Player player, TextView attributes) {
+        attributes.setVisibility(player.hasAttributes() ? View.VISIBLE : View.INVISIBLE);
+        attributes.setText(player.getAttributes());
     }
 
     private void setAge(View view, Player player) {

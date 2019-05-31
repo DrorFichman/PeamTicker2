@@ -190,4 +190,18 @@ public class Player implements Serializable, Comparable {
     public void setAge(int age) {
         mAge = age;
     }
+
+    public boolean hasAttributes() {
+        return isGK || isPlaymaker || isDefender;
+    }
+
+    public String getAttributes() {
+        if (!hasAttributes()) return "";
+
+        String attributes = "";
+        if (isGK) attributes += "GK,";
+        if (isPlaymaker) attributes += "PM,";
+        if (isDefender) attributes += "D,";
+        return attributes.substring(0,attributes.length()-1);
+    }
 }

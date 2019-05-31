@@ -154,14 +154,8 @@ public class MainActivity extends AppCompatActivity
         ((TextView) findViewById(R.id.player_age)).setText("Age");
         setHeadlineSorting(R.id.player_age, sortType.age);
 
-        ((TextView) findViewById(R.id.player_d)).setText("D");
-        setHeadlineSorting(R.id.player_d, sortType.defender);
-
-        ((TextView) findViewById(R.id.player_gk)).setText("GK");
-        setHeadlineSorting(R.id.player_gk, sortType.gk);
-
-        ((TextView) findViewById(R.id.player_pm)).setText("PM");
-        setHeadlineSorting(R.id.player_pm, sortType.pm);
+        ((TextView) findViewById(R.id.player_attributes)).setText("Att");
+        setHeadlineSorting(R.id.player_attributes, sortType.attributes);
 
         ((TextView) findViewById(R.id.player_recent_performance)).setText("+/-");
         setHeadlineSorting(R.id.player_recent_performance, sortType.suggestedGrade);
@@ -279,9 +273,7 @@ public class MainActivity extends AppCompatActivity
         suggestedGrade,
         coming,
         age,
-        gk,
-        defender,
-        pm
+        attributes
     }
 
     public void refreshPlayers() {
@@ -298,12 +290,8 @@ public class MainActivity extends AppCompatActivity
                     return p1.mName.compareTo(p2.mName);
                 } else if (sort.equals(sortType.age)) {
                     return Integer.compare(p2.getAge(), p1.getAge());
-                } else if (sort.equals(sortType.gk)) {
-                    return Boolean.compare(p2.isGK, p1.isGK);
-                } else if (sort.equals(sortType.defender)) {
-                    return Boolean.compare(p2.isDefender, p1.isDefender);
-                } else if (sort.equals(sortType.pm)) {
-                    return Boolean.compare(p2.isPlaymaker, p1.isPlaymaker);
+                } else if (sort.equals(sortType.attributes)) {
+                    return Boolean.compare(p2.hasAttributes(), p1.hasAttributes());
                 } else {
                     int i = Boolean.compare(p2.isComing, p1.isComing);
                     return (i != 0) ? i : p1.mName.compareTo(p2.mName);

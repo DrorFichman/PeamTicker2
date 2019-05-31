@@ -38,32 +38,13 @@
         android:textSize="14sp" />
 
     <TextView
-        android:id="@+id/player_gk"
-        android:layout_width="30dp"
+        android:id="@+id/player_attributes"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
         android:text="GK"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/player_d"
-        android:layout_width="30dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="3dp"
-        android:layout_marginRight="3dp"
-        android:text="D"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/player_pm"
-        android:layout_width="30dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="3dp"
-        android:layout_marginRight="3dp"
-        android:text="PM"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="14sp" />
 
