@@ -18,7 +18,8 @@
     <string name="add_player">Add player</string>
     <string name="make_teams">Make teams</string>
     <string name="enter_results">Enter Results</string>
-    <string name="team_data">" Count: %1$s \n Sum : %2$s \n Average: %3$s \n Success : %4$s \n Grade StdDev: %5$s  \n Age: %6$s  \n Age StdDev: %5$s  "</string>
+    <string name="team_data">" Count: %1$s \n Sum : %2$s \n Average: %3$s \n Success : %4$s \n Grade StdDev: %5$s  "</string>
+    <string name="team_public_stats">" Age: %1$s "</string>
     <string name="delete">Delete</string>
     <string name="win_rate">Win rate</string>
     <string name="player_stat">"Games: %1$s \nWins: %2$s"</string>

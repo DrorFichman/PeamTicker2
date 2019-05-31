@@ -387,8 +387,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
             team2Stats = players;
         }
 
-        updateTeamData(teamData1, team1Stats, players1.size());
-        updateTeamData(teamData2, team2Stats, players2.size());
+        updateTeamData(teamData1, (TextView) findViewById(R.id.team1_public_stats), team1Stats, players1.size());
+        updateTeamData(teamData2, (TextView) findViewById(R.id.team2_public_stats), team2Stats, players2.size());
     }
 
     private void scramble() {
@@ -400,14 +400,16 @@ public class MakeTeamsActivity extends AppCompatActivity {
         }
     }
 
-    private void updateTeamData(TextView view, List<Player> players, int playersActualCount) {
+    private void updateTeamData(TextView stats, TextView publicStats, List<Player> players, int playersActualCount) {
         TeamData teamData = new TeamData(players);
-        view.setText(getString(R.string.team_data,
+        stats.setText(getString(R.string.team_data,
                 String.valueOf(playersActualCount),
                 String.valueOf(teamData.getSum()),
                 String.valueOf(teamData.getAverage()),
                 String.valueOf(teamData.getSuccess()),
-                String.valueOf(teamData.getStdDev()),
+                String.valueOf(teamData.getStdDev())));
+
+        publicStats.setText(getString(R.string.team_public_stats,
                 String.valueOf(teamData.getAge())));
     }
 

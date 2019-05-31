@@ -34,6 +34,12 @@
                 android:divider="@null"
                 android:padding="5dp" />
 
+            <TextView
+                android:id="@+id/team1_public_stats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/darker_gray" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -59,6 +65,12 @@
                 android:background="@android:color/holo_blue_light"
                 android:divider="@null"
                 android:padding="5dp" />
+
+            <TextView
+                android:id="@+id/team2_public_stats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/darker_gray" />
 
         </LinearLayout>
 
@@ -133,9 +145,9 @@
             android:id="@+id/move_mode_how_to_exit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="invisible"
             android:lines="2"
-            android:text="* Click the players you want to move \n* Click the blue icon to exit move mode" />
+            android:text="* Click the players you want to move \n* Click the blue icon to exit move mode"
+            android:visibility="invisible" />
 
     </LinearLayout>
 
