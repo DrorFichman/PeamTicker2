@@ -372,23 +372,12 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void updateStats() {
-        ArrayList<Player> team1Stats = players1;
-        ArrayList<Player> team2Stats = players2;
-        if (players1.size() > players2.size()) {
-            ArrayList<Player> players = TeamDivision.cloneList(players1);
-            Collections.sort(players);
-            players.remove(players.size() - 1);
-            team1Stats = players;
-        }
-        if (players2.size() > players1.size()) {
-            ArrayList<Player> players = TeamDivision.cloneList(players2);
-            Collections.sort(players);
-            players.remove(players.size() - 1);
-            team2Stats = players;
-        }
+        int count = Math.min(players1.size(), players2.size());
+        TeamData team1Data = new TeamData(players1, count);
+        TeamData team2Data = new TeamData(players2, count);
 
-        updateTeamData(teamData1, (TextView) findViewById(R.id.team1_public_stats), team1Stats, players1.size());
-        updateTeamData(teamData2, (TextView) findViewById(R.id.team2_public_stats), team2Stats, players2.size());
+        updateTeamData(teamData1, (TextView) findViewById(R.id.team1_public_stats), team1Data);
+        updateTeamData(teamData2, (TextView) findViewById(R.id.team2_public_stats), team2Data);
     }
 
     private void scramble() {
@@ -400,17 +389,17 @@ public class MakeTeamsActivity extends AppCompatActivity {
         }
     }
 
-    private void updateTeamData(TextView stats, TextView publicStats, List<Player> players, int playersActualCount) {
-        TeamData teamData = new TeamData(players);
+    private void updateTeamData(TextView stats, TextView publicStats, TeamData players) {
+
         stats.setText(getString(R.string.team_data,
-                String.valueOf(playersActualCount),
-                String.valueOf(teamData.getSum()),
-                String.valueOf(teamData.getAverage()),
-                String.valueOf(teamData.getSuccess()),
-                String.valueOf(teamData.getStdDev())));
+                String.valueOf(players.getAllCount()),
+                String.valueOf(players.getSum()),
+                String.valueOf(players.getAverage()),
+                String.valueOf(players.getSuccess()),
+                String.valueOf(players.getStdDev())));
 
         publicStats.setText(getString(R.string.team_public_stats,
-                String.valueOf(teamData.getAge())));
+                String.valueOf(players.getAge())));
     }
 
     private void sortPlayerNames(ArrayList<Player> playersList) {

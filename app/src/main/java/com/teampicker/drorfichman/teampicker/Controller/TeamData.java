@@ -9,16 +9,34 @@ import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * Created by drorfichman on 9/17/16.
  */
 public class TeamData {
+    List<Player> allPlayers = new ArrayList<>();
     public List<Player> players = new ArrayList<>();
 
+    /**
+     * @param ps players data
+     * @param count consider top players count
+     */
+    public TeamData(List<Player> ps, int count) {
+        allPlayers = ps;
+
+        if (ps.size() > count) {
+            List<Player> clone = TeamDivision.cloneList(ps);
+            Collections.sort(clone);
+            players = clone.subList(0, count);
+        } else {
+            players = ps;
+        }
+    }
+
     public TeamData(List<Player> ps) {
-        players = ps;
+        this(ps, ps.size());
     }
 
     public TeamData() {
@@ -36,6 +54,14 @@ public class TeamData {
             return 0;
         }
         return getSum() / players.size();
+    }
+
+    public int getAllCount() {
+        if (allPlayers != null) {
+            return allPlayers.size();
+        } else {
+            return getCount();
+        }
     }
 
     public int getCount() {
@@ -106,7 +132,7 @@ public class TeamData {
     public int getAge() {
         int sum = 0;
         int count = 0;
-        for (Player p : players) {
+        for (Player p : allPlayers) {
             int age = p.getAge();
             if (age > 0) {
                 sum += age;
