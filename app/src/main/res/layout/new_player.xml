@@ -49,22 +49,25 @@
             android:id="@+id/player_is_gk"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="Is GK" />
+            android:text="GK" />
 
         <CheckBox
             android:id="@+id/player_is_defender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="Is Defender" />
+            android:text="Defender" />
 
         <CheckBox
             android:id="@+id/player_is_playmaker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:text="Is Play-Maker" />
+            android:text="Playmaker" />
+
+        <CheckBox
+            android:id="@+id/player_is_breaking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Breakable" />
     </LinearLayout>
 
 

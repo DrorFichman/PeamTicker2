@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
@@ -38,6 +39,7 @@ public class EditPlayerActivity extends AppCompatActivity {
     private CheckBox isGK;
     private CheckBox isDefender;
     private CheckBox isPlaymaker;
+    private CheckBox isBreakable;
 
     @NonNull
     public static Intent getEditPlayerIntent(Context context, String playerName) {
@@ -66,6 +68,7 @@ public class EditPlayerActivity extends AppCompatActivity {
         isGK = (CheckBox) findViewById(R.id.player_is_gk);
         isDefender = (CheckBox) findViewById(R.id.player_is_defender);
         isPlaymaker = (CheckBox) findViewById(R.id.player_is_playmaker);
+        isBreakable = (CheckBox) findViewById(R.id.player_is_breaking);
 
         // TODO change to stars
         // TODO plus/minus ratio
@@ -164,11 +167,12 @@ public class EditPlayerActivity extends AppCompatActivity {
         isGK.setChecked(pPlayer.isGK);
         isDefender.setChecked(pPlayer.isDefender);
         isPlaymaker.setChecked(pPlayer.isPlaymaker);
+        isBreakable.setChecked(pPlayer.isBreakable);
 
         isGK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PlayerDbHelper.setIsGK(EditPlayerActivity.this, pPlayer.mName, isGK.isChecked());
+                PlayerDbHelper.setAttribute(EditPlayerActivity.this, pPlayer.mName, PreferenceAttributesHelper.PlayerAttribute.isGK, isGK.isChecked());
                 Toast.makeText(EditPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
             }
         });
@@ -176,7 +180,7 @@ public class EditPlayerActivity extends AppCompatActivity {
         isDefender.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PlayerDbHelper.setIsDefender(EditPlayerActivity.this, pPlayer.mName, isDefender.isChecked());
+                PlayerDbHelper.setAttribute(EditPlayerActivity.this, pPlayer.mName, PreferenceAttributesHelper.PlayerAttribute.isDefender, isDefender.isChecked());
                 Toast.makeText(EditPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
             }
         });
@@ -184,7 +188,15 @@ public class EditPlayerActivity extends AppCompatActivity {
         isPlaymaker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PlayerDbHelper.setIsPlaymaker(EditPlayerActivity.this, pPlayer.mName, isPlaymaker.isChecked());
+                PlayerDbHelper.setAttribute(EditPlayerActivity.this, pPlayer.mName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker, isPlaymaker.isChecked());
+                Toast.makeText(EditPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        isBreakable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                PlayerDbHelper.setAttribute(EditPlayerActivity.this, pPlayer.mName, PreferenceAttributesHelper.PlayerAttribute.isBreakable, isBreakable.isChecked());
                 Toast.makeText(EditPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
             }
         });

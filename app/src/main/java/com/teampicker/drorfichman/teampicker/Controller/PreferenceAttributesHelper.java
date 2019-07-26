@@ -1,7 +1,6 @@
 package com.teampicker.drorfichman.teampicker.Controller;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 /**
  * Created by drorfichman on 7/29/16.
@@ -13,7 +12,8 @@ public class PreferenceAttributesHelper {
     public enum PlayerAttribute {
         isGK("_is_gk"),
         isDefender("_is_defender"),
-        isPlaymaker("_is_playmaker");
+        isPlaymaker("_is_playmaker"),
+        isBreakable("_is_breakable");
 
         String attribute;
 
@@ -40,5 +40,6 @@ public class PreferenceAttributesHelper {
         setPlayerPreferences(context, player, PlayerAttribute.isDefender, false);
         setPlayerPreferences(context, player, PlayerAttribute.isGK, false);
         setPlayerPreferences(context, player, PlayerAttribute.isPlaymaker, false);
+        setPlayerPreferences(context, player, PlayerAttribute.isBreakable, false);
     }
 }

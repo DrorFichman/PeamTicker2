@@ -301,9 +301,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void initialDivision() {
 
-        players1.clear();
-        players2.clear();
-
         ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, STARS_COUNT);
         int totalPlayers = comingPlayers.size();
         int teamSize = totalPlayers / 2;

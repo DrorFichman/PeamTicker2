@@ -1,13 +1,10 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
-import android.util.Log;
-
 import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by drorfichman on 7/27/16.
@@ -29,6 +26,7 @@ public class Player implements Serializable, Comparable {
     public boolean isGK;
     public boolean isDefender;
     public boolean isPlaymaker;
+    public boolean isBreakable;
 
     private static final int RECENT_GAMES_COUNT = 10;
 
@@ -192,13 +190,14 @@ public class Player implements Serializable, Comparable {
     }
 
     public boolean hasAttributes() {
-        return isGK || isPlaymaker || isDefender;
+        return isGK || isPlaymaker || isDefender || isBreakable;
     }
 
     public String getAttributes() {
         if (!hasAttributes()) return "";
 
         String attributes = "";
+        if (isBreakable) attributes += "B,";
         if (isGK) attributes += "GK,";
         if (isPlaymaker) attributes += "PM,";
         if (isDefender) attributes += "D,";

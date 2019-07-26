@@ -127,9 +127,10 @@ public class PlayerDbHelper {
         p.isComing = (is_coming != null) ? c.getInt(c.getColumnIndex(is_coming)) == 1 : true;
         p.mBirthYear = (year != null && c.getColumnIndex(year) > 0) ? c.getInt(c.getColumnIndex(year)) : 0;
         p.mBirthMonth = (month != null && c.getColumnIndex(month) > 0) ? c.getInt(c.getColumnIndex(month)) : 0;
-        p.isGK = isGK(ctx, p.mName);
-        p.isDefender = isDefender(ctx, p.mName);
-        p.isPlaymaker = isPlaymaker(ctx, p.mName);
+        p.isGK = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isGK);
+        p.isDefender = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isDefender);
+        p.isPlaymaker = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker);
+        p.isBreakable = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isBreakable);
         return p;
     }
 
@@ -137,31 +138,9 @@ public class PlayerDbHelper {
         return PreferenceAttributesHelper.getPlayerPreferences(ctx, playerName, attribute);
     }
 
-    public static boolean isGK(Context ctx, String playerName) {
-        return PreferenceAttributesHelper.getPlayerPreferences(ctx, playerName, PreferenceAttributesHelper.PlayerAttribute.isGK);
-    }
-
-    public static void setIsGK(Context ctx, String playerName, boolean set) {
-        PreferenceAttributesHelper.setPlayerPreferences(ctx,
-                playerName, PreferenceAttributesHelper.PlayerAttribute.isGK, set);
-    }
-
-    public static boolean isPlaymaker(Context ctx, String playerName) {
-        return PreferenceAttributesHelper.getPlayerPreferences(ctx, playerName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker);
-    }
-
-    public static void setIsPlaymaker(Context ctx, String playerName, boolean set) {
-        PreferenceAttributesHelper.setPlayerPreferences(ctx,
-                playerName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker, set);
-    }
-
-    public static boolean isDefender(Context ctx, String playerName) {
-        return PreferenceAttributesHelper.getPlayerPreferences(ctx, playerName, PreferenceAttributesHelper.PlayerAttribute.isDefender);
-    }
-
-    public static void setIsDefender(Context ctx, String playerName, boolean set) {
-        PreferenceAttributesHelper.setPlayerPreferences(ctx,
-                playerName, PreferenceAttributesHelper.PlayerAttribute.isDefender, set);
+    public static void setAttribute(Context ctx, String playerName,
+                                       PreferenceAttributesHelper.PlayerAttribute attribute, boolean set) {
+        PreferenceAttributesHelper.setPlayerPreferences(ctx, playerName, attribute, set);
     }
 
     public static void deletePlayer(SQLiteDatabase db, String name) {

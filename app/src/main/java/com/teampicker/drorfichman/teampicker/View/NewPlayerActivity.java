@@ -14,6 +14,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
 import com.teampicker.drorfichman.teampicker.R;
@@ -28,6 +29,7 @@ public class NewPlayerActivity extends AppCompatActivity {
     private CheckBox isGK;
     private CheckBox isDefender;
     private CheckBox isPlaymaker;
+    private CheckBox isBreakable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +42,7 @@ public class NewPlayerActivity extends AppCompatActivity {
         isGK = (CheckBox) findViewById(R.id.player_is_gk);
         isDefender = (CheckBox) findViewById(R.id.player_is_defender);
         isPlaymaker = (CheckBox) findViewById(R.id.player_is_playmaker);
+        isBreakable = (CheckBox) findViewById(R.id.player_is_breaking);
 
         isGK.setVisibility(View.GONE);
         isDefender.setVisibility(View.GONE);
@@ -71,7 +74,8 @@ public class NewPlayerActivity extends AppCompatActivity {
                     return;
                 }
 
-                boolean isCreated = createNewPlayer(newName, newGrade, isGK.isChecked(), isDefender.isChecked(), isPlaymaker.isChecked());
+                boolean isCreated = createNewPlayer(newName, newGrade,
+                        isGK.isChecked(), isDefender.isChecked(), isPlaymaker.isChecked(), isBreakable.isChecked());
 
                 if (isCreated) {
                     setPlayerBirthday(newName);
@@ -111,12 +115,13 @@ public class NewPlayerActivity extends AppCompatActivity {
         }
     }
 
-    private boolean createNewPlayer(String name, int grade, boolean isGK, boolean isDefender, boolean isPlaymaker) {
+    private boolean createNewPlayer(String name, int grade, boolean isGK, boolean isDefender, boolean isPlaymaker, boolean isBreakable) {
         boolean inserted = DbHelper.insertPlayer(NewPlayerActivity.this, name, grade);
         if (inserted) {
-            PlayerDbHelper.setIsGK(NewPlayerActivity.this, name, isGK);
-            PlayerDbHelper.setIsPlaymaker(NewPlayerActivity.this, name, isPlaymaker);
-            PlayerDbHelper.setIsDefender(NewPlayerActivity.this, name, isDefender);
+            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isGK, isGK);
+            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker, isPlaymaker);
+            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isDefender, isDefender);
+            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isBreakable, isBreakable);
         }
         return inserted;
     }
