@@ -63,8 +63,61 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         setActivityTitle();
+
+        setFloatingActionButton();
+
+        setNavigationDrawer(toolbar);
+
+        setPlayersList();
+    }
+
+    private void setPlayersList() {
         setHeadlines();
 
+        playersList = (ListView) findViewById(R.id.players_list);
+
+        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT);
+        playersAdapter = new PlayerAdapter(this, players);
+
+        playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Player p = (Player) view.getTag();
+                Intent intent = EditPlayerActivity.getEditPlayerIntent(MainActivity.this, p.mName);
+                startActivityForResult(intent, ACTIVITY_RESULT_PLAYER);
+            }
+        });
+
+        playersList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                checkPlayerDeletion((Player) view.getTag());
+                return true;
+            }
+        });
+
+        playersList.setAdapter(playersAdapter);
+
+        if (players == null || players.size() == 0) {
+            showTutorialDialog();
+        }
+    }
+
+    private void setNavigationDrawer(Toolbar toolbar) {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        navigationView.setItemIconTintList(ColorStateList.valueOf(Color.BLUE));
+        navigationView.setItemTextColor(null);
+    }
+
+    private void setFloatingActionButton() {
         fab = (FloatingActionsMenu) findViewById(R.id.fab);
 
         FloatingActionButton enterResultsButton = new FloatingActionButton(this);
@@ -105,46 +158,6 @@ public class MainActivity extends AppCompatActivity
         fab.addButton(enterResultsButton);
         fab.addButton(makeTeamsButton);
         fab.addButton(addPlayerButton);
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        navigationView.setItemIconTintList(ColorStateList.valueOf(Color.BLUE));
-        navigationView.setItemTextColor(null);
-
-        playersList = (ListView) findViewById(R.id.players_list);
-
-        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT);
-        playersAdapter = new PlayerAdapter(this, players);
-
-        playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Player p = (Player) view.getTag();
-                Intent intent = EditPlayerActivity.getEditPlayerIntent(MainActivity.this, p.mName);
-                startActivityForResult(intent, ACTIVITY_RESULT_PLAYER);
-            }
-        });
-
-        playersList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                checkPlayerDeletion((Player) view.getTag());
-                return true;
-            }
-        });
-
-        playersList.setAdapter(playersAdapter);
-
-        if (players == null || players.size() == 0) {
-            showTutorialDialog();
-        }
     }
 
     private void setHeadlines() {
