@@ -31,6 +31,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
     TextView gradeTitle;
     private int games = 50;
+    private sortType sort = sortType.success;
 
     private static final int ACTIVITY_RESULT_PLAYER = 1;
 
@@ -39,17 +40,16 @@ public class StatisticsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_statistics_activity);
 
-        gradeTitle = (TextView) findViewById(R.id.stat_player_grade);
-        gradeTitle.setText("Grade");
+        setPlayersList();
+    }
 
-        ((TextView) findViewById(R.id.player_name)).setText("Name");
-        ((TextView) findViewById(R.id.stat_success)).setText("Success");
-        ((TextView) findViewById(R.id.stat_games_count)).setText("Games");
-        ((TextView) findViewById(R.id.stat_wins_percentage)).setText("Win rate");
+    private void setPlayersList() {
+        setHeadlines();
 
         playersList = (ListView) findViewById(R.id.players_statistics_list);
+        playersAdapter = new PlayerStatisticsAdapter(this, new ArrayList<Player>());
 
-        refreshList(games);
+        refreshPlayers();
 
         playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -67,6 +67,35 @@ public class StatisticsActivity extends AppCompatActivity {
         });
     }
 
+    private void setHeadlines() {
+        gradeTitle = (TextView) findViewById(R.id.stat_player_grade);
+        ((TextView) findViewById(R.id.stat_player_grade)).setText("Grade");
+        setHeadlineSorting(R.id.stat_player_grade, sortType.grade);
+
+        ((TextView) findViewById(R.id.player_name)).setText("Name");
+        setHeadlineSorting(R.id.player_name, sortType.name);
+
+        ((TextView) findViewById(R.id.stat_success)).setText("Success");
+        setHeadlineSorting(R.id.stat_success, sortType.success);
+
+        ((TextView) findViewById(R.id.stat_games_count)).setText("Games");
+        setHeadlineSorting(R.id.stat_games_count, sortType.games);
+
+        ((TextView) findViewById(R.id.stat_wins_percentage)).setText("Win rate");
+        setHeadlineSorting(R.id.stat_wins_percentage, sortType.winPercentage);
+    }
+
+    private void setHeadlineSorting(int field, final sortType sorting) {
+        findViewById(field).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sort = sorting;
+                refreshPlayers();
+            }
+        });
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.statisctics_menu, menu);
@@ -78,35 +107,32 @@ public class StatisticsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_send_statistics:
 
-                Toast.makeText(this, "Not supported", Toast.LENGTH_SHORT).show();
-
-                /* TODO support sending?
                 enterSendMode();
 
                 final Runnable r = new Runnable() {
                     public void run() {
-                        ScreenshotHelper.takeScreenShot(StatisticsActivity.this);
+                        ScreenshotHelper.takeListScreenshot(StatisticsActivity.this,
+                                playersList, findViewById(R.id.titles), playersAdapter);
                         Log.d("teams", "Exit send mode - Shot taken");
                         exitSendMode();
                     }
                 };
 
                 new Handler().postDelayed(r, 400);
-                */
 
                 break;
 
             case R.id.action_last_10_games:
                 games = 10;
-                refreshList(games);
+                refreshPlayers();
                 break;
             case R.id.action_last_50_games:
                 games = 50;
-                refreshList(games);
+                refreshPlayers();
                 break;
             case R.id.action_no_limit:
                 games = -1;
-                refreshList(games);
+                refreshPlayers();
                 break;
         }
 
@@ -127,12 +153,12 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private void enterSendMode() {
         gradeTitle.setVisibility(View.INVISIBLE);
-        refreshList(games);
+        refreshPlayers();
     }
 
     private void exitSendMode() {
         gradeTitle.setVisibility(View.VISIBLE);
-        refreshList(games);
+        refreshPlayers();
     }
 
     private void showHideGrades(ArrayList<Player> players) {
@@ -143,113 +169,49 @@ public class StatisticsActivity extends AppCompatActivity {
         }
     }
 
-    private void refreshList(int games) {
-
-        ArrayList<Player> players = DbHelper.getPlayersStatistics(getApplicationContext(), games);
-
-        updateList(players);
-
-        sortByNameHandler(players);
-        sortByGradeHandler(players);
-        sortBySuccessHandler(players);
-        sortByGamesHandler(players);
-        sortByWinRateHandler(players);
-
-        showHideGrades(players);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ACTIVITY_RESULT_PLAYER && resultCode > 0) {
             Log.d("TEAMS", "refresh statistics list on save");
-            refreshList(games);
+            refreshPlayers();
         }
     }
 
-    private void updateList(ArrayList<Player> players) {
-        playersAdapter = new PlayerStatisticsAdapter(StatisticsActivity.this, players);
+    public void refreshPlayers() {
+
+        ArrayList<Player> players = DbHelper.getPlayersStatistics(getApplicationContext(), games);
+
+        Collections.sort(players, new Comparator<Player>() {
+            @Override
+            public int compare(Player p1, Player p2) {
+                if (sort.equals(sortType.grade)) {
+                    return Integer.compare(p2.mGrade, p1.mGrade);
+                } else if (sort.equals(sortType.suggestedGrade)) {
+                    return Integer.compare(p2.getSuggestedGradeDiff(), p1.getSuggestedGradeDiff());
+                } else if (sort.equals(sortType.name)) {
+                    return p1.mName.compareTo(p2.mName);
+                } else if (sort.equals(sortType.age)) {
+                    return Integer.compare(p2.getAge(), p1.getAge());
+                } else if (sort.equals(sortType.attributes)) {
+                    return Boolean.compare(p2.hasAttributes(), p1.hasAttributes());
+                } else if (sort.equals(sortType.winPercentage)) {
+                    return (Float.compare(p2.statistics.getWinRate(), p1.statistics.getWinRate()));
+                } else if (sort.equals(sortType.games)) {
+                    return Integer.compare(p2.statistics.gamesCount, p1.statistics.gamesCount);
+                } else if (sort.equals(sortType.success)) {
+                    return Integer.compare(p2.statistics.successRate, p1.statistics.successRate);
+                } else {
+                    return p1.mName.compareTo(p2.mName);
+                }
+            }
+        });
+
+        showHideGrades(players);
+
+        playersAdapter.clear();
+        playersAdapter.addAll(players);
         playersList.setAdapter(playersAdapter);
-    }
-
-    private void sortByWinRateHandler(final ArrayList<Player> players) {
-        View.OnClickListener sort = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Collections.sort(players, new Comparator<Player>() {
-                    @Override
-                    public int compare(Player p1, Player p2) {
-                        return (Float.valueOf(p2.statistics.getWinRate()).compareTo(Float.valueOf(p1.statistics.getWinRate())));
-                    }
-                });
-                updateList(players);
-            }
-        };
-        findViewById(R.id.stat_wins_percentage).setOnClickListener(sort);
-    }
-
-    private void sortByGamesHandler(final ArrayList<Player> players) {
-        View.OnClickListener sort = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Collections.sort(players, new Comparator<Player>() {
-                    @Override
-                    public int compare(Player p1, Player p2) {
-                        return ((Integer) p2.statistics.gamesCount).compareTo(p1.statistics.gamesCount);
-                    }
-                });
-                updateList(players);
-            }
-        };
-        findViewById(R.id.stat_games_count).setOnClickListener(sort);
-    }
-
-    private void sortBySuccessHandler(final ArrayList<Player> players) {
-        View.OnClickListener sort = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Collections.sort(players, new Comparator<Player>() {
-                    @Override
-                    public int compare(Player p1, Player p2) {
-                        return ((Integer) p2.statistics.successRate).compareTo(p1.statistics.successRate);
-                    }
-                });
-                updateList(players);
-            }
-        };
-        findViewById(R.id.stat_success).setOnClickListener(sort);
-    }
-
-    private void sortByGradeHandler(final ArrayList<Player> players) {
-        View.OnClickListener sort = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Collections.sort(players, new Comparator<Player>() {
-                    @Override
-                    public int compare(Player p1, Player p2) {
-                        return ((Integer) p2.mGrade).compareTo(p1.mGrade);
-                    }
-                });
-                updateList(players);
-            }
-        };
-        findViewById(R.id.stat_player_grade).setOnClickListener(sort);
-    }
-
-    private void sortByNameHandler(final ArrayList<Player> players) {
-        View.OnClickListener sort = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Collections.sort(players, new Comparator<Player>() {
-                    @Override
-                    public int compare(Player p1, Player p2) {
-                        return p1.mName.compareTo(p2.mName);
-                    }
-                });
-                updateList(players);
-            }
-        };
-        findViewById(R.id.player_name).setOnClickListener(sort);
     }
 }

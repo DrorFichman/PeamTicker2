@@ -130,7 +130,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
                 final Runnable r = new Runnable() {
                     public void run() {
-                        ScreenshotHelper.takeScreenShot(MakeTeamsActivity.this, teamsScreenArea);
+                        ScreenshotHelper.takeScreenshot(MakeTeamsActivity.this, teamsScreenArea);
                         Log.d("teams", "Exit send mode - Shot taken");
                         exitSendMode();
                     }

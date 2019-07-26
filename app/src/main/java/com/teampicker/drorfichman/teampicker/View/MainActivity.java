@@ -280,15 +280,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    enum sortType {
-        name,
-        grade,
-        suggestedGrade,
-        coming,
-        age,
-        attributes
-    }
-
     public void refreshPlayers() {
         ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT);
 
@@ -312,8 +303,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
-        // Attach cursor adapter to the ListView
         playersAdapter.clear();
         playersAdapter.addAll(players);
 
