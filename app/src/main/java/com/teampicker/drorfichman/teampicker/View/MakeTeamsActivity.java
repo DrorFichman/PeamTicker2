@@ -232,11 +232,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private boolean handleComingChanges(ArrayList<Player> comingPlayers,
                                         ArrayList<Player> players1, ArrayList<Player> players2) {
-        // TODO + toast
-        Log.d("COMING", "coming " + comingPlayers.size() +
-                " 1=" + players1.size() +
-                " 2=" + players2.size());
-
         boolean isChanged = false;
 
         HashMap<String, Player> all = new HashMap<>();
@@ -246,7 +241,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         isChanged = removeNonComingPlayers(players1, all) || isChanged;
         isChanged = removeNonComingPlayers(players2, all) || isChanged;
-
         isChanged = isChanged || all.values().size() > 0;
         players1.addAll(all.values());
 

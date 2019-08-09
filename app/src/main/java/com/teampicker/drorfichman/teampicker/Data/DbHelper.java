@@ -39,57 +39,6 @@ public class DbHelper extends SQLiteOpenHelper {
         }
 
         Log.d("IMPORT", "No new data");
-        // TODO debug data
-        /*
-        PlayerDbHelper.insertPlayer(db, "הדר יוסיפון", 88);
-        PlayerDbHelper.insertPlayer(db, "אורי ש", 88);
-        PlayerDbHelper.insertPlayer(db, "גלעד ב.א.", 88);
-        PlayerDbHelper.insertPlayer(db, "תומר ל", 88);
-        PlayerDbHelper.insertPlayer(db, "אלון ב", 88);
-        PlayerDbHelper.insertPlayer(db, "בנקיר", 88);
-        PlayerDbHelper.insertPlayer(db, "עומרי", 88);
-        PlayerDbHelper.insertPlayer(db, "שיר הסוללים", 88);
-        PlayerDbHelper.insertPlayer(db, "נדב", 85);
-        PlayerDbHelper.insertPlayer(db, "גלעד", 85);
-        PlayerDbHelper.insertPlayer(db, "שחר", 85);
-        PlayerDbHelper.insertPlayer(db, "אלעד שניידר", 84);
-        PlayerDbHelper.insertPlayer(db, "אורי גבאי", 84);
-        PlayerDbHelper.insertPlayer(db, "אורן", 84);
-        PlayerDbHelper.insertPlayer(db, "סער", 82);
-        PlayerDbHelper.insertPlayer(db, "טל הדרי", 82);
-        PlayerDbHelper.insertPlayer(db, "לירן", 81);
-        PlayerDbHelper.insertPlayer(db, "רונן", 81);
-        PlayerDbHelper.insertPlayer(db, "דרור", 80);
-        PlayerDbHelper.insertPlayer(db, "שי חדד", 80);
-        PlayerDbHelper.insertPlayer(db, "ריקי", 80);
-        PlayerDbHelper.insertPlayer(db, "נועם", 79);
-        PlayerDbHelper.insertPlayer(db, "בר", 79);
-        PlayerDbHelper.insertPlayer(db, "גבי", 78);
-        PlayerDbHelper.insertPlayer(db, "עדן", 78);
-        PlayerDbHelper.insertPlayer(db, "רותם", 76);
-        PlayerDbHelper.insertPlayer(db, "גדי", 75);
-        PlayerDbHelper.insertPlayer(db, "מתן הורביץ", 75);
-        PlayerDbHelper.insertPlayer(db, "שי פ", 73);
-        PlayerDbHelper.insertPlayer(db, "בועז", 73);
-        PlayerDbHelper.insertPlayer(db, "שי חן", 73);
-        PlayerDbHelper.insertPlayer(db, "הדר ל", 73);
-        PlayerDbHelper.insertPlayer(db, "תומר מן", 73);
-        PlayerDbHelper.insertPlayer(db, "בוריס", 73);
-        PlayerDbHelper.insertPlayer(db, "ערן", 73);
-        PlayerDbHelper.insertPlayer(db, "שרון ב", 73);
-        PlayerDbHelper.insertPlayer(db, "שרון ר", 73);
-        */
-
-        /*
-        PlayerDbHelper.insertPlayer(db, "דרור", 85);
-        PlayerDbHelper.insertPlayer(db, "אורי", 91);
-        PlayerDbHelper.insertPlayer(db, "נדב", 87);
-        PlayerDbHelper.insertPlayer(db, "גלעד", 88);
-        PlayerDbHelper.insertPlayer(db, "מתן", 85);
-        PlayerDbHelper.insertPlayer(db, "שי", 60);
-        PlayerDbHelper.insertPlayer(db, "גדי", 75);
-        PlayerDbHelper.insertPlayer(db, "פלאיני", 50);
-        */
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -102,6 +51,7 @@ public class DbHelper extends SQLiteOpenHelper {
         addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.BIRTH_YEAR, "INTEGER", null);
         addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.BIRTH_MONTH, "INTEGER", null);
         addColumn(db, PlayerContract.PlayerGameEntry.TABLE_NAME, PlayerContract.PlayerGameEntry.PLAYER_AGE, "INTEGER", null);
+        // TODO add player attributes column
         // TODO add game index
     }
 
