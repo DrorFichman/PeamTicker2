@@ -3,12 +3,10 @@ package com.teampicker.drorfichman.teampicker.View;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -30,7 +28,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 public class MakeTeamsActivity extends AppCompatActivity {
@@ -97,7 +94,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
                     player.switchMissed();
 
                     DbHelper.setPlayerResult(MakeTeamsActivity.this, DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, newResult);
-                    updateLists();
+                    refreshPlayers();
 
                 } else if (moveView.isChecked()) { // Moving
 
@@ -221,7 +218,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
             if (players1 != null && players1.size() > 0 && players2 != null && players2.size() > 0) {
                 boolean changed = handleComingChanges(comingPlayers, players1, players2);
-                updateLists();
+                refreshPlayers();
                 if (changed) Toast.makeText(this, "Changes in coming players applied", Toast.LENGTH_SHORT).show();
             } else {
                 Log.e("TEAMS", "Unable to find teams for curr game " + currGame);
@@ -279,18 +276,16 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void enterSendMode() {
 
         hideSelection();
-        showGrade(false);
-        showStats(false);
+        totalData.setVisibility(View.INVISIBLE);
 
-        updateLists();
+        refreshPlayers(false);
     }
 
     private void exitSendMode() {
 
-        showGrade(true);
-        showStats(true);
+        totalData.setVisibility(View.VISIBLE);
 
-        updateLists();
+        refreshPlayers(true);
     }
 
     private void initialDivision() {
@@ -308,7 +303,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         scramble();
 
-        updateLists();
+        refreshPlayers();
     }
 
     @Override
@@ -317,27 +312,14 @@ public class MakeTeamsActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private void showStats(boolean show) {
-        totalData.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
-    }
-
-    private void showGrade(boolean show) {
-        for (Player p : players1) {
-            p.showGrade(show);
-        }
-        for (Player p : players2) {
-            p.showGrade(show);
-        }
-    }
-
     private void hideSelection() {
         for (Player p : players1) {
-            p.switchMoved(false);
+            p.switchMoved(false); // TODO change to adapter
         }
         for (Player p : players2) {
             p.switchMoved(false);
         }
-        updateLists();
+        refreshPlayers();
     }
 
     public void onRequestPermissionsResult(int requestCode,
@@ -352,14 +334,17 @@ public class MakeTeamsActivity extends AppCompatActivity {
         }
     }
 
-    private void updateLists() {
-
+    private void refreshPlayers(boolean showInternalData) {
         sortPlayerNames(players1);
         sortPlayerNames(players2);
-        list1.setAdapter(newArrayAdapter(players1));
-        list2.setAdapter(newArrayAdapter(players2));
+        list1.setAdapter(new PlayerTeamAdapter(this, players1, showInternalData));
+        list2.setAdapter(new PlayerTeamAdapter(this, players2, showInternalData));
 
         updateStats();
+    }
+
+    private void refreshPlayers() {
+        refreshPlayers(true);
     }
 
     private void updateStats() {
@@ -411,7 +396,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 players1.remove(curr);
                 players2.add(curr);
 
-                updateLists();
+                refreshPlayers();
                 return;
             }
         }
@@ -421,15 +406,9 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 players1.add(curr);
                 players2.remove(curr);
 
-                updateLists();
+                refreshPlayers();
                 return;
             }
         }
-    }
-
-    @NonNull
-    private ArrayAdapter<Player> newArrayAdapter(List<Player> players) {
-
-        return new PlayerTeamAdapter(this, players);
     }
 }

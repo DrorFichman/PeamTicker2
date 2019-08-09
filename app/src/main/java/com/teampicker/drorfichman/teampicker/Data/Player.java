@@ -16,7 +16,6 @@ public class Player implements Serializable, Comparable {
     public int mBirthMonth;
     private int mAge;
 
-    private boolean mIsGradeDisplayed;
     public boolean isComing;
     private boolean isMoved;
     private boolean isMissed;
@@ -35,15 +34,6 @@ public class Player implements Serializable, Comparable {
     public Player(String name, int grade) {
         mName = name;
         mGrade = grade;
-        mIsGradeDisplayed = true;
-    }
-
-    public void showGrade(boolean show) {
-        mIsGradeDisplayed = show;
-    }
-
-    public boolean isGradeDisplayed() {
-        return mIsGradeDisplayed;
     }
 
     @Override
@@ -64,17 +54,6 @@ public class Player implements Serializable, Comparable {
 
     public int getSuggestedGradeDiff() {
         return getSuggestedGrade() - mGrade;
-    }
-
-    public String getSuggestedChange() {
-        int suggest = getSuggestedGrade();
-        if (suggest > mGrade) {
-            return "+" + (suggest - mGrade);
-        } else if (suggest < mGrade) {
-            return "-" + (mGrade - suggest);
-        } else {
-            return "";
-        }
     }
 
     private int getAverageGrade() {

@@ -70,8 +70,8 @@ public class GameDetailsDialogFragment extends DialogFragment {
         ListView team1List = (ListView) view.findViewById(R.id.game_details_team1);
         ListView team2List = (ListView) view.findViewById(R.id.game_details_team2);
 
-        adapter1 = new PlayerTeamAdapter(getActivity(), new ArrayList<Player>());
-        adapter2 = new PlayerTeamAdapter(getActivity(), new ArrayList<Player>());
+        adapter1 = new PlayerTeamAdapter(getActivity(), new ArrayList<Player>(), false);
+        adapter2 = new PlayerTeamAdapter(getActivity(), new ArrayList<Player>(), false);
         refreshTeams();
 
         team1List.setAdapter(adapter1);

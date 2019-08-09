@@ -1,19 +1,13 @@
 package com.teampicker.drorfichman.teampicker.Adapter;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.support.v4.widget.CursorAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.TextView;
 
-import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
-import com.teampicker.drorfichman.teampicker.Data.PlayerContract;
 import com.teampicker.drorfichman.teampicker.R;
 
 import java.util.List;
@@ -26,10 +20,13 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
     private final Context context;
     private final List<Player> mPlayers;
 
-    public PlayerStatisticsAdapter(Context ctx, List<Player> players) {
+    boolean isGradeVisible = true;
+
+    public PlayerStatisticsAdapter(Context ctx, List<Player> players, boolean showGrades) {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
+        isGradeVisible = showGrades;
     }
 
     @Override
@@ -46,7 +43,7 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
 
         name.setText(p.mName);
 
-        if (p.isGradeDisplayed()) {
+        if (isGradeVisible) {
             grade.setText(String.valueOf(p.mGrade));
         } else {
             grade.setVisibility(View.INVISIBLE);

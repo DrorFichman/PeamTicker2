@@ -23,10 +23,17 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
     private final Context context;
     private final List<Player> mPlayers;
 
-    public PlayerTeamAdapter(Context ctx, List<Player> players) {
+    boolean isAttributesVisible = true;
+    boolean isGameHistoryVisible = true;
+    boolean isGradeVisible = true;
+
+    public PlayerTeamAdapter(Context ctx, List<Player> players, boolean showInternalData) {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
+        isAttributesVisible = showInternalData;
+        isGameHistoryVisible = showInternalData;
+        isGradeVisible = showInternalData;
     }
 
     @Override
@@ -39,10 +46,10 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         TextView name = (TextView) rowView.findViewById(R.id.player_team_name);
         name.setText(player.mName + isMissed);
 
-        rowView.findViewById(R.id.player_gk).setVisibility(player.isGK ? View.VISIBLE : View.GONE);
-        rowView.findViewById(R.id.player_d).setVisibility(player.isDefender ? View.VISIBLE : View.GONE);
-        rowView.findViewById(R.id.player_pm).setVisibility(player.isPlaymaker ? View.VISIBLE : View.GONE);
-        rowView.findViewById(R.id.player_breaking).setVisibility(player.isBreakable ? View.VISIBLE : View.GONE);
+        rowView.findViewById(R.id.player_gk).setVisibility(isAttributesVisible && player.isGK ? View.VISIBLE : View.GONE);
+        rowView.findViewById(R.id.player_d).setVisibility(isAttributesVisible && player.isDefender ? View.VISIBLE : View.GONE);
+        rowView.findViewById(R.id.player_pm).setVisibility(isAttributesVisible && player.isPlaymaker ? View.VISIBLE : View.GONE);
+        rowView.findViewById(R.id.player_breaking).setVisibility(isAttributesVisible && player.isBreakable ? View.VISIBLE : View.GONE);
 
         ArrayList<ImageView> starView = new ArrayList();
         starView.add((ImageView) rowView.findViewById(R.id.res_1));
@@ -55,31 +62,28 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             im.setVisibility(View.INVISIBLE);
         }
 
-        for (int r = 0; r < player.results.size() && r < starView.size(); ++r) {
-            ResultEnum res = player.results.get(r).result;
-            if (res == ResultEnum.Win) {
-                starView.get(r).setImageResource(R.drawable.circle_win);
-            } else if (res == ResultEnum.Lose) {
-                starView.get(r).setImageResource(R.drawable.circle_lose);
-            } else if (res == ResultEnum.Tie) {
-                starView.get(r).setImageResource(R.drawable.circle_draw);
-            } else if (res == ResultEnum.Missed) {
-                starView.get(r).setImageResource(R.drawable.circle_na);
+        if (isGameHistoryVisible) {
+            for (int r = 0; r < player.results.size() && r < starView.size(); ++r) {
+                ResultEnum res = player.results.get(r).result;
+                if (res == ResultEnum.Win) {
+                    starView.get(r).setImageResource(R.drawable.circle_win);
+                } else if (res == ResultEnum.Lose) {
+                    starView.get(r).setImageResource(R.drawable.circle_lose);
+                } else if (res == ResultEnum.Tie) {
+                    starView.get(r).setImageResource(R.drawable.circle_draw);
+                } else if (res == ResultEnum.Missed) {
+                    starView.get(r).setImageResource(R.drawable.circle_na);
+                }
+                starView.get(r).setVisibility(View.VISIBLE);
             }
-            starView.get(r).setVisibility(View.VISIBLE);
         }
 
         TextView grade = (TextView) rowView.findViewById(R.id.player_team_grade);
-
-        if (player.isGradeDisplayed()) {
+        if (isGradeVisible) {
             grade.setText(String.valueOf(player.mGrade));
             grade.setVisibility(View.VISIBLE);
         } else {
             grade.setVisibility(View.GONE);
-            rowView.findViewById(R.id.player_gk).setVisibility(View.GONE);
-            rowView.findViewById(R.id.player_d).setVisibility(View.GONE);
-            rowView.findViewById(R.id.player_pm).setVisibility(View.GONE);
-            rowView.findViewById(R.id.player_breaking).setVisibility(View.GONE);
         }
 
         if (player.isMoved()) {

@@ -47,7 +47,7 @@ public class StatisticsActivity extends AppCompatActivity {
         setHeadlines();
 
         playersList = (ListView) findViewById(R.id.players_statistics_list);
-        playersAdapter = new PlayerStatisticsAdapter(this, new ArrayList<Player>());
+        playersAdapter = new PlayerStatisticsAdapter(this, new ArrayList<Player>(), true);
 
         refreshPlayers();
 
@@ -153,20 +153,12 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private void enterSendMode() {
         gradeTitle.setVisibility(View.INVISIBLE);
-        refreshPlayers();
+        refreshPlayers(false);
     }
 
     private void exitSendMode() {
         gradeTitle.setVisibility(View.VISIBLE);
-        refreshPlayers();
-    }
-
-    private void showHideGrades(ArrayList<Player> players) {
-        boolean isGradeVisible = gradeTitle.getVisibility() == View.VISIBLE;
-
-        for (Player p : players) {
-            p.showGrade(isGradeVisible);
-        }
+        refreshPlayers(true);
     }
 
     @Override
@@ -180,6 +172,10 @@ public class StatisticsActivity extends AppCompatActivity {
     }
 
     public void refreshPlayers() {
+        refreshPlayers(true);
+    }
+
+    public void refreshPlayers(boolean showInternalData) {
 
         ArrayList<Player> players = DbHelper.getPlayersStatistics(getApplicationContext(), games);
 
@@ -208,10 +204,7 @@ public class StatisticsActivity extends AppCompatActivity {
             }
         });
 
-        showHideGrades(players);
-
-        playersAdapter.clear();
-        playersAdapter.addAll(players);
+        playersAdapter = new PlayerStatisticsAdapter(this, players, showInternalData);
         playersList.setAdapter(playersAdapter);
     }
 }
