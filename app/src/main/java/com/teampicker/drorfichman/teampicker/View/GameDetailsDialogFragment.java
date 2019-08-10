@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.widget.TextView;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
 
@@ -70,8 +72,6 @@ public class GameDetailsDialogFragment extends DialogFragment {
         ListView team1List = (ListView) view.findViewById(R.id.game_details_team1);
         ListView team2List = (ListView) view.findViewById(R.id.game_details_team2);
 
-        adapter1 = new PlayerTeamAdapter(getActivity(), new ArrayList<Player>());
-        adapter2 = new PlayerTeamAdapter(getActivity(), new ArrayList<Player>());
         refreshTeams();
 
         team1List.setAdapter(adapter1);
@@ -129,9 +129,25 @@ public class GameDetailsDialogFragment extends DialogFragment {
         mTeam1 = DbHelper.getCurrTeam(ctx, mGameId, TeamEnum.Team1, 0);
         mTeam2 = DbHelper.getCurrTeam(ctx, mGameId, TeamEnum.Team2, 0);
 
-        adapter1.clear();
-        adapter1.addAll(mTeam1);
-        adapter2.clear();
-        adapter2.addAll(mTeam2);
+        ArrayList missedPlayers = findMissedPlayers();
+
+        adapter1 = new PlayerTeamAdapter(getActivity(), mTeam1, new ArrayList<Player>(), missedPlayers, false);
+        adapter2 = new PlayerTeamAdapter(getActivity(), mTeam2, new ArrayList<Player>(), missedPlayers, false);
+    }
+
+    @NonNull
+    private ArrayList findMissedPlayers() {
+        ArrayList missedPlayers = new ArrayList();
+        for (Player p : mTeam1) {
+            if (ResultEnum.Missed.getValue() == p.gameResult) {
+                missedPlayers.add(p);
+            }
+        }
+        for (Player p : mTeam2) {
+            if (ResultEnum.Missed.getValue() == p.gameResult) {
+                missedPlayers.add(p);
+            }
+        }
+        return missedPlayers;
     }
 }

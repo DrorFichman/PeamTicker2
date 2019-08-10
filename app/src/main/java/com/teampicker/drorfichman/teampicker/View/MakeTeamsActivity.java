@@ -40,6 +40,9 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private ListView list2;
     private ListView list1;
 
+    ArrayList<Player> movedPlayers = new ArrayList<>();
+    ArrayList<Player> missedPlayers = new ArrayList<>();
+
     private View totalData;
     private TextView teamData2;
     private TextView teamData1;
@@ -90,10 +93,16 @@ public class MakeTeamsActivity extends AppCompatActivity {
                     // Switch player NA/Missed status
                     Player player = (Player) adapterView.getItemAtPosition(i);
 
-                    ResultEnum newResult = player.isMissed() ? ResultEnum.NA : ResultEnum.Missed;
-                    DbHelper.setPlayerResult(MakeTeamsActivity.this, DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, newResult);
+                    if (missedPlayers.contains(player)) {
+                        missedPlayers.remove(player);
+                        DbHelper.setPlayerResult(MakeTeamsActivity.this,
+                                DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, ResultEnum.NA);
+                    } else {
+                        missedPlayers.add(player);
+                        DbHelper.setPlayerResult(MakeTeamsActivity.this,
+                                DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, ResultEnum.Missed);
+                    }
 
-                    player.switchMissed();
 
                     refreshPlayers();
 
@@ -333,8 +342,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void refreshPlayers(boolean showInternalData) {
         sortPlayerNames(players1);
         sortPlayerNames(players2);
-        list1.setAdapter(new PlayerTeamAdapter(this, players1, movedPlayers, showInternalData));
-        list2.setAdapter(new PlayerTeamAdapter(this, players2, movedPlayers, showInternalData));
+        list1.setAdapter(new PlayerTeamAdapter(this, players1, movedPlayers, missedPlayers, showInternalData));
+        list2.setAdapter(new PlayerTeamAdapter(this, players2, movedPlayers, missedPlayers, showInternalData));
 
         updateStats();
     }
@@ -382,8 +391,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
             }
         });
     }
-
-    ArrayList<Player> movedPlayers = new ArrayList<>();
 
     private void switchPlayer(Player movedPlayer) {
 

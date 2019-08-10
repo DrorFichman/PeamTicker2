@@ -17,7 +17,6 @@ public class Player implements Serializable, Comparable {
     private int mAge;
 
     public boolean isComing;
-    private boolean isMissed;
 
     public ArrayList<PlayerGameStat> results = new ArrayList<>();
     public StatisticsData statistics;
@@ -108,14 +107,6 @@ public class Player implements Serializable, Comparable {
             }
         }
         return value;
-    }
-
-    public boolean isMissed() {
-        return isMissed;
-    }
-
-    public void switchMissed() {
-        isMissed = !isMissed;
     }
 
     public void setStatistics(StatisticsData statistics) {

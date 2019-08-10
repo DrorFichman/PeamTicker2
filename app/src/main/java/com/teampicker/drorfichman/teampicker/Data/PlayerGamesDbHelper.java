@@ -104,12 +104,8 @@ public class PlayerGamesDbHelper {
 
                     // age is saved at the time the game was played
                     p.setAge(c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_AGE)));
+                    p.gameResult = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT));
 
-                    int res = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT));
-                    if (ResultEnum.Missed.getValue() == res) {
-                        p.switchMissed();
-                    }
-                    p.gameResult = res;
                     players.add(p);
                 } while (c.moveToNext());
             }

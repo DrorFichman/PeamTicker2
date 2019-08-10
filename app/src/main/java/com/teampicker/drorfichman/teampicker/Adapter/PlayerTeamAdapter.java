@@ -23,17 +23,20 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
     private final Context context;
     private final List<Player> mPlayers;
     private final List<Player> mColorPlayers;
+    private final List<Player> mMarkedPlayers;
 
     boolean isAttributesVisible;
     boolean isGameHistoryVisible;
     boolean isGradeVisible;
 
-    public PlayerTeamAdapter(Context ctx, List<Player> players, List<Player> markedPlayers,
+    public PlayerTeamAdapter(Context ctx, List<Player> players,
+                             List<Player> coloredPlayers, List<Player> markedPlayers,
                              boolean showInternalData) {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
-        mColorPlayers = markedPlayers != null ? markedPlayers : new ArrayList<Player>();
+        mColorPlayers = coloredPlayers != null ? coloredPlayers : new ArrayList<Player>();
+        mMarkedPlayers = markedPlayers != null ? markedPlayers : new ArrayList<Player>();
         isAttributesVisible = showInternalData;
         isGameHistoryVisible = showInternalData;
         isGradeVisible = showInternalData;
@@ -44,6 +47,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         context = ctx;
         mPlayers = players;
         mColorPlayers = new ArrayList<>();
+        mMarkedPlayers = new ArrayList<>();
         isAttributesVisible = false;
         isGameHistoryVisible = false;
         isGradeVisible = false;
@@ -56,7 +60,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         Player player = mPlayers.get(position);
 
         TextView name = (TextView) rowView.findViewById(R.id.player_team_name);
-        name.setText(player.mName + (player.isMissed() ? " **" : "")); // TODO from adapter list
+        name.setText(player.mName + (mMarkedPlayers.contains(player) ? " **" : ""));
 
         rowView.findViewById(R.id.player_gk).setVisibility(isAttributesVisible && player.isGK ? View.VISIBLE : View.GONE);
         rowView.findViewById(R.id.player_d).setVisibility(isAttributesVisible && player.isDefender ? View.VISIBLE : View.GONE);
