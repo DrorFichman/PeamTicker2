@@ -85,18 +85,19 @@ public class MakeTeamsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
-                if (mSetResult) { // Setting "Missed"
+                if (mSetResult) { // Setting "Missed" when setting results
 
                     // Switch player NA/Missed status
                     Player player = (Player) adapterView.getItemAtPosition(i);
 
                     ResultEnum newResult = player.isMissed() ? ResultEnum.NA : ResultEnum.Missed;
+                    DbHelper.setPlayerResult(MakeTeamsActivity.this, DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, newResult);
+
                     player.switchMissed();
 
-                    DbHelper.setPlayerResult(MakeTeamsActivity.this, DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, newResult);
                     refreshPlayers();
 
-                } else if (moveView.isChecked()) { // Moving
+                } else if (moveView.isChecked()) { // Moving when making teams
 
                     switchPlayer((Player) adapterView.getItemAtPosition(i));
                 }
@@ -313,12 +314,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void hideSelection() {
-        for (Player p : players1) {
-            p.switchMoved(false); // TODO change to adapter
-        }
-        for (Player p : players2) {
-            p.switchMoved(false);
-        }
+        movedPlayers.clear();
         refreshPlayers();
     }
 
@@ -337,8 +333,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void refreshPlayers(boolean showInternalData) {
         sortPlayerNames(players1);
         sortPlayerNames(players2);
-        list1.setAdapter(new PlayerTeamAdapter(this, players1, showInternalData));
-        list2.setAdapter(new PlayerTeamAdapter(this, players2, showInternalData));
+        list1.setAdapter(new PlayerTeamAdapter(this, players1, movedPlayers, showInternalData));
+        list2.setAdapter(new PlayerTeamAdapter(this, players2, movedPlayers, showInternalData));
 
         updateStats();
     }
@@ -387,28 +383,20 @@ public class MakeTeamsActivity extends AppCompatActivity {
         });
     }
 
+    ArrayList<Player> movedPlayers = new ArrayList<>();
+
     private void switchPlayer(Player movedPlayer) {
 
-        movedPlayer.switchMoved(true);
+        movedPlayers.add(movedPlayer);
 
-        for (Player curr : players1) {
-            if (curr.mName.equals(movedPlayer.mName)) {
-                players1.remove(curr);
-                players2.add(curr);
-
-                refreshPlayers();
-                return;
-            }
+        if (players1.contains(movedPlayer)) {
+            players1.remove(movedPlayer);
+            players2.add(movedPlayer);
+        } else if (players2.contains(movedPlayer)) {
+            players1.add(movedPlayer);
+            players2.remove(movedPlayer);
         }
 
-        for (Player curr : players2) {
-            if (curr.mName.equals(movedPlayer.mName)) {
-                players1.add(curr);
-                players2.remove(curr);
-
-                refreshPlayers();
-                return;
-            }
-        }
+        refreshPlayers();
     }
 }

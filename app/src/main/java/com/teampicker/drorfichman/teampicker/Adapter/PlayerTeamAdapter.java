@@ -22,18 +22,31 @@ import java.util.List;
 public class PlayerTeamAdapter extends ArrayAdapter<Player> {
     private final Context context;
     private final List<Player> mPlayers;
+    private final List<Player> mColorPlayers;
 
-    boolean isAttributesVisible = true;
-    boolean isGameHistoryVisible = true;
-    boolean isGradeVisible = true;
+    boolean isAttributesVisible;
+    boolean isGameHistoryVisible;
+    boolean isGradeVisible;
 
-    public PlayerTeamAdapter(Context ctx, List<Player> players, boolean showInternalData) {
+    public PlayerTeamAdapter(Context ctx, List<Player> players, List<Player> markedPlayers,
+                             boolean showInternalData) {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
+        mColorPlayers = markedPlayers != null ? markedPlayers : new ArrayList<Player>();
         isAttributesVisible = showInternalData;
         isGameHistoryVisible = showInternalData;
         isGradeVisible = showInternalData;
+    }
+
+    public PlayerTeamAdapter(Context ctx, List<Player> players) {
+        super(ctx, -1, players);
+        context = ctx;
+        mPlayers = players;
+        mColorPlayers = new ArrayList<>();
+        isAttributesVisible = false;
+        isGameHistoryVisible = false;
+        isGradeVisible = false;
     }
 
     @Override
@@ -42,9 +55,8 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
         Player player = mPlayers.get(position);
 
-        String isMissed = player.isMissed() ? " **" : "";
         TextView name = (TextView) rowView.findViewById(R.id.player_team_name);
-        name.setText(player.mName + isMissed);
+        name.setText(player.mName + (player.isMissed() ? " **" : "")); // TODO from adapter list
 
         rowView.findViewById(R.id.player_gk).setVisibility(isAttributesVisible && player.isGK ? View.VISIBLE : View.GONE);
         rowView.findViewById(R.id.player_d).setVisibility(isAttributesVisible && player.isDefender ? View.VISIBLE : View.GONE);
@@ -86,7 +98,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             grade.setVisibility(View.GONE);
         }
 
-        if (player.isMoved()) {
+        if (mColorPlayers.contains(player)) {
             rowView.setBackgroundColor(Color.CYAN);
         } else {
             rowView.setBackgroundColor(Color.TRANSPARENT);

@@ -17,7 +17,6 @@ public class Player implements Serializable, Comparable {
     private int mAge;
 
     public boolean isComing;
-    private boolean isMoved;
     private boolean isMissed;
 
     public ArrayList<PlayerGameStat> results = new ArrayList<>();
@@ -109,18 +108,6 @@ public class Player implements Serializable, Comparable {
             }
         }
         return value;
-    }
-
-    public boolean isMoved() {
-        return isMoved;
-    }
-
-    public void switchMoved(boolean moved) {
-        if (!moved) {
-            isMoved = false;
-        } else {
-            isMoved = !isMoved;
-        }
     }
 
     public boolean isMissed() {
