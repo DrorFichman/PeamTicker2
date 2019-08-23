@@ -241,6 +241,18 @@ public class PlayerDbHelper {
         updatePlayer(db, name, values);
     }
 
+    public static void updatePlayerName(SQLiteDatabase db, String currentName, String newName) {
+        ContentValues values = new ContentValues();
+        values.put(PlayerContract.PlayerEntry.NAME, newName);
+        updatePlayer(db, currentName, values);
+
+        String where = PlayerContract.PlayerGameEntry.NAME + " = ? ";
+        String[] whereArgs = new String[]{currentName};
+        ContentValues values2 = new ContentValues();
+        values2.put(PlayerContract.PlayerGameEntry.NAME, newName);
+        DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerGameEntry.TABLE_NAME);
+    }
+
     private static void updatePlayer(SQLiteDatabase db, String name, ContentValues values) {
         String where = PlayerContract.PlayerEntry.NAME + " = ? ";
         String[] whereArgs = new String[]{name};

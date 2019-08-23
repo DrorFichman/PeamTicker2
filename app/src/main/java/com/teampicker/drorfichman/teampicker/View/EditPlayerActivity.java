@@ -73,8 +73,7 @@ public class EditPlayerActivity extends AppCompatActivity {
         // TODO change to stars
         // TODO plus/minus ratio
 
-        vName.setText(pPlayer.mName);
-        vName.setEnabled(false);
+        vName.setHint(pPlayer.mName);
         vGrade.setHint(String.valueOf(pPlayer.mGrade));
 
         if (pPlayer.mBirthYear > 0) setBirthday(pPlayer.mBirthYear, pPlayer.mBirthMonth);
@@ -103,9 +102,11 @@ public class EditPlayerActivity extends AppCompatActivity {
                 setResult(1);
                 boolean playerUpdated = false;
 
-                String stringGrade = vGrade.getText().toString();
-                if (!TextUtils.isEmpty(stringGrade)) {
-                    Integer newGrade = Integer.valueOf(stringGrade);
+                String grade = vGrade.getText().toString();
+                String name = vName.getText().toString();
+
+                if (!TextUtils.isEmpty(grade)) {
+                    Integer newGrade = Integer.valueOf(grade);
 
                     if (newGrade > 99 || newGrade < 0) {
                         Toast.makeText(getApplicationContext(), "Score must be between 0-99", Toast.LENGTH_LONG).show();
@@ -113,6 +114,16 @@ public class EditPlayerActivity extends AppCompatActivity {
                     }
                     DbHelper.updatePlayerGrade(getApplicationContext(), pPlayer.mName, newGrade);
                     playerUpdated = true;
+                }
+
+                if (!TextUtils.isEmpty(name)) {
+                    boolean updated = DbHelper.updatePlayerName(getApplicationContext(), pPlayer, name);
+                    if (updated) {
+                        playerUpdated = true;
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Player name is already taken", Toast.LENGTH_LONG).show();
+                        return;
+                    }
                 }
 
                 if (vBirth.getTag() != null) {

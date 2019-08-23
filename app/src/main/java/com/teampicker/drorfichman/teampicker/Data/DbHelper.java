@@ -92,6 +92,22 @@ public class DbHelper extends SQLiteOpenHelper {
         PlayerDbHelper.updatePlayerGrade(getSqLiteDatabase(context), name, grade);
     }
 
+    public static boolean updatePlayerName(Context context, Player player, String newName) {
+        if (getPlayer(context, newName) != null) {
+            return false;
+        }
+
+        PlayerDbHelper.updatePlayerName(getSqLiteDatabase(context), player.mName, newName);
+
+        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isBreakable, player.isBreakable);
+        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isDefender, player.isDefender);
+        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker, player.isPlaymaker);
+        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isGK, player.isGK);
+        PreferenceAttributesHelper.deletePlayerAttributes(context, player.mName);
+
+        return true;
+    }
+
     public static void updatePlayerBirth(Context context, String name, int year, int month) {
         PlayerDbHelper.updatePlayerBirth(getSqLiteDatabase(context), name, year, month);
     }
@@ -210,9 +226,9 @@ public class DbHelper extends SQLiteOpenHelper {
         return DateFormat.format("dd-MM-yyyy", System.currentTimeMillis()).toString();
     }
 
-    public static void updateRecord(SQLiteDatabase db, ContentValues values, String where, String[] whereArgs, String tableName) {
+    public static int updateRecord(SQLiteDatabase db, ContentValues values, String where, String[] whereArgs, String tableName) {
 
-        db.updateWithOnConflict(tableName,
+        return db.updateWithOnConflict(tableName,
                 values,
                 where, whereArgs, SQLiteDatabase.CONFLICT_IGNORE);
     }
