@@ -29,6 +29,7 @@ public final class PlayerContract {
         public static final String IS_COMING = "is_coming";
         public static final String BIRTH_YEAR = "birth_year";
         public static final String BIRTH_MONTH = "birth_month";
+        public static final String ARCHIVED = "archived";
     }
 
     public static abstract class PlayerGameEntry {

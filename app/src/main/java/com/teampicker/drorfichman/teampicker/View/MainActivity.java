@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final int RECENT_GAMES_COUNT = 10;
     private sortType sort = sortType.grade;
+    private boolean showArchivedPlayers = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity
 
         playersList = (ListView) findViewById(R.id.players_list);
 
-        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT);
+        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT, showArchivedPlayers);
         playersAdapter = new PlayerAdapter(this, players);
 
         playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -222,6 +223,9 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+        } else if (showArchivedPlayers) {
+            showArchivedPlayers = false;
+            refreshPlayers();
         } else {
             super.onBackPressed();
         }
@@ -246,6 +250,18 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.add_player :
                 startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), ACTIVITY_RESULT_PLAYER);
+                break;
+            case R.id.show_archived_players :
+                showArchivedPlayers = !showArchivedPlayers;
+                if (showArchivedPlayers) {
+                    ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT, showArchivedPlayers);
+                    if (players.size() == 0) {
+                        Toast.makeText(MainActivity.this, "No archived players found", Toast.LENGTH_LONG).show();
+                        showArchivedPlayers = false;
+                        break;
+                    }
+                }
+                refreshPlayers();
                 break;
             case R.id.clear_all:
                 DbHelper.clearComingPlayers(this);
@@ -281,7 +297,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void refreshPlayers() {
-        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT);
+        ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT, showArchivedPlayers);
 
         Collections.sort(players, new Comparator<Player>() {
             @Override
@@ -319,17 +335,25 @@ public class MainActivity extends AppCompatActivity
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
-        alertDialogBuilder.setTitle("Delete");
-
-        // set dialog message
-        alertDialogBuilder
-                .setMessage("Do you want to remove this player?")
+        String archiveAction = showArchivedPlayers ? "Unarchive" : "Archive";
+        alertDialogBuilder.setTitle("Do you want to remove the player?")
                 .setCancelable(true)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        DbHelper.deletePlayer(MainActivity.this, player.mName);
-                        refreshPlayers();
-                        dialog.dismiss();
+                .setItems(new CharSequence[]
+                        {archiveAction, "Remove", "Cancel"},
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which) {
+                            case 0:
+                                DbHelper.archivePlayer(MainActivity.this, player.mName, !showArchivedPlayers);
+                                refreshPlayers();
+                                break;
+                            case 1:
+                                DbHelper.deletePlayer(MainActivity.this, player.mName);
+                                refreshPlayers();
+                                break;
+                            case 2:
+                                break;
+                        }
                     }
                 });
 
@@ -363,7 +387,11 @@ public class MainActivity extends AppCompatActivity
 
 
     public void setActivityTitle() {
-        setTitle(String.format("PeamTicker (%d)", DbHelper.getComingPlayersCount(this)));
+        if (showArchivedPlayers) {
+            setTitle("Archived players");
+        } else {
+            setTitle(String.format("PeamTicker (%d)", DbHelper.getComingPlayersCount(this)));
+        }
     }
 
     //region snapshot

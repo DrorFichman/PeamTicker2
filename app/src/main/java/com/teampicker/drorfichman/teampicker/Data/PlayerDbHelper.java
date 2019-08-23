@@ -39,8 +39,9 @@ public class PlayerDbHelper {
                 PlayerContract.PlayerEntry.IS_COMING
         };
 
-        String where = PlayerContract.PlayerEntry.IS_COMING + " = ? ";
-        String[] whereArgs = new String[]{"1"};
+        String where = PlayerContract.PlayerEntry.IS_COMING + " = ? AND " +
+                PlayerContract.PlayerEntry.ARCHIVED + " = ? ";
+        String[] whereArgs = new String[]{"1", "0"}; // coming and not archived
 
         Cursor c = db.query(
                 PlayerContract.PlayerEntry.TABLE_NAME,  // The table to query
@@ -76,8 +77,9 @@ public class PlayerDbHelper {
         // How you want the results sorted in the resulting Cursor
         String sortOrder = PlayerContract.PlayerEntry.GRADE + " DESC";
 
-        String where = PlayerContract.PlayerEntry.IS_COMING + " = ? ";
-        String[] whereArgs = new String[]{"1"};
+        String where = PlayerContract.PlayerEntry.IS_COMING + " = ? AND " +
+                PlayerContract.PlayerEntry.ARCHIVED + " = ? ";
+        String[] whereArgs = new String[]{"1", "0"}; // coming and not archived
 
         Cursor c = db.query(
                 PlayerContract.PlayerEntry.TABLE_NAME,  // The table to query
@@ -151,7 +153,15 @@ public class PlayerDbHelper {
                 new String[]{name});
     }
 
-    public static ArrayList<Player> getPlayers(Context context, SQLiteDatabase db) {
+    public static void archivePlayer(SQLiteDatabase db, String name, boolean archive) {
+        ContentValues values = new ContentValues();
+        values.put(PlayerContract.PlayerEntry.ARCHIVED, archive ? 1 : 0);
+
+        updatePlayer(db, name, values);
+    }
+
+    @NonNull
+    public static ArrayList<Player> getPlayers(Context context, SQLiteDatabase db, boolean showArchived) {
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -166,14 +176,16 @@ public class PlayerDbHelper {
 
         // How you want the results sorted in the resulting Cursor
         String sortOrder = PlayerContract.PlayerEntry.GRADE + " DESC";
+        String where = PlayerContract.PlayerEntry.ARCHIVED + " = ? ";
+        String[] selectionArgs = {showArchived ? "1" : "0"};
 
         Cursor c = db.query(
-                PlayerContract.PlayerEntry.TABLE_NAME,  // The table to query
+                PlayerContract.PlayerEntry.TABLE_NAME,    // The table to query
                 projection,                               // The columns to return
-                null,                                // The columns for the WHERE clause
-                null,                            // The values for the WHERE clause
-                null,                                     // don't group the rows
-                null,                                     // don't filter by row groups
+                where,                                    // where
+                selectionArgs,                        // where values
+                null,                            // don't group the rows
+                null,                             // don't filter by row groups
                 sortOrder                                 // The sort order
         );
 
@@ -216,12 +228,8 @@ public class PlayerDbHelper {
     }
 
     public static void updatePlayerComing(SQLiteDatabase db, String name, boolean coming) {
-
-        // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(PlayerContract.PlayerEntry.IS_COMING, coming ? 1 : 0);
-
-        Log.d("DB", " updated " + name + " coming " + coming);
 
         updatePlayer(db, name, values);
     }

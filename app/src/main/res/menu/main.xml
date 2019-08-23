@@ -10,6 +10,10 @@
         android:title="@string/add_player"
         app:showAsAction="never" />
     <item
+        android:id="@+id/show_archived_players"
+        android:title="@string/show_archived"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/make_teams"
         android:title="@string/make_teams"
         app:showAsAction="never" />

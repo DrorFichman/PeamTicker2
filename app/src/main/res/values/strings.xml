@@ -16,6 +16,7 @@
     <string name="sort_grade">Sort grade</string>
     <string name="sort_coming">Sort coming</string>
     <string name="add_player">Add player</string>
+    <string name="show_archived">Players Archive</string>
     <string name="make_teams">Make teams</string>
     <string name="enter_results">Enter Results</string>
     <string name="team_data">" Count: %1$s \n Sum : %2$s \n Average: %3$s \n Success : %4$s \n Grade StdDev: %5$s  "</string>
