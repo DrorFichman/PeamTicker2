@@ -1,8 +1,10 @@
 package com.teampicker.drorfichman.teampicker.View;
 
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -14,11 +16,13 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
+import com.teampicker.drorfichman.teampicker.Controller.CollaborationHelper;
 import com.teampicker.drorfichman.teampicker.Controller.ScreenshotHelper;
 import com.teampicker.drorfichman.teampicker.Controller.TeamData;
 import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
 import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
@@ -32,7 +36,8 @@ import java.util.Random;
 
 public class MakeTeamsActivity extends AppCompatActivity {
 
-    private static final int STARS_COUNT = 5;
+    private static final int RECENT_GAMES = 50;
+
     public static String INTENT_SET_RESULT = "INTENT_SET_RESULT";
 
     private ArrayList<Player> players1 = new ArrayList<>();
@@ -168,6 +173,14 @@ public class MakeTeamsActivity extends AppCompatActivity {
             }
         }
 
+        findViewById(R.id.game_prediction_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                CollaborationHelper.PredictionResult res = CollaborationHelper.predictWinner(MakeTeamsActivity.this, players1, players2);
+                showPredictionDialog(res);
+            }
+        });
+
         initialData();
     }
 
@@ -219,12 +232,11 @@ public class MakeTeamsActivity extends AppCompatActivity {
             Log.d("teams", "Initial shuffled teams");
             initialDivision();
         } else {
-            // Toast.makeText(this,"Saved teams", Toast.LENGTH_SHORT).show();
             Log.d("teams", "Initial data curr game > 0 - so getting from DB");
-            players1 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team1, STARS_COUNT);
-            players2 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team2, STARS_COUNT);
+            players1 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team1, RECENT_GAMES);
+            players2 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team2, RECENT_GAMES);
 
-            ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, STARS_COUNT);
+            ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, RECENT_GAMES);
 
             if (players1 != null && players1.size() > 0 && players2 != null && players2.size() > 0) {
                 boolean changed = handleComingChanges(comingPlayers, players1, players2);
@@ -300,7 +312,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void initialDivision() {
 
-        ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, STARS_COUNT);
+        ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, RECENT_GAMES);
+
         int totalPlayers = comingPlayers.size();
         int teamSize = totalPlayers / 2;
         Log.d("teams", "Total " + totalPlayers + ", team " + teamSize);
@@ -405,5 +418,30 @@ public class MakeTeamsActivity extends AppCompatActivity {
         }
 
         refreshPlayers();
+    }
+
+    private void showPredictionDialog(CollaborationHelper.PredictionResult result) {
+
+        if (result.t1.affectedForGood.size() == 0 && result.t1.affectedForBad.size() == 0 &&
+                result.t2.affectedForGood.size() == 0 && result.t2.affectedForBad.size() == 0) {
+            Toast.makeText(this, "Analysis requires longer history of games", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        alertDialogBuilder.setTitle("Team Analysis");
+
+        alertDialogBuilder
+                .setMessage("Team1 - chemistry affects players \n\n" +
+                        "++ Positive effect (" + result.t1.affectedForGood.size() + ") \n " + result.t1.getGoodEffect() + " \n\n" +
+                        "-- Negative effect (" + result.t1.affectedForBad.size() + ") \n " + result.t1.getBadEffect() + " \n\n" +
+                        "\n" +
+                        "Team2 - chemistry affects players  \n\n" +
+                        "++ Positive effect (" + result.t2.affectedForGood.size() + ") \n " + result.t2.getGoodEffect() + " \n\n" +
+                        "-- Negative effect (" + result.t2.affectedForBad.size() + ") \n " + result.t2.getBadEffect() + " \n\n")
+                .setCancelable(true);
+
+        alertDialogBuilder.create().show();
     }
 }

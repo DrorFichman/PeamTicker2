@@ -149,7 +149,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     public static ArrayList<Player> getComingPlayers(Context context, int countLastGames) {
         ArrayList<Player> comingPlayers = PlayerDbHelper.getComingPlayers(context, getSqLiteDatabase(context));
-        addLastGameStats(context, countLastGames, comingPlayers, false);
+        addLastGameStats(context, countLastGames, comingPlayers, countLastGames > 0);
         return comingPlayers;
     }
 
@@ -173,7 +173,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static ArrayList<Player> getCurrTeam(Context context, int currGame, TeamEnum team, int countLastGames) {
         ArrayList<Player> currTeam = PlayerGamesDbHelper.getCurrTeam(context, getSqLiteDatabase(context), currGame, team);
 
-        addLastGameStats(context, countLastGames, currTeam, false);
+        addLastGameStats(context, countLastGames, currTeam, countLastGames > 0);
 
         return currTeam;
     }
