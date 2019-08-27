@@ -59,20 +59,9 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             }
         }
 
-        isAttributesVisible = showInternalData && mSelectedPlayer == null;
-        isGameHistoryVisible = showInternalData && mSelectedPlayer == null;
+        isAttributesVisible = showInternalData && mCollaboration == null;
+        isGameHistoryVisible = showInternalData && mCollaboration == null;
         isGradeVisible = showInternalData;
-    }
-
-    public PlayerTeamAdapter(Context ctx, List<Player> players) {
-        super(ctx, -1, players);
-        context = ctx;
-        mPlayers = players;
-        mMovedPlayers = new ArrayList<>();
-        mMarkedPlayers = new ArrayList<>();
-        isAttributesVisible = false;
-        isGameHistoryVisible = false;
-        isGradeVisible = false;
     }
 
     @Override
@@ -127,31 +116,41 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         TextView playerMarker = (TextView) rowView.findViewById(R.id.player_moved_marker);
         playerMarker.setVisibility(mMovedPlayers.contains(player) ? View.VISIBLE : View.GONE);
 
-        if (mSelectedPlayer != null) {
-            String newData = String.valueOf(player.mGrade);
-            CollaborationHelper.PlayerCollaboration data = mCollaboration.getPlayer(mSelectedPlayer);
+        TextView collaboration = (TextView) rowView.findViewById(R.id.player_team_collaboration);
+        if (mSelectedPlayer != null && mCollaboration != null) {
+            String stats = "";
+
+            CollaborationHelper.PlayerCollaboration selectedPlayerData = mCollaboration.getPlayer(mSelectedPlayer);
             if (player.mName.equals(mSelectedPlayer)) {
-                newData += " (W:" + String.valueOf(data.winRate) + "%, G:" + String.valueOf(data.games) + ")";
+                stats = "(W:" + String.valueOf(selectedPlayerData.winRate) + selectedPlayerData.getWinRateDiffString() +", G:" + String.valueOf(selectedPlayerData.games) + ")";
             } else {
-                CollaborationHelper.EffectMargin collaboratorEffect = data.getCollaboratorEffect(player.mName);
+                CollaborationHelper.EffectMargin collaboratorEffect = selectedPlayerData.getCollaboratorEffect(player.mName);
                 if (collaboratorEffect != null) {
                     switch (collaboratorEffect.effect) {
                         case Positive:
-                            newData += " (+" + String.valueOf(collaboratorEffect.winRateMargin) + "% G:" + String.valueOf(collaboratorEffect.games) + ")";
+                            stats = "(+" + String.valueOf(collaboratorEffect.winRateMargin) + "% G:" + String.valueOf(collaboratorEffect.games) + ")";
                             rowView.setBackgroundColor(Color.YELLOW);
                             break;
                         case Negative:
-                            newData += " (" + String.valueOf(collaboratorEffect.winRateMargin) + "% G:" + String.valueOf(collaboratorEffect.games) + ")";
-                            rowView.setBackgroundColor(Color.MAGENTA);
+                            stats = "(" + String.valueOf(collaboratorEffect.winRateMargin) + "% G:" + String.valueOf(collaboratorEffect.games) + ")";
+                            rowView.setBackgroundColor(Color.RED);
                             break;
                         default:
                             rowView.setBackgroundColor(Color.TRANSPARENT);
                             break;
-
                     }
                 }
             }
-            grade.setText(newData);
+
+            collaboration.setVisibility(View.VISIBLE);
+            collaboration.setText(stats);
+        } else if (mCollaboration != null) {
+            CollaborationHelper.PlayerCollaboration data = mCollaboration.getPlayer(player.mName);
+            String stats = "(W:" + String.valueOf(data.winRate) + data.getWinRateDiffString() +", G:" + String.valueOf(data.games) + ")";
+            collaboration.setVisibility(View.VISIBLE);
+            collaboration.setText(stats);
+        } else {
+            collaboration.setVisibility(View.GONE);
         }
 
         if (player.mName.equals(mSelectedPlayer)) {
@@ -162,7 +161,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             if (mColorPositive.contains(player.mName)) {
                 rowView.setBackgroundColor(Color.YELLOW);
             } else if (mColorNegative.contains(player.mName)) {
-                rowView.setBackgroundColor(Color.MAGENTA);
+                rowView.setBackgroundColor(Color.RED);
             } else {
                 rowView.setBackgroundColor(Color.TRANSPARENT);
             }

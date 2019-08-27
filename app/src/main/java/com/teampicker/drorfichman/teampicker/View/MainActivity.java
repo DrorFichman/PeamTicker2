@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity
     private static final int ACTIVITY_RESULT_IMPORT_FILE_SELECTED = 2;
 
     private static final int RECENT_GAMES_COUNT = 10;
-    private sortType sort = sortType.grade;
+    private sortType sort = sortType.grade; // TOOO sort by games
     private boolean showArchivedPlayers = false;
 
     @Override

@@ -265,8 +265,8 @@ public class PlayerGamesDbHelper {
         if (playersStatistics.size() > 0) {
             return playersStatistics.get(0).statistics;
         } else {
-            Log.e("STAT", "Can't find player " + name);
-            return null;
+            Log.e("STAT", "Can't find player stats" + name);
+            return new StatisticsData();
         }
     }
 

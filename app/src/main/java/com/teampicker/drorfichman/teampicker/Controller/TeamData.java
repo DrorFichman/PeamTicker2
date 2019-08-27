@@ -145,4 +145,20 @@ public class TeamData {
             return -1;
         }
     }
+
+    public int getWinRate() {
+        int totalGames = 0;
+        int totalWins = 0;
+        for (Player p : players) {
+            if (p.statistics != null) {
+                totalGames += p.statistics.gamesCount;
+                totalWins += p.statistics.wins;
+            }
+        }
+        if (totalGames > 0) {
+            return (totalWins * 100 / totalGames);
+        } else {
+            return 0;
+        }
+    }
 }

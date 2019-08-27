@@ -18,6 +18,15 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="14sp" />
 
+    <TextView
+        android:id="@+id/player_team_collaboration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="1dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="10sp"
+        android:visibility="gone" />
+
     <ImageView
         android:id="@+id/res_1"
         android:layout_width="wrap_content"

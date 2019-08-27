@@ -8,6 +8,7 @@ import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by drorfichman on 9/17/16.
@@ -15,7 +16,6 @@ import java.util.HashMap;
 public class CollaborationHelper {
 
     private static final int RECENT_GAMES = 50;         // games back to look for
-    private static final int MIN_GAMES_COUNT = 7;       // games for player to play over RECENT_GAMES to consider effect
     private static final int MIN_GAMES_TOGETHER = 5;    // games played with another player to consider effect
     private static final int WIN_RATE_MARGIN = 5;       // win rate exceeded by to count effect
 
@@ -23,18 +23,30 @@ public class CollaborationHelper {
         Positive,
         Negative,
         Equal,
-        NoData
+        NotEnoughData
     }
 
     public static class Collaboration {
         public HashMap<String, PlayerCollaboration> players = new HashMap<>();
 
-        public EffectType overallEffect() {
-            return EffectType.NoData;
-        }
-
         public PlayerCollaboration getPlayer(String name) {
             return players.get(name);
+        }
+
+        public int getCollaborationWinRate(List<Player> players) {
+            int games = 0;
+            int wins = 0;
+            for (Player p : players) {
+                CollaborationHelper.PlayerCollaboration player = getPlayer(p.mName);
+                if (player != null) {
+                    games += player.overallGames;
+                    wins += player.overallWins;
+                }
+            }
+            if (games > 0)
+                return (wins * 100 / games);
+            else
+                return 0;
         }
     }
 
@@ -44,20 +56,31 @@ public class CollaborationHelper {
         public int winRate;
         HashMap<String, EffectMargin> collaborators = new HashMap<>();
 
-        int overallEffect = 0;
+        int overallEffectCounter = 0;
+        public int overallGames = 0;
+        public int overallWins = 0;
 
-        void addCollaborator(String name, EffectMargin effectData) {
-            collaborators.put(name, effectData);
-            switch (effectData.effect) {
-                case Positive: overallEffect++; break;
-                case Negative: overallEffect--; break;
+        PlayerCollaboration(Player p) {
+            name = p.mName;
+            if (p.statistics != null) {
+                games = p.statistics.gamesCount;
+                winRate = p.statistics.getWinRate();
             }
         }
 
-        public PlayerCollaboration(Player p) {
-            name = p.mName;
-            games =  p.statistics.gamesCount;
-            winRate =  p.statistics.getWinRate();
+        void addCollaborator(String name, EffectMargin effectData) {
+            collaborators.put(name, effectData);
+            overallGames += effectData.games;
+            overallWins += effectData.wins;
+
+            switch (effectData.effect) {
+                case Positive:
+                    overallEffectCounter++;
+                    break;
+                case Negative:
+                    overallEffectCounter--;
+                    break;
+            }
         }
 
         public EffectMargin getCollaboratorEffect(String name) {
@@ -66,14 +89,28 @@ public class CollaborationHelper {
 
         public EffectType getOverallEffect() {
             if (collaborators.size() == 0) {
-                return EffectType.NoData;
-            } else if (overallEffect == 0) {
+                return EffectType.NotEnoughData;
+            } else if (overallEffectCounter == 0) {
                 return EffectType.Equal;
-            } else if (overallEffect > 0) {
+            } else if (overallEffectCounter > 0) {
                 return EffectType.Positive;
             } else {
                 return EffectType.Negative;
             }
+        }
+
+        int getWinRateDifference() {
+            if (overallGames > 0) {
+                return (overallWins * 100 / overallGames) - winRate;
+            }
+            return 0;
+        }
+
+        public String getWinRateDiffString() {
+            int diff = getWinRateDifference();
+            if (diff == 0) return "";
+            if (diff > 0) return '+' + String.valueOf(diff) + '%';
+            return String.valueOf(diff) + '%';
         }
     }
 
@@ -82,18 +119,18 @@ public class CollaborationHelper {
         public String collaborator;
         public EffectType effect;
         public int games;
-        public int winRate;
+        public int wins;
         public int winRateMargin;
 
-        public EffectMargin(Player player, PlayerParticipation with) {
+        EffectMargin(Player player, PlayerParticipation with) {
             this.player = player.mName;
             collaborator = with.mName;
             games = with.statisticsWith.gamesCount;
-            winRate = with.statisticsWith.getWinRate();
-            winRateMargin = with.statisticsWith.getWinRate() - player.statistics.getWinRate();
+            wins = with.statisticsWith.wins;
 
+            winRateMargin = with.statisticsWith.getWinRate() - player.statistics.getWinRate();
             if (with.statisticsWith.gamesCount < MIN_GAMES_TOGETHER) {
-                effect = EffectType.NoData;
+                effect = EffectType.NotEnoughData;
             } else if (winRateMargin > WIN_RATE_MARGIN) {
                 effect = EffectType.Positive;
             } else if (winRateMargin < -WIN_RATE_MARGIN) {
@@ -104,7 +141,7 @@ public class CollaborationHelper {
         }
     }
 
-    public static Collaboration predictWinner(Context context, ArrayList<Player> team1, ArrayList<Player> team2) {
+    public static Collaboration getCollaborationData(Context context, ArrayList<Player> team1, ArrayList<Player> team2) {
         Collaboration result = new Collaboration();
         processTeam(context, result, team1);
         processTeam(context, result, team2);
@@ -114,19 +151,19 @@ public class CollaborationHelper {
 
     private static void processTeam(Context context, Collaboration result, ArrayList<Player> team) {
 
-        for (Player p : team) {
-            HashMap<String, PlayerParticipation> ps = DbHelper.getPlayersParticipationsStatistics(context, RECENT_GAMES, p.mName);
-            PlayerCollaboration pcoll = new PlayerCollaboration(p);
-            if (p.statistics.gamesCount >= MIN_GAMES_COUNT) {
+        for (Player currPlayer : team) {
+            HashMap<String, PlayerParticipation> collaborationMap = DbHelper.getPlayersParticipationsStatistics(context, RECENT_GAMES, currPlayer.mName);
+            PlayerCollaboration playerCollaboration = new PlayerCollaboration(currPlayer);
+            if (currPlayer.statistics != null) {
                 for (Player with : team) {
-                    PlayerParticipation pp = ps.get(with.mName);
-                    if (pp != null) {
-                        EffectMargin effect = new EffectMargin(p, pp);
-                        pcoll.addCollaborator(with.mName, effect);
+                    PlayerParticipation collaborationWith = collaborationMap.get(with.mName);
+                    if (collaborationWith != null) {
+                        EffectMargin collaboratorEffect = new EffectMargin(currPlayer, collaborationWith);
+                        playerCollaboration.addCollaborator(with.mName, collaboratorEffect);
                     }
                 }
             }
-            result.players.put(p.mName, pcoll);
+            result.players.put(currPlayer.mName, playerCollaboration);
         }
     }
 }

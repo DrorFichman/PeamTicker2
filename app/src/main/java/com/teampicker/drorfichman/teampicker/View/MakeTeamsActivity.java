@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,8 +40,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private ArrayList<Player> players1 = new ArrayList<>();
     private ArrayList<Player> players2 = new ArrayList<>();
-    private CollaborationHelper.Collaboration predictionResult;
-    private String predictionSelectedPlayer;
+    private CollaborationHelper.Collaboration collaborationResult;
+    private String collaborationSelectedPlayer;
 
     private ListView list2;
     private ListView list1;
@@ -56,7 +57,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private ToggleButton moveView;
     private View shuffleView;
     private View moveViewDescription;
-    private View predictView;
+    private ImageView predictView;
 
     private Button team1Score;
     private Button team2Score;
@@ -136,15 +137,20 @@ public class MakeTeamsActivity extends AppCompatActivity {
         team1Score = (Button) findViewById(R.id.team_1_score);
         team2Score = (Button) findViewById(R.id.team_2_score);
 
-        predictView = findViewById(R.id.game_prediction_button);
+        predictView = (ImageView) findViewById(R.id.game_prediction_button);
         predictView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (predictionResult != null) {
-                    predictionResult = null;
-                    predictionSelectedPlayer = null;
+                if (collaborationSelectedPlayer != null) { // cancel player analysis selection
+                    collaborationSelectedPlayer = null;
+                    predictView.setImageResource(R.drawable.analysis_selected);
                     refreshPlayers();
-                } else {
+                } else if (collaborationResult != null) { // cancel analysis
+                    collaborationResult = null;
+                    predictView.setImageResource(R.drawable.analysis);
+                    refreshPlayers();
+                } else { // enter analysis mode
+                    predictView.setImageResource(R.drawable.analysis_selected);
                     initCollaboration();
                 }
             }
@@ -163,8 +169,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void initCollaboration() {
-        predictionResult = CollaborationHelper.predictWinner(MakeTeamsActivity.this, players1, players2);
-        predictionSelectedPlayer = null;
+        collaborationResult = CollaborationHelper.getCollaborationData(MakeTeamsActivity.this, players1, players2);
+        collaborationSelectedPlayer = null;
         refreshPlayers();
     }
 
@@ -214,7 +220,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         int currGame = DbHelper.getActiveGame(this);
         if (currGame < 0) {
-            Toast.makeText(this,"Initial teams", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Initial teams", Toast.LENGTH_SHORT).show();
             Log.d("teams", "Initial shuffled teams");
             initialDivision();
         } else {
@@ -227,7 +233,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
             if (players1 != null && players1.size() > 0 && players2 != null && players2.size() > 0) {
                 boolean changed = handleComingChanges(comingPlayers, players1, players2);
                 refreshPlayers();
-                if (changed) Toast.makeText(this, "Changes in coming players applied", Toast.LENGTH_SHORT).show();
+                if (changed)
+                    Toast.makeText(this, "Changes in coming players applied", Toast.LENGTH_SHORT).show();
             } else {
                 Log.e("TEAMS", "Unable to find teams for curr game " + currGame);
                 initialDivision();
@@ -283,7 +290,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void enterSendMode() {
 
-        hideSelection();
+        clearMovedPlayers();
+        clearTeamAnalysis();
         totalData.setVisibility(View.INVISIBLE);
 
         refreshPlayers(false);
@@ -312,8 +320,12 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         scramble();
 
-        hideSelection();
+        clearMovedPlayers();
         refreshPlayers();
+
+        if (collaborationResult != null) {
+            initCollaboration();
+        }
     }
 
     @Override
@@ -322,10 +334,14 @@ public class MakeTeamsActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    private void hideSelection() {
+    private void clearMovedPlayers() {
         movedPlayers.clear();
-        predictionResult = null;
-        predictionSelectedPlayer = null;
+        moveView.setChecked(false);
+    }
+
+    private void clearTeamAnalysis() {
+        collaborationResult = null;
+        collaborationSelectedPlayer = null;
     }
 
     public void onRequestPermissionsResult(int requestCode,
@@ -343,8 +359,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void refreshPlayers(boolean showInternalData) {
         sortPlayerNames(players1);
         sortPlayerNames(players2);
-        list1.setAdapter(new PlayerTeamAdapter(this, players1, movedPlayers, missedPlayers, predictionResult, predictionSelectedPlayer, showInternalData));
-        list2.setAdapter(new PlayerTeamAdapter(this, players2, movedPlayers, missedPlayers, predictionResult, predictionSelectedPlayer, showInternalData));
+        list1.setAdapter(new PlayerTeamAdapter(this, players1, movedPlayers, missedPlayers, collaborationResult, collaborationSelectedPlayer, showInternalData));
+        list2.setAdapter(new PlayerTeamAdapter(this, players2, movedPlayers, missedPlayers, collaborationResult, collaborationSelectedPlayer, showInternalData));
 
         updateStats();
     }
@@ -373,10 +389,18 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void updateTeamData(TextView stats, TextView publicStats, TeamData players) {
 
+        String collaborationWinRate = "";
+        if (collaborationResult != null) {
+            int winRate = collaborationResult.getCollaborationWinRate(players.players);
+            if (winRate != 0) {
+                collaborationWinRate = " (" + winRate + "%)";
+            }
+        }
+
         stats.setText(getString(R.string.team_data,
                 String.valueOf(players.getAllCount()),
-                String.valueOf(players.getSum()),
                 String.valueOf(players.getAverage()),
+                String.valueOf(players.getWinRate() + collaborationWinRate),
                 String.valueOf(players.getSuccess()),
                 String.valueOf(players.getStdDev())));
 
@@ -405,17 +429,17 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 switchPlayer(player);
 
                 // After a player is moved - recalculate team's collaboration
-                if (predictionResult != null) {
+                if (collaborationResult != null) {
                     initCollaboration();
                 }
-            } else if (predictionResult != null) { // Seeing extra data for collaboration
+            } else if (collaborationResult != null) { // Seeing extra data for collaboration
 
-                if (player.mName.equals(predictionSelectedPlayer)) {
-                    predictionSelectedPlayer = null;
+                if (player.mName.equals(collaborationSelectedPlayer)) {
+                    collaborationSelectedPlayer = null;
                 } else {
-                    CollaborationHelper.PlayerCollaboration playerStats = predictionResult.getPlayer(player.mName);
+                    CollaborationHelper.PlayerCollaboration playerStats = collaborationResult.getPlayer(player.mName);
                     if (playerStats != null) {
-                        predictionSelectedPlayer = player.mName;
+                        collaborationSelectedPlayer = player.mName;
                     }
                 }
                 refreshPlayers();
