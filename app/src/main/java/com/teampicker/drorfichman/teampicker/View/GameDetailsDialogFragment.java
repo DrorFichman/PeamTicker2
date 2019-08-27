@@ -40,6 +40,8 @@ public class GameDetailsDialogFragment extends DialogFragment {
     private AdapterView.OnItemLongClickListener onPlayerClick;
     private PlayerTeamAdapter adapter1;
     private PlayerTeamAdapter adapter2;
+    private ListView team1List;
+    private ListView team2List;
 
     static GameDetailsDialogFragment newInstance(Context context,
                                                  int gameId, String details) {
@@ -69,8 +71,8 @@ public class GameDetailsDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.layout_game_details_dialog, container, false);
 
         ((TextView) view.findViewById(R.id.game_details_title)).setText(mDetails);
-        ListView team1List = (ListView) view.findViewById(R.id.game_details_team1);
-        ListView team2List = (ListView) view.findViewById(R.id.game_details_team2);
+        team1List = (ListView) view.findViewById(R.id.game_details_team1);
+        team2List = (ListView) view.findViewById(R.id.game_details_team2);
 
         refreshTeams();
 
@@ -131,8 +133,11 @@ public class GameDetailsDialogFragment extends DialogFragment {
 
         ArrayList missedPlayers = findMissedPlayers();
 
-        adapter1 = new PlayerTeamAdapter(getActivity(), mTeam1, new ArrayList<Player>(), missedPlayers, false);
-        adapter2 = new PlayerTeamAdapter(getActivity(), mTeam2, new ArrayList<Player>(), missedPlayers, false);
+        adapter1 = new PlayerTeamAdapter(getActivity(), mTeam1, new ArrayList<Player>(), missedPlayers, null, null, false);
+        adapter2 = new PlayerTeamAdapter(getActivity(), mTeam2, new ArrayList<Player>(), missedPlayers, null, null, false);
+
+        team1List.setAdapter(adapter1);
+        team2List.setAdapter(adapter2);
     }
 
     @NonNull

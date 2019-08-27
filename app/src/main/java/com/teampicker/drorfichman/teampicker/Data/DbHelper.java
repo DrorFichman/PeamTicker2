@@ -213,7 +213,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         if (pg.result == ResultEnum.Missed) {
 
-            // TODO move this option to another place
+            // TODO move this option to another place // TODO check with Uri
             Game game = GameDbHelper.getGame(getSqLiteDatabase(context), gameId);
             newRes = TeamEnum.getTeamResultInGame(game, pg.team);
 

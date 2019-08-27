@@ -1,10 +1,8 @@
 package com.teampicker.drorfichman.teampicker.View;
 
-import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -22,7 +20,6 @@ import com.teampicker.drorfichman.teampicker.Controller.TeamData;
 import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
-import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
 import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
@@ -42,6 +39,9 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private ArrayList<Player> players1 = new ArrayList<>();
     private ArrayList<Player> players2 = new ArrayList<>();
+    private CollaborationHelper.Collaboration predictionResult;
+    private String predictionSelectedPlayer;
+
     private ListView list2;
     private ListView list1;
 
@@ -56,6 +56,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private ToggleButton moveView;
     private View shuffleView;
     private View moveViewDescription;
+    private View predictView;
 
     private Button team1Score;
     private Button team2Score;
@@ -82,44 +83,16 @@ public class MakeTeamsActivity extends AppCompatActivity {
         moveView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 moveViewDescription.setVisibility(moveView.isChecked() ? View.VISIBLE : View.INVISIBLE);
-
-                hideSelection();
+                if (!moveView.isChecked()) {
+                    movedPlayers.clear();
+                    refreshPlayers();
+                }
             }
         });
 
-        AdapterView.OnItemClickListener selected = new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                if (mSetResult) { // Setting "Missed" when setting results
-
-                    // Switch player NA/Missed status
-                    Player player = (Player) adapterView.getItemAtPosition(i);
-
-                    if (missedPlayers.contains(player)) {
-                        missedPlayers.remove(player);
-                        DbHelper.setPlayerResult(MakeTeamsActivity.this,
-                                DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, ResultEnum.NA);
-                    } else {
-                        missedPlayers.add(player);
-                        DbHelper.setPlayerResult(MakeTeamsActivity.this,
-                                DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, ResultEnum.Missed);
-                    }
-
-
-                    refreshPlayers();
-
-                } else if (moveView.isChecked()) { // Moving when making teams
-
-                    switchPlayer((Player) adapterView.getItemAtPosition(i));
-                }
-            }
-        };
-
-        list1.setOnItemClickListener(selected);
-        list2.setOnItemClickListener(selected);
+        list1.setOnItemClickListener(playerSelected);
+        list2.setOnItemClickListener(playerSelected);
 
         saveView = findViewById(R.id.save);
         saveView.setOnClickListener(new View.OnClickListener() {
@@ -163,25 +136,36 @@ public class MakeTeamsActivity extends AppCompatActivity {
         team1Score = (Button) findViewById(R.id.team_1_score);
         team2Score = (Button) findViewById(R.id.team_2_score);
 
-        // TODO curr game might not be needed since we're always saving teams - never auto-reshuffle
+        predictView = findViewById(R.id.game_prediction_button);
+        predictView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (predictionResult != null) {
+                    predictionResult = null;
+                    predictionSelectedPlayer = null;
+                    refreshPlayers();
+                } else {
+                    initCollaboration();
+                }
+            }
+        });
+
         if (getIntent().getBooleanExtra(INTENT_SET_RESULT, false)) {
             if (DbHelper.getActiveGame(this) > 0) {
-                setResultInit();
+                InitSetResults();
             } else {
                 Toast.makeText(this, "No saved teams found, \n" +
                         "Make teams first", Toast.LENGTH_LONG).show();
             }
         }
 
-        findViewById(R.id.game_prediction_button).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                CollaborationHelper.PredictionResult res = CollaborationHelper.predictWinner(MakeTeamsActivity.this, players1, players2);
-                showPredictionDialog(res);
-            }
-        });
-
         initialData();
+    }
+
+    private void initCollaboration() {
+        predictionResult = CollaborationHelper.predictWinner(MakeTeamsActivity.this, players1, players2);
+        predictionSelectedPlayer = null;
+        refreshPlayers();
     }
 
     private void saveResults() {
@@ -192,11 +176,13 @@ public class MakeTeamsActivity extends AppCompatActivity {
         finish();
     }
 
-    private void setResultInit() {
+    private void InitSetResults() {
 
         mSetResult = true;
 
         moveView.setVisibility(View.GONE);
+        predictView.setVisibility(View.VISIBLE);
+
         shuffleView.setVisibility(View.GONE);
         sendView.setVisibility(View.GONE);
 
@@ -326,6 +312,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         scramble();
 
+        hideSelection();
         refreshPlayers();
     }
 
@@ -337,7 +324,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void hideSelection() {
         movedPlayers.clear();
-        refreshPlayers();
+        predictionResult = null;
+        predictionSelectedPlayer = null;
     }
 
     public void onRequestPermissionsResult(int requestCode,
@@ -355,8 +343,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void refreshPlayers(boolean showInternalData) {
         sortPlayerNames(players1);
         sortPlayerNames(players2);
-        list1.setAdapter(new PlayerTeamAdapter(this, players1, movedPlayers, missedPlayers, showInternalData));
-        list2.setAdapter(new PlayerTeamAdapter(this, players2, movedPlayers, missedPlayers, showInternalData));
+        list1.setAdapter(new PlayerTeamAdapter(this, players1, movedPlayers, missedPlayers, predictionResult, predictionSelectedPlayer, showInternalData));
+        list2.setAdapter(new PlayerTeamAdapter(this, players2, movedPlayers, missedPlayers, predictionResult, predictionSelectedPlayer, showInternalData));
 
         updateStats();
     }
@@ -405,9 +393,57 @@ public class MakeTeamsActivity extends AppCompatActivity {
         });
     }
 
+    //region player clicked
+    AdapterView.OnItemClickListener playerSelected = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+            Player player = (Player) adapterView.getItemAtPosition(i);
+
+            if (moveView.isChecked()) { // Moving when making teams
+
+                switchPlayer(player);
+
+                // After a player is moved - recalculate team's collaboration
+                if (predictionResult != null) {
+                    initCollaboration();
+                }
+            } else if (predictionResult != null) { // Seeing extra data for collaboration
+
+                if (player.mName.equals(predictionSelectedPlayer)) {
+                    predictionSelectedPlayer = null;
+                } else {
+                    CollaborationHelper.PlayerCollaboration playerStats = predictionResult.getPlayer(player.mName);
+                    if (playerStats != null) {
+                        predictionSelectedPlayer = player.mName;
+                    }
+                }
+                refreshPlayers();
+            } else if (mSetResult) { // Setting "Missed" when setting results
+
+                // Switch player NA/Missed status
+                if (missedPlayers.contains(player)) {
+                    missedPlayers.remove(player);
+                    DbHelper.setPlayerResult(MakeTeamsActivity.this,
+                            DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, ResultEnum.NA);
+                } else {
+                    missedPlayers.add(player);
+                    DbHelper.setPlayerResult(MakeTeamsActivity.this,
+                            DbHelper.getActiveGame(MakeTeamsActivity.this), player.mName, ResultEnum.Missed);
+                }
+
+                refreshPlayers();
+            }
+        }
+    };
+
     private void switchPlayer(Player movedPlayer) {
 
-        movedPlayers.add(movedPlayer);
+        if (movedPlayers.contains(movedPlayer)) {
+            movedPlayers.remove(movedPlayer);
+        } else {
+            movedPlayers.add(movedPlayer);
+        }
 
         if (players1.contains(movedPlayer)) {
             players1.remove(movedPlayer);
@@ -419,29 +455,5 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         refreshPlayers();
     }
-
-    private void showPredictionDialog(CollaborationHelper.PredictionResult result) {
-
-        if (result.t1.affectedForGood.size() == 0 && result.t1.affectedForBad.size() == 0 &&
-                result.t2.affectedForGood.size() == 0 && result.t2.affectedForBad.size() == 0) {
-            Toast.makeText(this, "Analysis requires longer history of games", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-        alertDialogBuilder.setTitle("Team Analysis");
-
-        alertDialogBuilder
-                .setMessage("Team1 - chemistry affects players \n\n" +
-                        "++ Positive effect (" + result.t1.affectedForGood.size() + ") \n " + result.t1.getGoodEffect() + " \n\n" +
-                        "-- Negative effect (" + result.t1.affectedForBad.size() + ") \n " + result.t1.getBadEffect() + " \n\n" +
-                        "\n" +
-                        "Team2 - chemistry affects players  \n\n" +
-                        "++ Positive effect (" + result.t2.affectedForGood.size() + ") \n " + result.t2.getGoodEffect() + " \n\n" +
-                        "-- Negative effect (" + result.t2.affectedForBad.size() + ") \n " + result.t2.getBadEffect() + " \n\n")
-                .setCancelable(true);
-
-        alertDialogBuilder.create().show();
-    }
+    //endregion
 }

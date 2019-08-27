@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.teampicker.drorfichman.teampicker.Controller.CollaborationHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.R;
@@ -20,10 +21,14 @@ import java.util.List;
  * Created by drorfichman on 7/30/16.
  */
 public class PlayerTeamAdapter extends ArrayAdapter<Player> {
-    private final Context context;
-    private final List<Player> mPlayers;
-    private final List<Player> mColorPlayers;
-    private final List<Player> mMarkedPlayers;
+    private Context context;
+    private List<Player> mPlayers;
+    private List<Player> mMovedPlayers;
+    private List<Player> mMarkedPlayers;
+    private List<String> mColorPositive = new ArrayList<>();
+    private List<String> mColorNegative = new ArrayList<>();
+    private String mSelectedPlayer = null;
+    private CollaborationHelper.Collaboration mCollaboration;
 
     boolean isAttributesVisible;
     boolean isGameHistoryVisible;
@@ -31,14 +36,31 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
     public PlayerTeamAdapter(Context ctx, List<Player> players,
                              List<Player> coloredPlayers, List<Player> markedPlayers,
+                             CollaborationHelper.Collaboration collaboration, String selectedPlayer,
                              boolean showInternalData) {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
-        mColorPlayers = coloredPlayers != null ? coloredPlayers : new ArrayList<Player>();
+        mMovedPlayers = coloredPlayers != null ? coloredPlayers : new ArrayList<Player>();
         mMarkedPlayers = markedPlayers != null ? markedPlayers : new ArrayList<Player>();
-        isAttributesVisible = showInternalData;
-        isGameHistoryVisible = showInternalData;
+        mSelectedPlayer = selectedPlayer;
+
+        if (collaboration != null) {
+            mCollaboration = collaboration;
+            for (CollaborationHelper.PlayerCollaboration effect : collaboration.players.values()) {
+                switch (effect.getOverallEffect()) {
+                    case Positive:
+                        mColorPositive.add(effect.name);
+                        break;
+                    case Negative:
+                        mColorNegative.add(effect.name);
+                        break;
+                }
+            }
+        }
+
+        isAttributesVisible = showInternalData && mSelectedPlayer == null;
+        isGameHistoryVisible = showInternalData && mSelectedPlayer == null;
         isGradeVisible = showInternalData;
     }
 
@@ -46,7 +68,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
-        mColorPlayers = new ArrayList<>();
+        mMovedPlayers = new ArrayList<>();
         mMarkedPlayers = new ArrayList<>();
         isAttributesVisible = false;
         isGameHistoryVisible = false;
@@ -102,10 +124,48 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             grade.setVisibility(View.GONE);
         }
 
-        if (mColorPlayers.contains(player)) {
-            rowView.setBackgroundColor(Color.CYAN);
-        } else {
-            rowView.setBackgroundColor(Color.TRANSPARENT);
+        TextView playerMarker = (TextView) rowView.findViewById(R.id.player_moved_marker);
+        playerMarker.setVisibility(mMovedPlayers.contains(player) ? View.VISIBLE : View.GONE);
+
+        if (mSelectedPlayer != null) {
+            String newData = String.valueOf(player.mGrade);
+            CollaborationHelper.PlayerCollaboration data = mCollaboration.getPlayer(mSelectedPlayer);
+            if (player.mName.equals(mSelectedPlayer)) {
+                newData += " (W:" + String.valueOf(data.winRate) + "%, G:" + String.valueOf(data.games) + ")";
+            } else {
+                CollaborationHelper.EffectMargin collaboratorEffect = data.getCollaboratorEffect(player.mName);
+                if (collaboratorEffect != null) {
+                    switch (collaboratorEffect.effect) {
+                        case Positive:
+                            newData += " (+" + String.valueOf(collaboratorEffect.winRateMargin) + "% G:" + String.valueOf(collaboratorEffect.games) + ")";
+                            rowView.setBackgroundColor(Color.YELLOW);
+                            break;
+                        case Negative:
+                            newData += " (" + String.valueOf(collaboratorEffect.winRateMargin) + "% G:" + String.valueOf(collaboratorEffect.games) + ")";
+                            rowView.setBackgroundColor(Color.MAGENTA);
+                            break;
+                        default:
+                            rowView.setBackgroundColor(Color.TRANSPARENT);
+                            break;
+
+                    }
+                }
+            }
+            grade.setText(newData);
+        }
+
+        if (player.mName.equals(mSelectedPlayer)) {
+            rowView.setBackgroundColor(Color.WHITE);
+        }
+
+        if (mSelectedPlayer == null) {
+            if (mColorPositive.contains(player.mName)) {
+                rowView.setBackgroundColor(Color.YELLOW);
+            } else if (mColorNegative.contains(player.mName)) {
+                rowView.setBackgroundColor(Color.MAGENTA);
+            } else {
+                rowView.setBackgroundColor(Color.TRANSPARENT);
+            }
         }
 
         return rowView;

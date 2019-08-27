@@ -23,40 +23,40 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left|center_vertical"
-        android:visibility="gone"
-        android:padding="1dp" />
+        android:padding="1dp"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/res_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left|center_vertical"
-        android:visibility="gone"
-        android:padding="1dp" />
+        android:padding="1dp"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/res_3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left|center_vertical"
-        android:visibility="gone"
-        android:padding="1dp" />
+        android:padding="1dp"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/res_4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left|center_vertical"
-        android:visibility="gone"
-        android:padding="1dp" />
+        android:padding="1dp"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/res_5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="left|center_vertical"
-        android:visibility="gone"
-        android:padding="1dp" />
+        android:padding="1dp"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/player_gk"
@@ -98,14 +98,27 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textSize="8sp" />
 
-    <TextView
-        android:id="@+id/player_team_name"
+    <RelativeLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="right"
-        android:paddingRight="3dp"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="14sp" />
+        android:gravity="right">
+
+        <TextView
+            android:id="@+id/player_moved_marker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/player_team_name"
+            android:text="*"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/player_team_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="3dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="14sp" />
+    </RelativeLayout>
 
 </LinearLayout>
