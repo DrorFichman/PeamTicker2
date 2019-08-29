@@ -79,19 +79,14 @@ public class EditPlayerActivity extends AppCompatActivity {
         if (pPlayer.mBirthYear > 0) setBirthday(pPlayer.mBirthYear, pPlayer.mBirthMonth);
 
         vResults.setText(pPlayer.getResults());
-        vResults.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hideKeyboard();
-                startActivity(GamesActivity.getGameActivityIntent(EditPlayerActivity.this, pPlayer.mName));
-            }
-        });
+        vResults.setOnClickListener(resultsClicked);
 
         if (pPlayer != null && pPlayer.statistics != null) {
             vResultsSummary.setText(
                     getString(R.string.player_stat,
                             String.valueOf(pPlayer.statistics.gamesCount),
                             String.valueOf(pPlayer.statistics.wins)));
+            vResultsSummary.setOnClickListener(resultsClicked);
         }
 
         initPlayerAttributes();
@@ -168,6 +163,14 @@ public class EditPlayerActivity extends AppCompatActivity {
             }
         });
     }
+
+    private View.OnClickListener resultsClicked = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            hideKeyboard();
+            startActivity(GamesActivity.getGameActivityIntent(EditPlayerActivity.this, pPlayer.mName));
+        }
+    };
 
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);

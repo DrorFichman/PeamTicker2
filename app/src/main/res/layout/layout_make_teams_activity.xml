@@ -150,11 +150,11 @@
         android:gravity="center">
 
         <TextView
-            android:id="@+id/move_mode_how_to_exit"
+            android:id="@+id/operation_explanation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:lines="2"
-            android:text="* Click the players you want to move \n* Click the blue icon to exit move mode"
+            android:text="@string/operation_move"
             android:visibility="invisible" />
 
     </LinearLayout>

@@ -40,8 +40,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private ArrayList<Player> players1 = new ArrayList<>();
     private ArrayList<Player> players2 = new ArrayList<>();
-    private CollaborationHelper.Collaboration collaborationResult;
-    private String collaborationSelectedPlayer;
+    private CollaborationHelper.Collaboration analysisResult;
+    private String analysisSelectedPlayer;
 
     private ListView list2;
     private ListView list1;
@@ -56,8 +56,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private View sendView;
     private ToggleButton moveView;
     private View shuffleView;
-    private View moveViewDescription;
-    private ImageView predictView;
+    private TextView operationDescription;
+    private ImageView analysisView;
 
     private Button team1Score;
     private Button team2Score;
@@ -79,13 +79,16 @@ public class MakeTeamsActivity extends AppCompatActivity {
         list1 = (ListView) findViewById(R.id.team_1);
         list2 = (ListView) findViewById(R.id.team_2);
 
-        moveViewDescription = findViewById(R.id.move_mode_how_to_exit);
+        operationDescription = (TextView) findViewById(R.id.operation_explanation);
         moveView = (ToggleButton) findViewById(R.id.move);
         moveView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                moveViewDescription.setVisibility(moveView.isChecked() ? View.VISIBLE : View.INVISIBLE);
-                if (!moveView.isChecked()) {
+                if (moveView.isChecked()) {
+                    operationDescription.setText(getString(R.string.operation_move));
+                    operationDescription.setVisibility(View.VISIBLE);
+                } else {
+                    operationDescription.setVisibility(View.INVISIBLE);
                     movedPlayers.clear();
                     refreshPlayers();
                 }
@@ -137,20 +140,25 @@ public class MakeTeamsActivity extends AppCompatActivity {
         team1Score = (Button) findViewById(R.id.team_1_score);
         team2Score = (Button) findViewById(R.id.team_2_score);
 
-        predictView = (ImageView) findViewById(R.id.game_prediction_button);
-        predictView.setOnClickListener(new View.OnClickListener() {
+        analysisView = (ImageView) findViewById(R.id.game_prediction_button);
+        analysisView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (collaborationSelectedPlayer != null) { // cancel player analysis selection
-                    collaborationSelectedPlayer = null;
-                    predictView.setImageResource(R.drawable.analysis_selected);
+                if (analysisSelectedPlayer != null) { // cancel player analysis selection
+                    analysisSelectedPlayer = null;
+                    analysisView.setImageResource(R.drawable.analysis_selected);
+                    if (!moveView.isChecked()) operationDescription.setText(getString(R.string.operation_analysis));
+                    operationDescription.setVisibility(View.VISIBLE);
                     refreshPlayers();
-                } else if (collaborationResult != null) { // cancel analysis
-                    collaborationResult = null;
-                    predictView.setImageResource(R.drawable.analysis);
+                } else if (analysisResult != null) { // cancel analysis
+                    analysisResult = null;
+                    analysisView.setImageResource(R.drawable.analysis);
+                    if (!moveView.isChecked()) operationDescription.setVisibility(View.INVISIBLE);
                     refreshPlayers();
                 } else { // enter analysis mode
-                    predictView.setImageResource(R.drawable.analysis_selected);
+                    if (!moveView.isChecked()) operationDescription.setText(getString(R.string.operation_analysis));
+                    operationDescription.setVisibility(View.VISIBLE);
+                    analysisView.setImageResource(R.drawable.analysis_selected);
                     initCollaboration();
                 }
             }
@@ -169,8 +177,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void initCollaboration() {
-        collaborationResult = CollaborationHelper.getCollaborationData(MakeTeamsActivity.this, players1, players2);
-        collaborationSelectedPlayer = null;
+        analysisResult = CollaborationHelper.getCollaborationData(MakeTeamsActivity.this, players1, players2);
+        analysisSelectedPlayer = null;
         refreshPlayers();
     }
 
@@ -187,7 +195,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         mSetResult = true;
 
         moveView.setVisibility(View.GONE);
-        predictView.setVisibility(View.VISIBLE);
+        analysisView.setVisibility(View.VISIBLE);
 
         shuffleView.setVisibility(View.GONE);
         sendView.setVisibility(View.GONE);
@@ -323,7 +331,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         clearMovedPlayers();
         refreshPlayers();
 
-        if (collaborationResult != null) {
+        if (analysisResult != null) {
             initCollaboration();
         }
     }
@@ -337,11 +345,12 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void clearMovedPlayers() {
         movedPlayers.clear();
         moveView.setChecked(false);
+        operationDescription.setVisibility(View.INVISIBLE);
     }
 
     private void clearTeamAnalysis() {
-        collaborationResult = null;
-        collaborationSelectedPlayer = null;
+        analysisResult = null;
+        analysisSelectedPlayer = null;
     }
 
     public void onRequestPermissionsResult(int requestCode,
@@ -359,8 +368,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void refreshPlayers(boolean showInternalData) {
         sortPlayerNames(players1);
         sortPlayerNames(players2);
-        list1.setAdapter(new PlayerTeamAdapter(this, players1, movedPlayers, missedPlayers, collaborationResult, collaborationSelectedPlayer, showInternalData));
-        list2.setAdapter(new PlayerTeamAdapter(this, players2, movedPlayers, missedPlayers, collaborationResult, collaborationSelectedPlayer, showInternalData));
+        list1.setAdapter(new PlayerTeamAdapter(this, players1, movedPlayers, missedPlayers, analysisResult, analysisSelectedPlayer, showInternalData));
+        list2.setAdapter(new PlayerTeamAdapter(this, players2, movedPlayers, missedPlayers, analysisResult, analysisSelectedPlayer, showInternalData));
 
         updateStats();
     }
@@ -390,8 +399,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void updateTeamData(TextView stats, TextView publicStats, TeamData players) {
 
         String collaborationWinRate = "";
-        if (collaborationResult != null) {
-            int winRate = collaborationResult.getCollaborationWinRate(players.players);
+        if (analysisResult != null) {
+            int winRate = analysisResult.getCollaborationWinRate(players.players);
             if (winRate != 0) {
                 collaborationWinRate = " (" + winRate + "%)";
             }
@@ -429,17 +438,17 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 switchPlayer(player);
 
                 // After a player is moved - recalculate team's collaboration
-                if (collaborationResult != null) {
+                if (analysisResult != null) {
                     initCollaboration();
                 }
-            } else if (collaborationResult != null) { // Seeing extra data for collaboration
+            } else if (analysisResult != null) { // Seeing extra data for collaboration
 
-                if (player.mName.equals(collaborationSelectedPlayer)) {
-                    collaborationSelectedPlayer = null;
+                if (player.mName.equals(analysisSelectedPlayer)) {
+                    analysisSelectedPlayer = null;
                 } else {
-                    CollaborationHelper.PlayerCollaboration playerStats = collaborationResult.getPlayer(player.mName);
+                    CollaborationHelper.PlayerCollaboration playerStats = analysisResult.getPlayer(player.mName);
                     if (playerStats != null) {
-                        collaborationSelectedPlayer = player.mName;
+                        analysisSelectedPlayer = player.mName;
                     }
                 }
                 refreshPlayers();
