@@ -187,7 +187,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             if (player.mName.equals(mSelectedPlayer)) { // selected player stats
                 stats = context.getString(R.string.player_analysis,
                         String.valueOf(selectedPlayerData.winRate),
-                        selectedPlayerData.success + selectedPlayerData.getSuccessDiffString(),
+                        String.valueOf(selectedPlayerData.success) + selectedPlayerData.getSuccessDiffString(),
                         String.valueOf(selectedPlayerData.games));
             } else { // collaborator of selected player stats
                 CollaborationHelper.EffectMargin collaboratorEffect = selectedPlayerData.getCollaboratorEffect(player.mName);
