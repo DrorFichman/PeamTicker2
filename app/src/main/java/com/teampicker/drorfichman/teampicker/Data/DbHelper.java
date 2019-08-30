@@ -158,8 +158,8 @@ public class DbHelper extends SQLiteOpenHelper {
         PreferenceAttributesHelper.deletePlayerAttributes(context, playerName);
     }
 
-    public static void archivePlayer(Context context, String name, boolean archive) {
-        PlayerDbHelper.archivePlayer(getSqLiteDatabase(context), name, archive);
+    public static void archivePlayer(Context context, String name, boolean archiveValue) {
+        PlayerDbHelper.archivePlayer(getSqLiteDatabase(context), name, archiveValue);
     }
 
     public static void clearOldGameTeams(Context context) {

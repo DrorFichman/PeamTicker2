@@ -177,11 +177,11 @@ public class MainActivity extends AppCompatActivity
         ((TextView) findViewById(R.id.player_grade)).setText("Grade");
         setHeadlineSorting(R.id.player_grade, sortType.grade);
 
-        ((CheckBox)findViewById(R.id.player_coming)).setTextColor(Color.BLACK);
+        ((CheckBox) findViewById(R.id.player_coming)).setTextColor(Color.BLACK);
         findViewById(R.id.player_coming).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ((CheckBox)view).setChecked(true);
+                ((CheckBox) view).setChecked(true);
                 sort = sortType.coming;
                 refreshPlayers();
             }
@@ -242,16 +242,16 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.make_teams :
+            case R.id.make_teams:
                 startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
                 break;
-            case R.id.enter_results :
+            case R.id.enter_results:
                 startEnterResultActivity();
                 break;
-            case R.id.add_player :
+            case R.id.add_player:
                 startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), ACTIVITY_RESULT_PLAYER);
                 break;
-            case R.id.show_archived_players :
+            case R.id.show_archived_players:
                 showArchivedPlayers = !showArchivedPlayers;
                 if (showArchivedPlayers) {
                     ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT, showArchivedPlayers);
@@ -331,35 +331,57 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    //region player archive & deletion
     private void checkPlayerDeletion(final Player player) {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 
-        String archiveAction = showArchivedPlayers ? "Unarchive" : "Archive";
-        alertDialogBuilder.setTitle("Do you want to remove the player?")
-                .setCancelable(true)
-                .setItems(new CharSequence[]
-                        {archiveAction, "Remove", "Cancel"},
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        switch (which) {
-                            case 0:
-                                DbHelper.archivePlayer(MainActivity.this, player.mName, !showArchivedPlayers);
-                                refreshPlayers();
-                                break;
-                            case 1:
-                                DbHelper.deletePlayer(MainActivity.this, player.mName);
-                                refreshPlayers();
-                                break;
-                            case 2:
-                                break;
-                        }
-                    }
-                });
+        if (showArchivedPlayers) {
+            alertDialogBuilder.setTitle("Do you want to remove the player?")
+                    .setCancelable(true)
+                    .setItems(new CharSequence[]
+                                    {"Unarchive", "Remove", "Cancel"},
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    switch (which) {
+                                        case 0:
+                                            DbHelper.archivePlayer(MainActivity.this, player.mName, false);
+                                            refreshPlayers();
+                                            break;
+                                        case 1:
+                                            DbHelper.deletePlayer(MainActivity.this, player.mName);
+                                            refreshPlayers();
+                                            break;
+                                        case 2:
+                                            break;
+                                    }
+                                }
+                            });
+        } else {
+            alertDialogBuilder.setTitle("Do you want to archive the player?")
+                    .setCancelable(true)
+                    .setItems(new CharSequence[]
+                                    {"Archive", "Cancel"},
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    switch (which) {
+                                        case 0:
+                                            DbHelper.archivePlayer(MainActivity.this, player.mName, true);
+                                            refreshPlayers();
+                                            break;
+                                        case 2:
+                                            break;
+                                    }
+                                }
+                            });
+        }
+
 
         alertDialogBuilder.create().show();
     }
+    //endregion
 
+    //region Tutorial
     private void showTutorialDialog() {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -384,7 +406,7 @@ public class MainActivity extends AppCompatActivity
 
         alertDialogBuilder.create().show();
     }
-
+    //endregion
 
     public void setActivityTitle() {
         if (showArchivedPlayers) {
@@ -466,7 +488,7 @@ public class MainActivity extends AppCompatActivity
                 .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
 
-                        DBSnapshotUtils.importDBSnapshotSelected(MainActivity.this,importPath, handler);
+                        DBSnapshotUtils.importDBSnapshotSelected(MainActivity.this, importPath, handler);
 
                         dialog.dismiss();
                     }
