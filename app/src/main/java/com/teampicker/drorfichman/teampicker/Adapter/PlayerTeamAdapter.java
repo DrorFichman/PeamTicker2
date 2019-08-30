@@ -21,8 +21,10 @@ import java.util.List;
  * Created by drorfichman on 7/30/16.
  */
 public class PlayerTeamAdapter extends ArrayAdapter<Player> {
-    static final int SUCCESS_DIFF_ISSUE = 3;
-    static final int SUCCESS_DIFF_EXCESSIVE = 7;
+    static final int SUCCESS_DIFF_ISSUE = 5;
+    static final int SUCCESS_DIFF_EXCESSIVE = 10;
+    static final int LOW_WIN_RATE = 40;
+    static final int HIGH_WIN_RATE = 60;
 
     private Context context;
     private List<Player> mPlayers;
@@ -61,9 +63,9 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             for (CollaborationHelper.PlayerCollaboration effect : collaboration.players.values()) {
 
                 if (effect.games > CollaborationHelper.MIN_GAMES_ANALYSIS) {
-                    if (effect.winRate > 60) {
+                    if (effect.winRate > HIGH_WIN_RATE) {
                         mHighPlayers.add(effect.name);
-                    } else if (effect.winRate < 40) {
+                    } else if (effect.winRate < LOW_WIN_RATE) {
                         mLowPlayers.add(effect.name);
                     }
                 }
