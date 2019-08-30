@@ -16,7 +16,7 @@ import java.util.List;
 public class CollaborationHelper {
 
     private static final int RECENT_GAMES = 50;         // games back to look for
-    public static final int MIN_GAMES_ANALYSIS = 7;    //
+    public static final int MIN_GAMES_ANALYSIS = 7;     //
     private static final int MIN_GAMES_TOGETHER = 5;    // games played with another player to consider effect
     private static final int WIN_RATE_MARGIN = 5;       // win rate exceeded by to count effect
 

@@ -299,7 +299,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void enterSendMode() {
 
         clearMovedPlayers();
-        clearTeamAnalysis();
         totalData.setVisibility(View.INVISIBLE);
 
         refreshPlayers(false);

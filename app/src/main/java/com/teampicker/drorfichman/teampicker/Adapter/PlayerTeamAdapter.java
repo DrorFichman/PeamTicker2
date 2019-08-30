@@ -50,9 +50,9 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
         initCollaboration(collaboration);
 
-        isAttributesVisible = showInternalData && mCollaboration == null;
-        isGameHistoryVisible = showInternalData && mCollaboration == null;
         isGradeVisible = showInternalData;
+        isAttributesVisible = showInternalData && mCollaboration == null;
+        isGameHistoryVisible = mCollaboration == null;
     }
 
     private void initCollaboration(CollaborationHelper.Collaboration collaboration) {
