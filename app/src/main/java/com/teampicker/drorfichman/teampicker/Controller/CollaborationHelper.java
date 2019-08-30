@@ -16,6 +16,7 @@ import java.util.List;
 public class CollaborationHelper {
 
     private static final int RECENT_GAMES = 50;         // games back to look for
+    public static final int MIN_GAMES_ANALYSIS = 7;    //
     private static final int MIN_GAMES_TOGETHER = 5;    // games played with another player to consider effect
     private static final int WIN_RATE_MARGIN = 5;       // win rate exceeded by to count effect
 
@@ -53,25 +54,31 @@ public class CollaborationHelper {
     public static class PlayerCollaboration {
         public String name;
         public int games;
+        public int success;
         public int winRate;
+        int wins;
         HashMap<String, EffectMargin> collaborators = new HashMap<>();
 
         int overallEffectCounter = 0;
         public int overallGames = 0;
         public int overallWins = 0;
+        int overallSuccess = 0;
 
         PlayerCollaboration(Player p) {
             name = p.mName;
             if (p.statistics != null) {
                 games = p.statistics.gamesCount;
+                wins = p.statistics.wins;
+                success = p.statistics.successRate;
                 winRate = p.statistics.getWinRate();
             }
         }
 
         void addCollaborator(String name, EffectMargin effectData) {
             collaborators.put(name, effectData);
-            overallGames += effectData.games;
-            overallWins += effectData.wins;
+            overallGames += effectData.gamesWith;
+            overallWins += effectData.winsWith;
+            overallSuccess += effectData.successWith;
 
             switch (effectData.effect) {
                 case Positive:
@@ -87,57 +94,53 @@ public class CollaborationHelper {
             return collaborators.get(name);
         }
 
-        public EffectType getOverallEffect() {
-            if (collaborators.size() == 0) {
-                return EffectType.NotEnoughData;
-            } else if (overallEffectCounter == 0) {
-                return EffectType.Equal;
-            } else if (overallEffectCounter > 0) {
-                return EffectType.Positive;
-            } else {
-                return EffectType.Negative;
-            }
+        public int getSuccessDiff() {
+            return overallSuccess - success;
         }
 
-        int getWinRateDifference() {
-            if (overallGames > 0) {
-                return (overallWins * 100 / overallGames) - winRate;
-            }
-            return 0;
-        }
-
-        public String getWinRateDiffString() {
-            int diff = getWinRateDifference();
-            if (diff == 0) return "";
-            if (diff > 0) return '+' + String.valueOf(diff) + '%';
-            return String.valueOf(diff) + '%';
+        public String getSuccessDiffString() {
+            int diff = getSuccessDiff();
+            if (diff > 0) return '+' + String.valueOf(diff);
+            return String.valueOf(diff);
         }
     }
 
     public static class EffectMargin {
         public String player;
-        public String collaborator;
+        String collaborator;
         public EffectType effect;
-        public int games;
-        public int wins;
-        public int winRateMargin;
+        public int gamesWith;
+        public int winsWith;
+        public int successWith;
+        public int winRateWith;
+
+        int winRateMarginWith;
+        int successMarginWith;
 
         EffectMargin(Player player, PlayerParticipation with) {
             this.player = player.mName;
             collaborator = with.mName;
-            games = with.statisticsWith.gamesCount;
-            wins = with.statisticsWith.wins;
+            gamesWith = with.statisticsWith.gamesCount;
+            winsWith = with.statisticsWith.wins;
+            successWith = with.statisticsWith.successRate;
+            winRateWith = with.statisticsWith.getWinRate();
 
-            winRateMargin = with.statisticsWith.getWinRate() - player.statistics.getWinRate();
-            if (with.statisticsWith.gamesCount < MIN_GAMES_TOGETHER) {
+            winRateMarginWith = with.statisticsWith.getWinRate() - player.statistics.getWinRate();
+            successMarginWith = with.statisticsWith.successRate - player.statistics.successRate;
+            if (gamesWith < MIN_GAMES_TOGETHER) {
                 effect = EffectType.NotEnoughData;
-            } else if (winRateMargin > WIN_RATE_MARGIN) {
+            } else if (winRateMarginWith > WIN_RATE_MARGIN) {
                 effect = EffectType.Positive;
-            } else if (winRateMargin < -WIN_RATE_MARGIN) {
+            } else if (winRateMarginWith < -WIN_RATE_MARGIN) {
                 effect = EffectType.Negative;
             } else {
                 effect = EffectType.Equal;
             }
+        }
+
+        public String getSuccessWithString() {
+            if (successWith > 0) return '+' + String.valueOf(successWith);
+            return String.valueOf(successWith);
         }
     }
 

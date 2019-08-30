@@ -21,13 +21,16 @@ import java.util.List;
  * Created by drorfichman on 7/30/16.
  */
 public class PlayerTeamAdapter extends ArrayAdapter<Player> {
+    static final int SUCCESS_DIFF_ISSUE = 3;
+    static final int SUCCESS_DIFF_EXCESSIVE = 7;
+
     private Context context;
     private List<Player> mPlayers;
     private List<Player> mMovedPlayers;
     private List<Player> mMarkedPlayers;
-    private List<String> mColorPositive = new ArrayList<>();
-    private List<String> mColorNegative = new ArrayList<>();
-    private String mSelectedPlayer = null;
+    private List<String> mHighPlayers = new ArrayList<>();
+    private List<String> mLowPlayers = new ArrayList<>();
+    private String mSelectedPlayer;
     private CollaborationHelper.Collaboration mCollaboration;
 
     boolean isAttributesVisible;
@@ -45,23 +48,27 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         mMarkedPlayers = markedPlayers != null ? markedPlayers : new ArrayList<Player>();
         mSelectedPlayer = selectedPlayer;
 
-        if (collaboration != null) {
-            mCollaboration = collaboration;
-            for (CollaborationHelper.PlayerCollaboration effect : collaboration.players.values()) {
-                switch (effect.getOverallEffect()) {
-                    case Positive:
-                        mColorPositive.add(effect.name);
-                        break;
-                    case Negative:
-                        mColorNegative.add(effect.name);
-                        break;
-                }
-            }
-        }
+        initCollaboration(collaboration);
 
         isAttributesVisible = showInternalData && mCollaboration == null;
         isGameHistoryVisible = showInternalData && mCollaboration == null;
         isGradeVisible = showInternalData;
+    }
+
+    private void initCollaboration(CollaborationHelper.Collaboration collaboration) {
+        if (collaboration != null) {
+            mCollaboration = collaboration;
+            for (CollaborationHelper.PlayerCollaboration effect : collaboration.players.values()) {
+
+                if (effect.games > CollaborationHelper.MIN_GAMES_ANALYSIS) {
+                    if (effect.winRate > 60) {
+                        mHighPlayers.add(effect.name);
+                    } else if (effect.winRate < 40) {
+                        mLowPlayers.add(effect.name);
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -71,13 +78,79 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         Player player = mPlayers.get(position);
 
         TextView name = (TextView) rowView.findViewById(R.id.player_team_name);
-        name.setText(player.mName + (mMarkedPlayers.contains(player) ? " **" : ""));
+        setName(player, name);
 
+        setAttributes(rowView, player);
+
+        setGamesHistory(rowView, player);
+
+        TextView grade = (TextView) rowView.findViewById(R.id.player_team_grade);
+        setGrade(player, grade);
+
+        TextView playerMarker = (TextView) rowView.findViewById(R.id.player_moved_marker);
+        playerMarker.setVisibility(mMovedPlayers.contains(player) ? View.VISIBLE : View.GONE);
+
+        TextView analysis = (TextView) rowView.findViewById(R.id.player_analysis);
+        ImageView suggestion = (ImageView) rowView.findViewById(R.id.player_analysis_suggestion);
+        setCollaborationAnalysis(rowView, player, analysis);
+        setSelectedPlayer(rowView, player);
+        setColoredPlayers(rowView, suggestion, player);
+
+        return rowView;
+    }
+
+    private void setName(Player player, TextView name) {
+        if (mCollaboration != null) {
+            name.setText(player.mName.substring(0, Math.min(5, player.mName.length())));
+        } else {
+            name.setText(player.mName + (mMarkedPlayers.contains(player) ? " **" : ""));
+        }
+    }
+
+    private void setSelectedPlayer(View rowView, Player player) {
+
+        if (player.mName.equals(mSelectedPlayer)) {
+            rowView.setBackgroundColor(Color.WHITE);
+        }
+    }
+
+    private void setColoredPlayers(View rowView, ImageView suggestion, Player player) {
+        suggestion.setVisibility(View.GONE);
+        if (mSelectedPlayer == null && mCollaboration != null) {
+            int successDiff = mCollaboration.getPlayer(player.mName).getSuccessDiff();
+            if (mHighPlayers.contains(player.mName) && successDiff > SUCCESS_DIFF_ISSUE) {
+                rowView.setBackgroundColor(Color.YELLOW);
+            } else if (successDiff > SUCCESS_DIFF_EXCESSIVE) {
+                suggestion.setImageResource(R.drawable.increase);
+                suggestion.setVisibility(View.VISIBLE);
+            } else if (mLowPlayers.contains(player.mName) && successDiff < -SUCCESS_DIFF_ISSUE) {
+                rowView.setBackgroundColor(Color.RED);
+            } else if (successDiff < -SUCCESS_DIFF_EXCESSIVE) {
+                suggestion.setImageResource(R.drawable.decrease);
+                suggestion.setVisibility(View.VISIBLE);
+            } else {
+                rowView.setBackgroundColor(Color.TRANSPARENT);
+            }
+        }
+    }
+
+    private void setAttributes(View rowView, Player player) {
         rowView.findViewById(R.id.player_gk).setVisibility(isAttributesVisible && player.isGK ? View.VISIBLE : View.GONE);
         rowView.findViewById(R.id.player_d).setVisibility(isAttributesVisible && player.isDefender ? View.VISIBLE : View.GONE);
         rowView.findViewById(R.id.player_pm).setVisibility(isAttributesVisible && player.isPlaymaker ? View.VISIBLE : View.GONE);
         rowView.findViewById(R.id.player_breaking).setVisibility(isAttributesVisible && player.isBreakable ? View.VISIBLE : View.GONE);
+    }
 
+    private void setGrade(Player player, TextView grade) {
+        if (isGradeVisible) {
+            grade.setText(String.valueOf(player.mGrade));
+            grade.setVisibility(View.VISIBLE);
+        } else {
+            grade.setVisibility(View.GONE);
+        }
+    }
+
+    private void setGamesHistory(View rowView, Player player) {
         ArrayList<ImageView> starView = new ArrayList();
         starView.add((ImageView) rowView.findViewById(R.id.res_1));
         starView.add((ImageView) rowView.findViewById(R.id.res_2));
@@ -104,35 +177,30 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
                 starView.get(r).setVisibility(View.VISIBLE);
             }
         }
+    }
 
-        TextView grade = (TextView) rowView.findViewById(R.id.player_team_grade);
-        if (isGradeVisible) {
-            grade.setText(String.valueOf(player.mGrade));
-            grade.setVisibility(View.VISIBLE);
-        } else {
-            grade.setVisibility(View.GONE);
-        }
-
-        TextView playerMarker = (TextView) rowView.findViewById(R.id.player_moved_marker);
-        playerMarker.setVisibility(mMovedPlayers.contains(player) ? View.VISIBLE : View.GONE);
-
-        TextView collaboration = (TextView) rowView.findViewById(R.id.player_team_collaboration);
-        if (mSelectedPlayer != null && mCollaboration != null) {
+    private void setCollaborationAnalysis(View rowView, Player player, TextView analysis) {
+        if (mSelectedPlayer != null && mCollaboration != null) { // selected player view
             String stats = "";
 
             CollaborationHelper.PlayerCollaboration selectedPlayerData = mCollaboration.getPlayer(mSelectedPlayer);
-            if (player.mName.equals(mSelectedPlayer)) {
-                stats = "(W:" + String.valueOf(selectedPlayerData.winRate) + selectedPlayerData.getWinRateDiffString() +", G:" + String.valueOf(selectedPlayerData.games) + ")";
-            } else {
+            if (player.mName.equals(mSelectedPlayer)) { // selected player stats
+                stats = context.getString(R.string.player_analysis,
+                        String.valueOf(selectedPlayerData.winRate),
+                        selectedPlayerData.success + selectedPlayerData.getSuccessDiffString(),
+                        String.valueOf(selectedPlayerData.games));
+            } else { // collaborator of selected player stats
                 CollaborationHelper.EffectMargin collaboratorEffect = selectedPlayerData.getCollaboratorEffect(player.mName);
                 if (collaboratorEffect != null) {
+                    stats = context.getString(R.string.player_analysis,
+                            String.valueOf(collaboratorEffect.winRateWith),
+                            String.valueOf(collaboratorEffect.getSuccessWithString()),
+                            String.valueOf(collaboratorEffect.gamesWith));
                     switch (collaboratorEffect.effect) {
                         case Positive:
-                            stats = "(+" + String.valueOf(collaboratorEffect.winRateMargin) + "% G:" + String.valueOf(collaboratorEffect.games) + ")";
                             rowView.setBackgroundColor(Color.YELLOW);
                             break;
                         case Negative:
-                            stats = "(" + String.valueOf(collaboratorEffect.winRateMargin) + "% G:" + String.valueOf(collaboratorEffect.games) + ")";
                             rowView.setBackgroundColor(Color.RED);
                             break;
                         default:
@@ -142,31 +210,18 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
                 }
             }
 
-            collaboration.setVisibility(View.VISIBLE);
-            collaboration.setText(stats);
-        } else if (mCollaboration != null) {
+            analysis.setVisibility(View.VISIBLE);
+            analysis.setText(stats);
+        } else if (mCollaboration != null) { // non-selected player view
             CollaborationHelper.PlayerCollaboration data = mCollaboration.getPlayer(player.mName);
-            String stats = "(W:" + String.valueOf(data.winRate) + data.getWinRateDiffString() +", G:" + String.valueOf(data.games) + ")";
-            collaboration.setVisibility(View.VISIBLE);
-            collaboration.setText(stats);
+            String stats = context.getString(R.string.player_analysis,
+                    String.valueOf(data.winRate),
+                    data.getSuccessDiffString(),
+                    String.valueOf(data.games));
+            analysis.setVisibility(View.VISIBLE);
+            analysis.setText(stats);
         } else {
-            collaboration.setVisibility(View.GONE);
+            analysis.setVisibility(View.GONE);
         }
-
-        if (player.mName.equals(mSelectedPlayer)) {
-            rowView.setBackgroundColor(Color.WHITE);
-        }
-
-        if (mSelectedPlayer == null) {
-            if (mColorPositive.contains(player.mName)) {
-                rowView.setBackgroundColor(Color.YELLOW);
-            } else if (mColorNegative.contains(player.mName)) {
-                rowView.setBackgroundColor(Color.RED);
-            } else {
-                rowView.setBackgroundColor(Color.TRANSPARENT);
-            }
-        }
-
-        return rowView;
     }
 }
