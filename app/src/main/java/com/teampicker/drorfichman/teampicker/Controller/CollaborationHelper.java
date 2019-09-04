@@ -40,8 +40,8 @@ public class CollaborationHelper {
             for (Player p : players) {
                 CollaborationHelper.PlayerCollaboration player = getPlayer(p.mName);
                 if (player != null) {
-                    games += player.overallGames;
-                    wins += player.overallWins;
+                    games += player.overallCollaboratorsGames;
+                    wins += player.overallCollaboratorsWins;
                 }
             }
             if (games > 0)
@@ -58,11 +58,16 @@ public class CollaborationHelper {
         public int winRate;
         int wins;
         HashMap<String, EffectMargin> collaborators = new HashMap<>();
+        HashMap<String, EffectMargin> opponents = new HashMap<>();
 
-        int overallEffectCounter = 0;
-        public int overallGames = 0;
-        public int overallWins = 0;
-        int overallSuccess = 0;
+        public int overallCollaboratorsGames = 0;
+        public int overallCollaboratorsWins = 0;
+        int overallCollaboratorsSuccess = 0;
+
+        // TODO use for win rate with opponents?
+        int overallOpponentsGames = 0;
+        int overallOpponentsWins = 0;
+        int overallOpponentsSuccess = 0;
 
         PlayerCollaboration(Player p) {
             name = p.mName;
@@ -76,26 +81,36 @@ public class CollaborationHelper {
 
         void addCollaborator(String name, EffectMargin effectData) {
             collaborators.put(name, effectData);
-            overallGames += effectData.gamesWith;
-            overallWins += effectData.winsWith;
-            overallSuccess += effectData.successWith;
+            overallCollaboratorsGames += effectData.gamesWith;
+            overallCollaboratorsWins += effectData.winsWith;
+            overallCollaboratorsSuccess += effectData.successWith;
+        }
 
-            switch (effectData.effect) {
-                case Positive:
-                    overallEffectCounter++;
-                    break;
-                case Negative:
-                    overallEffectCounter--;
-                    break;
-            }
+        void addOpponent(String name, EffectMargin effectData) {
+            opponents.put(name, effectData);
+            overallOpponentsGames += effectData.gamesWith;
+            overallOpponentsWins += effectData.winsWith;
+            overallOpponentsSuccess += effectData.successWith;
         }
 
         public EffectMargin getCollaboratorEffect(String name) {
             return collaborators.get(name);
         }
 
+        public EffectMargin getOpponentEffect(String name) {
+            return opponents.get(name);
+        }
+
+        public EffectMargin getEffect(String name) {
+            EffectMargin collaboratorEffect = getCollaboratorEffect(name);
+            if (collaboratorEffect != null)
+                return collaboratorEffect;
+            else
+                return getOpponentEffect(name);
+        }
+
         public int getSuccessDiff() {
-            return overallSuccess - success;
+            return overallCollaboratorsSuccess - success;
         }
 
         public String getSuccessDiffString() {
@@ -146,13 +161,13 @@ public class CollaborationHelper {
 
     public static Collaboration getCollaborationData(Context context, ArrayList<Player> team1, ArrayList<Player> team2) {
         Collaboration result = new Collaboration();
-        processTeam(context, result, team1);
-        processTeam(context, result, team2);
+        processTeam(context, result, team1, team2);
+        processTeam(context, result, team2, team1);
 
         return result;
     }
 
-    private static void processTeam(Context context, Collaboration result, ArrayList<Player> team) {
+    private static void processTeam(Context context, Collaboration result, ArrayList<Player> team, ArrayList<Player> other) {
 
         for (Player currPlayer : team) {
             HashMap<String, PlayerParticipation> collaborationMap = DbHelper.getPlayersParticipationsStatistics(context, RECENT_GAMES, currPlayer.mName);
@@ -163,6 +178,13 @@ public class CollaborationHelper {
                     if (collaborationWith != null) {
                         EffectMargin collaboratorEffect = new EffectMargin(currPlayer, collaborationWith);
                         playerCollaboration.addCollaborator(with.mName, collaboratorEffect);
+                    }
+                }
+                for (Player against : other) {
+                    PlayerParticipation collaborationWith = collaborationMap.get(against.mName);
+                    if (collaborationWith != null) {
+                        EffectMargin collaboratorEffect = new EffectMargin(currPlayer, collaborationWith);
+                        playerCollaboration.addOpponent(against.mName, collaboratorEffect);
                     }
                 }
             }

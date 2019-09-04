@@ -443,22 +443,22 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
             Player player = (Player) adapterView.getItemAtPosition(i);
 
-            if (isMoveMode()) { // Moving when making teams
+            if (isAnalysisMode() && player.mName.equals(analysisSelectedPlayer)) { // cancel analysis player selection
+
+                analysisSelectedPlayer = null;
+                refreshPlayers();
+
+            } else if (isMoveMode()) { // Moving when making teams
 
                 switchPlayer(player);
 
                 // After a player is moved - recalculate team's collaboration
-                if (isAnalysisMode()) {
-                    initCollaboration();
-                }
-            } else if (isAnalysisMode()) { // Seeing extra data for collaboration
+                if (isAnalysisMode()) initCollaboration();
 
-                if (!player.mName.equals(analysisSelectedPlayer)) { // set analysis player selection
-                    CollaborationHelper.PlayerCollaboration playerStats = analysisResult.getPlayer(player.mName);
-                    if (playerStats != null) analysisSelectedPlayer = player.mName;
-                } else { // cancel analysis player selection
-                    analysisSelectedPlayer = null;
-                }
+            } else if (isAnalysisMode() && !player.mName.equals(analysisSelectedPlayer)) { // set analysis player selection
+
+                CollaborationHelper.PlayerCollaboration playerStats = analysisResult.getPlayer(player.mName);
+                if (playerStats != null) analysisSelectedPlayer = player.mName;
 
                 refreshPlayers();
 
