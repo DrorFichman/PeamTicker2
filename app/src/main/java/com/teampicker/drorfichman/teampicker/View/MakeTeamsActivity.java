@@ -84,7 +84,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         moveView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (moveView.isChecked()) {
+                if (isMoveMode()) {
                     operationDescription.setText(getString(R.string.operation_move));
                     operationDescription.setVisibility(View.VISIBLE);
                 } else {
@@ -144,21 +144,24 @@ public class MakeTeamsActivity extends AppCompatActivity {
         analysisView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (analysisSelectedPlayer != null) { // cancel player analysis selection
+                if (isAnalysisPlayerSelectedMode()) { // cancel player analysis selection
                     analysisSelectedPlayer = null;
                     analysisView.setImageResource(R.drawable.analysis_selected);
-                    if (!moveView.isChecked()) operationDescription.setText(getString(R.string.operation_analysis));
+                    if (!isMoveMode()) operationDescription.setText(getString(R.string.operation_analysis));
                     operationDescription.setVisibility(View.VISIBLE);
                     refreshPlayers();
-                } else if (analysisResult != null) { // cancel analysis
+                } else if (isAnalysisMode()) { // cancel analysis
                     analysisResult = null;
+                    analysisSelectedPlayer = null;
                     analysisView.setImageResource(R.drawable.analysis);
-                    if (!moveView.isChecked()) operationDescription.setVisibility(View.INVISIBLE);
+                    if (!isMoveMode()) operationDescription.setVisibility(View.INVISIBLE);
                     refreshPlayers();
                 } else { // enter analysis mode
-                    if (!moveView.isChecked()) operationDescription.setText(getString(R.string.operation_analysis));
+                    if (!isMoveMode()) operationDescription.setText(getString(R.string.operation_analysis));
                     operationDescription.setVisibility(View.VISIBLE);
                     analysisView.setImageResource(R.drawable.analysis_selected);
+
+                    analysisSelectedPlayer = null;
                     initCollaboration();
                 }
             }
@@ -178,7 +181,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void initCollaboration() {
         analysisResult = CollaborationHelper.getCollaborationData(MakeTeamsActivity.this, players1, players2);
-        analysisSelectedPlayer = null;
         refreshPlayers();
     }
 
@@ -330,7 +332,9 @@ public class MakeTeamsActivity extends AppCompatActivity {
         clearMovedPlayers();
         refreshPlayers();
 
-        if (analysisResult != null) {
+        if (isAnalysisMode()) {
+
+            analysisSelectedPlayer = null;
             initCollaboration();
         }
     }
@@ -345,11 +349,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
         movedPlayers.clear();
         moveView.setChecked(false);
         operationDescription.setVisibility(View.INVISIBLE);
-    }
-
-    private void clearTeamAnalysis() {
-        analysisResult = null;
-        analysisSelectedPlayer = null;
     }
 
     public void onRequestPermissionsResult(int requestCode,
@@ -398,7 +397,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void updateTeamData(TextView stats, TextView publicStats, TeamData players) {
 
         String collaborationWinRate = "";
-        if (analysisResult != null) {
+        if (isAnalysisMode()) {
             int winRate = analysisResult.getCollaborationWinRate(players.players);
             if (winRate != 0) {
                 collaborationWinRate = " (" + winRate + "%)";
@@ -425,6 +424,18 @@ public class MakeTeamsActivity extends AppCompatActivity {
         });
     }
 
+    private boolean isAnalysisMode() {
+        return analysisResult != null;
+    }
+
+    private boolean isAnalysisPlayerSelectedMode() {
+        return analysisResult != null && analysisSelectedPlayer != null;
+    }
+
+    private boolean isMoveMode() {
+        return moveView != null && moveView.isChecked();
+    }
+
     //region player clicked
     AdapterView.OnItemClickListener playerSelected = new AdapterView.OnItemClickListener() {
         @Override
@@ -432,25 +443,25 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
             Player player = (Player) adapterView.getItemAtPosition(i);
 
-            if (moveView.isChecked()) { // Moving when making teams
+            if (isMoveMode()) { // Moving when making teams
 
                 switchPlayer(player);
 
                 // After a player is moved - recalculate team's collaboration
-                if (analysisResult != null) {
+                if (isAnalysisMode()) {
                     initCollaboration();
                 }
-            } else if (analysisResult != null) { // Seeing extra data for collaboration
+            } else if (isAnalysisMode()) { // Seeing extra data for collaboration
 
-                if (player.mName.equals(analysisSelectedPlayer)) {
-                    analysisSelectedPlayer = null;
-                } else {
+                if (!player.mName.equals(analysisSelectedPlayer)) { // set analysis player selection
                     CollaborationHelper.PlayerCollaboration playerStats = analysisResult.getPlayer(player.mName);
-                    if (playerStats != null) {
-                        analysisSelectedPlayer = player.mName;
-                    }
+                    if (playerStats != null) analysisSelectedPlayer = player.mName;
+                } else { // cancel analysis player selection
+                    analysisSelectedPlayer = null;
                 }
+
                 refreshPlayers();
+
             } else if (mSetResult) { // Setting "Missed" when setting results
 
                 // Switch player NA/Missed status
