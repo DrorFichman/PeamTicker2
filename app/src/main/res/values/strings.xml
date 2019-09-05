@@ -31,7 +31,8 @@
     <string name="action_statistics_no_limit">All games</string>
     <string name="action_send_statistics">Send Statistics</string>
 
-    <string name="player_analysis">"(W:%1$s%% G:%3$s) [S:%2$s]"</string>
+    <string name="player_analysis">"(W:%1$02d%% G:%2$02d) [S:%3$s]"</string>
+    <string name="player_analysis_selected">"(W:%1$02d%% G:%2$02d) [S:%3$s][%4$s]"</string>
 
     <string name="operation_move">* Click the players you want to move \n* Click the blue icon to exit move mode</string>
     <string name="operation_analysis">* Click the players for deeper analysis \n* Click the analysis icon to exit analysis mode</string>

@@ -187,17 +187,18 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
             CollaborationHelper.PlayerCollaboration selectedPlayerData = mCollaboration.getPlayer(mSelectedPlayer);
             if (player.mName.equals(mSelectedPlayer)) { // selected player stats
-                stats = context.getString(R.string.player_analysis,
-                        String.valueOf(selectedPlayerData.winRate),
-                        String.valueOf(selectedPlayerData.success) + selectedPlayerData.getSuccessDiffString(),
-                        String.valueOf(selectedPlayerData.games));
+                stats = context.getString(R.string.player_analysis_selected,
+                        selectedPlayerData.winRate,
+                        selectedPlayerData.games,
+                        String.valueOf(selectedPlayerData.success),
+                        selectedPlayerData.getSuccessDiffString());
             } else { // collaborator of selected player stats
                 CollaborationHelper.EffectMargin collaboratorEffect = selectedPlayerData.getEffect(player.mName);
                 if (collaboratorEffect != null) {
                     stats = context.getString(R.string.player_analysis,
-                            String.valueOf(collaboratorEffect.winRateWith),
-                            String.valueOf(collaboratorEffect.getSuccessWithString()),
-                            String.valueOf(collaboratorEffect.gamesWith));
+                            collaboratorEffect.winRateWith,
+                            collaboratorEffect.gamesWith,
+                            String.valueOf(collaboratorEffect.getSuccessWithString()));
                     switch (collaboratorEffect.effect) {
                         case Positive:
                             rowView.setBackgroundColor(Color.YELLOW);
@@ -217,9 +218,9 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         } else if (mCollaboration != null) { // non-selected player view
             CollaborationHelper.PlayerCollaboration data = mCollaboration.getPlayer(player.mName);
             String stats = context.getString(R.string.player_analysis,
-                    String.valueOf(data.winRate),
-                    data.getSuccessDiffString(),
-                    String.valueOf(data.games));
+                    data.winRate,
+                    data.games,
+                    data.getSuccessDiffString());
             analysis.setVisibility(View.VISIBLE);
             analysis.setText(stats);
         } else {

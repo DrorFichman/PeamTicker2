@@ -115,7 +115,7 @@ public class CollaborationHelper {
 
         public String getSuccessDiffString() {
             int diff = getSuccessDiff();
-            if (diff >= 0) return '+' + String.valueOf(diff);
+            if (diff > 0) return '+' + String.valueOf(diff);
             return String.valueOf(diff);
         }
     }
