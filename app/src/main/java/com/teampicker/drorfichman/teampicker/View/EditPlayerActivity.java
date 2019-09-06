@@ -73,8 +73,8 @@ public class EditPlayerActivity extends AppCompatActivity {
         // TODO change to stars
         // TODO plus/minus ratio
 
-        vName.setHint(pPlayer.mName);
-        vGrade.setHint(String.valueOf(pPlayer.mGrade));
+        vName.setText(pPlayer.mName);
+        vGrade.setText(String.valueOf(pPlayer.mGrade));
 
         if (pPlayer.mBirthYear > 0) setBirthday(pPlayer.mBirthYear, pPlayer.mBirthMonth);
 
