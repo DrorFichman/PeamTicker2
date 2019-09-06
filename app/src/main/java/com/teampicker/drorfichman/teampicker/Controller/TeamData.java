@@ -68,7 +68,7 @@ public class TeamData {
         return players.size();
     }
 
-    public int getCount(Context ctx, List<PlayerAttribute> attributes) {
+    public int getCount(List<PlayerAttribute> attributes) {
         int count = 0;
         for (Player player : players) {
             for (PlayerAttribute att : attributes) {
@@ -81,7 +81,7 @@ public class TeamData {
         return count;
     }
 
-    public int getCount(Context ctx, PlayerAttribute attribute) {
+    public int getCount(PlayerAttribute attribute) {
         if (attribute == null) {
             return getCount();
         }

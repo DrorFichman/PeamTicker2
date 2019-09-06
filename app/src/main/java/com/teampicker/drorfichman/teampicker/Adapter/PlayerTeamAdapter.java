@@ -103,7 +103,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
     private void setName(Player player, TextView name) {
         if (mCollaboration != null) {
-            name.setText(player.mName.substring(0, Math.min(5, player.mName.length())));
+            name.setText(player.mName.substring(0, Math.min(6, player.mName.length())));
         } else {
             name.setText(player.mName + (mMarkedPlayers.contains(player) ? " **" : ""));
         }

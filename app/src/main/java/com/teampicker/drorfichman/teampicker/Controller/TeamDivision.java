@@ -17,8 +17,7 @@ import java.util.Random;
  */
 public class TeamDivision {
 
-    public static void dividePlayers(Context ctx,
-                                     @NonNull List<Player> comingPlayers,
+    public static void dividePlayers(@NonNull List<Player> comingPlayers,
                                      @NonNull List<Player> resultPlayers1,
                                      @NonNull List<Player> resultPlayers2) {
 
@@ -28,7 +27,7 @@ public class TeamDivision {
         ArrayList<Player> players = cloneList(comingPlayers);
         Collections.sort(players);
 
-        maxOptionsDivision(ctx, players, resultPlayers1, resultPlayers2);
+        maxOptionsDivision(players, resultPlayers1, resultPlayers2);
     }
 
     public static ArrayList<Player> cloneList(List<Player> players) {
@@ -37,8 +36,7 @@ public class TeamDivision {
         return clone;
     }
 
-    private static void maxOptionsDivision(Context ctx,
-                                           @NonNull ArrayList<Player> comingPlayers,
+    private static void maxOptionsDivision(@NonNull ArrayList<Player> comingPlayers,
                                            @NonNull List<Player> players1,
                                            @NonNull List<Player> players2) {
 
@@ -57,9 +55,9 @@ public class TeamDivision {
             Others.remove(extraPlayer);
         }
 
-        OptionalDivision selected = getOption(ctx, Others, GKs, Defenders, Playmakers, Divs);
+        OptionalDivision selected = getOption(Others, GKs, Defenders, Playmakers, Divs);
         for (int option = 0; option < OPTIONS; ++option) {
-            OptionalDivision another = getOption(ctx, Others, GKs, Defenders, Playmakers, Divs);
+            OptionalDivision another = getOption(Others, GKs, Defenders, Playmakers, Divs);
             if (another.score() < selected.score()) {
                 selected = another;
             }
@@ -110,29 +108,33 @@ public class TeamDivision {
         add(PlayerAttribute.isGK);
     }};
 
-    private static TeamData nextTeamToAdd(Context ctx,
-                                          OptionalDivision option,
+    private static TeamData nextTeamToAdd(OptionalDivision option,
                                           PlayerAttribute attribute) {
 
-        int team1Players = option.players1.getCount(ctx, attribute);
-        int team2Players = option.players2.getCount(ctx, attribute);
-        if (team1Players > team2Players) {
+        int team1Players = option.players1.getCount(attribute);
+        int team2Players = option.players2.getCount(attribute);
+        if (team1Players > team2Players) { // more players of this type
             return option.players2;
         } else if (team2Players > team1Players) {
             return option.players1;
         } else {
-            int team1Specials = option.players1.getCount(ctx, specials);
-            int team2Specials = option.players2.getCount(ctx, specials);
-            if (team1Specials > team2Specials) {
+            int team1Specials = option.players1.getCount(specials);
+            int team2Specials = option.players2.getCount(specials);
+            if (team1Specials > team2Specials) { // more special players
                 return option.players2;
-            } else {
+            } else if (team2Specials > team1Specials) {
                 return option.players1;
+            } else { // randomly add
+                if (getRandom(new Random(), 2) == 0) {
+                    return option.players2;
+                } else {
+                    return option.players1;
+                }
             }
         }
     }
 
-    private static OptionalDivision getOption(Context ctx,
-                                              ArrayList<Player> iOthers,
+    private static OptionalDivision getOption(ArrayList<Player> iOthers,
                                               ArrayList<Player> iGKs,
                                               ArrayList<Player> iDefenders,
                                               ArrayList<Player> iPlaymakers,
@@ -144,24 +146,28 @@ public class TeamDivision {
         ArrayList<Player> Defenders = cloneList(iDefenders);
         ArrayList<Player> Playmakers = cloneList(iPlaymakers);
 
-        addSpecialPlayers(ctx, option, GKs, PlayerAttribute.isGK);
-        addSpecialPlayers(ctx, option, Defenders, PlayerAttribute.isDefender);
-        addSpecialPlayers(ctx, option, Playmakers, PlayerAttribute.isPlaymaker);
-        addSpecialPlayers(ctx, option, Divs, PlayerAttribute.isUnbreakable);
-        addSpecialPlayers(ctx, option, Others, null);
+        addSpecialPlayers(option, GKs, PlayerAttribute.isGK);
+        addSpecialPlayers(option, Defenders, PlayerAttribute.isDefender);
+        addSpecialPlayers(option, Playmakers, PlayerAttribute.isPlaymaker);
+        addSpecialPlayers(option, Divs, PlayerAttribute.isUnbreakable);
+        addSpecialPlayers(option, Others, null);
 
         return option;
     }
 
-    private static void addSpecialPlayers(Context ctx, OptionalDivision option,
+    private static void addSpecialPlayers(OptionalDivision option,
                                           ArrayList<Player> attributePlayers,
                                           PlayerAttribute attribute) {
         Random r = new Random();
         while (attributePlayers.size() > 0) {
-            int a = r.nextInt(attributePlayers.size());
-            nextTeamToAdd(ctx, option, attribute).players.add(attributePlayers.get(a));
+            int a = getRandom(r, attributePlayers.size());
+            nextTeamToAdd(option, attribute).players.add(attributePlayers.get(a));
             attributePlayers.remove(a);
         }
+    }
+
+    private static int getRandom(Random r, int value) {
+        return r.nextInt(value);
     }
 
     private static void simpleDivision(@NonNull List<Player> comingPlayers,
