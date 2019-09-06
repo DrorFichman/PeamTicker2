@@ -13,7 +13,7 @@ public class PreferenceAttributesHelper {
         isGK("_is_gk"),
         isDefender("_is_defender"),
         isPlaymaker("_is_playmaker"),
-        isBreakable("_is_breakable");
+        isUnbreakable("_is_breakable");
 
         String attribute;
 
@@ -40,6 +40,6 @@ public class PreferenceAttributesHelper {
         setPlayerPreferences(context, player, PlayerAttribute.isDefender, false);
         setPlayerPreferences(context, player, PlayerAttribute.isGK, false);
         setPlayerPreferences(context, player, PlayerAttribute.isPlaymaker, false);
-        setPlayerPreferences(context, player, PlayerAttribute.isBreakable, false);
+        setPlayerPreferences(context, player, PlayerAttribute.isUnbreakable, false);
     }
 }

@@ -140,7 +140,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         rowView.findViewById(R.id.player_gk).setVisibility(isAttributesVisible && player.isGK ? View.VISIBLE : View.GONE);
         rowView.findViewById(R.id.player_d).setVisibility(isAttributesVisible && player.isDefender ? View.VISIBLE : View.GONE);
         rowView.findViewById(R.id.player_pm).setVisibility(isAttributesVisible && player.isPlaymaker ? View.VISIBLE : View.GONE);
-        rowView.findViewById(R.id.player_breaking).setVisibility(isAttributesVisible && player.isBreakable ? View.VISIBLE : View.GONE);
+        rowView.findViewById(R.id.player_breaking).setVisibility(isAttributesVisible && player.isUnbreakable ? View.VISIBLE : View.GONE);
     }
 
     private void setGrade(Player player, TextView grade) {

@@ -23,7 +23,7 @@ public class Player implements Serializable, Comparable {
     public boolean isGK;
     public boolean isDefender;
     public boolean isPlaymaker;
-    public boolean isBreakable;
+    public boolean isUnbreakable;
 
     private static final int RECENT_GAMES_COUNT = 10;
 
@@ -147,14 +147,14 @@ public class Player implements Serializable, Comparable {
     }
 
     public boolean hasAttributes() {
-        return isGK || isPlaymaker || isDefender || isBreakable;
+        return isGK || isPlaymaker || isDefender || isUnbreakable;
     }
 
     public String getAttributes() {
         if (!hasAttributes()) return "";
 
         String attributes = "";
-        if (isBreakable) attributes += "B,";
+        if (isUnbreakable) attributes += "B,";
         if (isGK) attributes += "GK,";
         if (isPlaymaker) attributes += "PM,";
         if (isDefender) attributes += "D,";

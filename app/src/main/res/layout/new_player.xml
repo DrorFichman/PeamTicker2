@@ -65,10 +65,10 @@
             android:text="Playmaker" />
 
         <CheckBox
-            android:id="@+id/player_is_breaking"
+            android:id="@+id/player_is_unbreaking"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Breakable" />
+            android:text="Unbreakable" />
     </LinearLayout>
 
 

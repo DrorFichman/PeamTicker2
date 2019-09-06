@@ -10,7 +10,6 @@ import android.text.format.DateFormat;
 import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
-import com.teampicker.drorfichman.teampicker.View.MainActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,7 +101,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         PlayerDbHelper.updatePlayerName(getSqLiteDatabase(context), player.mName, newName);
 
-        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isBreakable, player.isBreakable);
+        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isUnbreakable, player.isUnbreakable);
         PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isDefender, player.isDefender);
         PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker, player.isPlaymaker);
         PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isGK, player.isGK);

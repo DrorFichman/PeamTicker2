@@ -132,7 +132,7 @@ public class PlayerDbHelper {
         p.isGK = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isGK);
         p.isDefender = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isDefender);
         p.isPlaymaker = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker);
-        p.isBreakable = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isBreakable);
+        p.isUnbreakable = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isUnbreakable);
         return p;
     }
 

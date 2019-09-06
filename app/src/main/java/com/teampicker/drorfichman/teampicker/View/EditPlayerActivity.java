@@ -39,7 +39,7 @@ public class EditPlayerActivity extends AppCompatActivity {
     private CheckBox isGK;
     private CheckBox isDefender;
     private CheckBox isPlaymaker;
-    private CheckBox isBreakable;
+    private CheckBox isUnbreakable;
 
     @NonNull
     public static Intent getEditPlayerIntent(Context context, String playerName) {
@@ -68,13 +68,13 @@ public class EditPlayerActivity extends AppCompatActivity {
         isGK = (CheckBox) findViewById(R.id.player_is_gk);
         isDefender = (CheckBox) findViewById(R.id.player_is_defender);
         isPlaymaker = (CheckBox) findViewById(R.id.player_is_playmaker);
-        isBreakable = (CheckBox) findViewById(R.id.player_is_breaking);
+        isUnbreakable = (CheckBox) findViewById(R.id.player_is_unbreaking);
 
         // TODO change to stars
         // TODO plus/minus ratio
 
         vName.setText(pPlayer.mName);
-        vGrade.setText(String.valueOf(pPlayer.mGrade));
+        vGrade.setHint(String.valueOf(pPlayer.mGrade));
 
         if (pPlayer.mBirthYear > 0) setBirthday(pPlayer.mBirthYear, pPlayer.mBirthMonth);
 
@@ -181,7 +181,7 @@ public class EditPlayerActivity extends AppCompatActivity {
         isGK.setChecked(pPlayer.isGK);
         isDefender.setChecked(pPlayer.isDefender);
         isPlaymaker.setChecked(pPlayer.isPlaymaker);
-        isBreakable.setChecked(pPlayer.isBreakable);
+        isUnbreakable.setChecked(pPlayer.isUnbreakable);
 
         isGK.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,10 +207,10 @@ public class EditPlayerActivity extends AppCompatActivity {
             }
         });
 
-        isBreakable.setOnClickListener(new View.OnClickListener() {
+        isUnbreakable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PlayerDbHelper.setAttribute(EditPlayerActivity.this, pPlayer.mName, PreferenceAttributesHelper.PlayerAttribute.isBreakable, isBreakable.isChecked());
+                PlayerDbHelper.setAttribute(EditPlayerActivity.this, pPlayer.mName, PreferenceAttributesHelper.PlayerAttribute.isUnbreakable, isUnbreakable.isChecked());
                 Toast.makeText(EditPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
             }
         });

@@ -86,7 +86,7 @@ public class TeamDivision {
                 GKs.add(currPlayer);
             } else if (currPlayer.isDefender) {
                 defenders.add(currPlayer);
-            } else if (currPlayer.isBreakable) {
+            } else if (currPlayer.isUnbreakable) {
                 divs.add(currPlayer);
             } else if (currPlayer.isPlaymaker) {
                 playmakers.add(currPlayer);
@@ -146,7 +146,7 @@ public class TeamDivision {
         addSpecialPlayers(ctx, option, GKs, PreferenceAttributesHelper.PlayerAttribute.isGK);
         addSpecialPlayers(ctx, option, Defenders, PreferenceAttributesHelper.PlayerAttribute.isDefender);
         addSpecialPlayers(ctx, option, Playmakers, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker);
-        addSpecialPlayers(ctx, option, Divs, PreferenceAttributesHelper.PlayerAttribute.isBreakable);
+        addSpecialPlayers(ctx, option, Divs, PreferenceAttributesHelper.PlayerAttribute.isUnbreakable);
         addSpecialPlayers(ctx, option, Others, null);
 
         return option;

@@ -29,7 +29,7 @@ public class NewPlayerActivity extends AppCompatActivity {
     private CheckBox isGK;
     private CheckBox isDefender;
     private CheckBox isPlaymaker;
-    private CheckBox isBreakable;
+    private CheckBox isUnbreakable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +42,12 @@ public class NewPlayerActivity extends AppCompatActivity {
         isGK = (CheckBox) findViewById(R.id.player_is_gk);
         isDefender = (CheckBox) findViewById(R.id.player_is_defender);
         isPlaymaker = (CheckBox) findViewById(R.id.player_is_playmaker);
-        isBreakable = (CheckBox) findViewById(R.id.player_is_breaking);
+        isUnbreakable = (CheckBox) findViewById(R.id.player_is_unbreaking);
 
         isGK.setVisibility(View.GONE);
         isDefender.setVisibility(View.GONE);
         isPlaymaker.setVisibility(View.GONE);
+        isUnbreakable.setVisibility(View.GONE);
 
         findViewById(R.id.player_participation_btn).setVisibility(View.INVISIBLE);
 
@@ -75,7 +76,7 @@ public class NewPlayerActivity extends AppCompatActivity {
                 }
 
                 boolean isCreated = createNewPlayer(newName, newGrade,
-                        isGK.isChecked(), isDefender.isChecked(), isPlaymaker.isChecked(), isBreakable.isChecked());
+                        isGK.isChecked(), isDefender.isChecked(), isPlaymaker.isChecked(), isUnbreakable.isChecked());
 
                 if (isCreated) {
                     setPlayerBirthday(newName);
@@ -115,13 +116,13 @@ public class NewPlayerActivity extends AppCompatActivity {
         }
     }
 
-    private boolean createNewPlayer(String name, int grade, boolean isGK, boolean isDefender, boolean isPlaymaker, boolean isBreakable) {
+    private boolean createNewPlayer(String name, int grade, boolean isGK, boolean isDefender, boolean isPlaymaker, boolean isUnbreakable) {
         boolean inserted = DbHelper.insertPlayer(NewPlayerActivity.this, name, grade);
         if (inserted) {
             PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isGK, isGK);
             PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker, isPlaymaker);
             PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isDefender, isDefender);
-            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isBreakable, isBreakable);
+            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isUnbreakable, isUnbreakable);
         }
         return inserted;
     }
