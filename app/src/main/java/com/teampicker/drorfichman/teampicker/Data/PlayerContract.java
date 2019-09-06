@@ -29,6 +29,7 @@ public final class PlayerContract {
         public static final String IS_COMING = "is_coming";
         public static final String BIRTH_YEAR = "birth_year";
         public static final String BIRTH_MONTH = "birth_month";
+        public static final String ATTRIBUTES = "attributes";
         public static final String ARCHIVED = "archived";
     }
 
@@ -46,6 +47,7 @@ public final class PlayerContract {
         public static final String ASSISTS = "assists";
         public static final String PLAYER_RESULT = "result";
         public static final String DID_WIN = "did_win";
+        public static final String ATTRIBUTES = "attributes";
     }
 
     public static abstract class GameEntry {

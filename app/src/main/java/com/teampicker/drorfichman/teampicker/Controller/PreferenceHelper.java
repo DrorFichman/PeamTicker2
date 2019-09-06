@@ -9,9 +9,6 @@ import android.content.SharedPreferences;
 public class PreferenceHelper {
     private final static String PREF_FILE = "PLAYERS";
 
-    public static String PREF_CURR_GAME_INDEX = "PREF_CURR_GAME_INDEX";
-    public static String PREF_MAX_GAME_INDEX = "PREF_MAX_GAME_INDEX";
-
     /**
      * Set a string shared preference
      * @param key - Key to set shared preference

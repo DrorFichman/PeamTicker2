@@ -1,13 +1,10 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.util.Log;
-
-import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
 
 import java.util.ArrayList;
 
@@ -61,7 +58,7 @@ public class PlayerDbHelper {
 
     public static
     @NonNull
-    ArrayList<Player> getComingPlayers(Context context, SQLiteDatabase db) {
+    ArrayList<Player> getComingPlayers(SQLiteDatabase db) {
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -71,7 +68,8 @@ public class PlayerDbHelper {
                 PlayerContract.PlayerEntry.GRADE,
                 PlayerContract.PlayerEntry.BIRTH_YEAR,
                 PlayerContract.PlayerEntry.BIRTH_MONTH,
-                PlayerContract.PlayerEntry.IS_COMING
+                PlayerContract.PlayerEntry.IS_COMING,
+                PlayerContract.PlayerEntry.ATTRIBUTES
         };
 
         // How you want the results sorted in the resulting Cursor
@@ -91,22 +89,23 @@ public class PlayerDbHelper {
                 sortOrder                                 // The sort order
         );
 
-        return getPlayers(c, context);
+        return getPlayers(c);
     }
 
     @NonNull
-    private static ArrayList<Player> getPlayers(Cursor c, Context ctx) {
+    private static ArrayList<Player> getPlayers(Cursor c) {
 
         ArrayList<Player> players = new ArrayList<>();
         try {
             if (c.moveToFirst()) {
                 do {
-                    Player p = createPlayerFromCursor(c, ctx,
+                    Player p = createPlayerFromCursor(c,
                             PlayerContract.PlayerEntry.NAME,
                             PlayerContract.PlayerEntry.BIRTH_YEAR,
                             PlayerContract.PlayerEntry.BIRTH_MONTH,
                             PlayerContract.PlayerEntry.GRADE,
-                            PlayerContract.PlayerEntry.IS_COMING);
+                            PlayerContract.PlayerEntry.IS_COMING,
+                            PlayerContract.PlayerEntry.ATTRIBUTES);
                     players.add(p);
                 } while (c.moveToNext());
             }
@@ -118,31 +117,26 @@ public class PlayerDbHelper {
     }
 
     @NonNull
-    public static Player createPlayerFromCursor(Cursor c, Context ctx,
+    public static Player createPlayerFromCursor(Cursor c,
                                                 String player_name,
                                                 String year,
                                                 String month,
                                                 String player_grade,
-                                                String is_coming) {
+                                                String is_coming, String attributes) {
 
         Player p = new Player(c.getString(c.getColumnIndex(player_name)), c.getInt(c.getColumnIndex(player_grade)));
         p.isComing = (is_coming != null) ? c.getInt(c.getColumnIndex(is_coming)) == 1 : true;
         p.mBirthYear = (year != null && c.getColumnIndex(year) > 0) ? c.getInt(c.getColumnIndex(year)) : 0;
         p.mBirthMonth = (month != null && c.getColumnIndex(month) > 0) ? c.getInt(c.getColumnIndex(month)) : 0;
-        p.isGK = isAttribute(ctx, p.mName, PlayerAttribute.isGK);
-        p.isDefender = isAttribute(ctx, p.mName, PlayerAttribute.isDefender);
-        p.isPlaymaker = isAttribute(ctx, p.mName, PlayerAttribute.isPlaymaker);
-        p.isUnbreakable = isAttribute(ctx, p.mName, PlayerAttribute.isUnbreakable);
+
+        if (attributes != null && c.getColumnIndex(attributes) > 0) {
+            String attr = c.getString(c.getColumnIndex(attributes));
+            p.isGK = attr.contains(PlayerAttribute.isGK.displayName);
+            p.isDefender = attr.contains(PlayerAttribute.isDefender.displayName);
+            p.isPlaymaker = attr.contains(PlayerAttribute.isPlaymaker.displayName);
+            p.isUnbreakable = attr.contains(PlayerAttribute.isUnbreakable.displayName);
+        }
         return p;
-    }
-
-    public static boolean isAttribute(Context ctx, String playerName, PlayerAttribute attribute) {
-        return PreferenceAttributesHelper.getPlayerPreferences(ctx, playerName, attribute);
-    }
-
-    public static void setAttribute(Context ctx, String playerName,
-                                    PlayerAttribute attribute, boolean set) {
-        PreferenceAttributesHelper.setPlayerPreferences(ctx, playerName, attribute, set);
     }
 
     public static void deletePlayer(SQLiteDatabase db, String name) {
@@ -153,6 +147,13 @@ public class PlayerDbHelper {
                 new String[]{name});
     }
 
+    public static void setPlayerAttributes(SQLiteDatabase db, String name, String attributes) {
+        ContentValues values = new ContentValues();
+        values.put(PlayerContract.PlayerEntry.ATTRIBUTES, attributes);
+
+        updatePlayer(db, name, values);
+    }
+
     public static void archivePlayer(SQLiteDatabase db, String name, boolean archive) {
         ContentValues values = new ContentValues();
         values.put(PlayerContract.PlayerEntry.ARCHIVED, archive ? 1 : 0);
@@ -161,7 +162,7 @@ public class PlayerDbHelper {
     }
 
     @NonNull
-    public static ArrayList<Player> getPlayers(Context context, SQLiteDatabase db, boolean showArchived) {
+    public static ArrayList<Player> getPlayers(SQLiteDatabase db, boolean showArchived) {
 
         // Define a projection that specifies which columns from the database
         // you will actually use after this query.
@@ -171,7 +172,8 @@ public class PlayerDbHelper {
                 PlayerContract.PlayerEntry.GRADE,
                 PlayerContract.PlayerEntry.BIRTH_YEAR,
                 PlayerContract.PlayerEntry.BIRTH_MONTH,
-                PlayerContract.PlayerEntry.IS_COMING
+                PlayerContract.PlayerEntry.IS_COMING,
+                PlayerContract.PlayerEntry.ATTRIBUTES
         };
 
         // How you want the results sorted in the resulting Cursor
@@ -189,7 +191,7 @@ public class PlayerDbHelper {
                 sortOrder                                 // The sort order
         );
 
-        return getPlayers(c, context);
+        return getPlayers(c);
     }
 
     public static boolean insertPlayer(SQLiteDatabase db, String name, int grade) {
@@ -268,7 +270,7 @@ public class PlayerDbHelper {
         DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerEntry.TABLE_NAME);
     }
 
-    public static Player getPlayer(Context ctx, SQLiteDatabase db, String name) {
+    public static Player getPlayer(SQLiteDatabase db, String name) {
 
         String[] projection = {
                 PlayerContract.PlayerEntry.ID,
@@ -276,7 +278,8 @@ public class PlayerDbHelper {
                 PlayerContract.PlayerEntry.GRADE,
                 PlayerContract.PlayerEntry.IS_COMING,
                 PlayerContract.PlayerEntry.BIRTH_YEAR,
-                PlayerContract.PlayerEntry.BIRTH_MONTH
+                PlayerContract.PlayerEntry.BIRTH_MONTH,
+                PlayerContract.PlayerEntry.ATTRIBUTES
         };
 
         String where = PlayerContract.PlayerEntry.NAME + " = ? ";
@@ -295,12 +298,12 @@ public class PlayerDbHelper {
 
         try {
             if (c.moveToFirst()) {
-                return createPlayerFromCursor(c, ctx,
+                return createPlayerFromCursor(c,
                         PlayerContract.PlayerEntry.NAME,
                         PlayerContract.PlayerEntry.BIRTH_YEAR,
                         PlayerContract.PlayerEntry.BIRTH_MONTH,
                         PlayerContract.PlayerEntry.GRADE,
-                        PlayerContract.PlayerEntry.IS_COMING);
+                        PlayerContract.PlayerEntry.IS_COMING, PlayerContract.PlayerEntry.ATTRIBUTES);
             }
         } finally {
             c.close();

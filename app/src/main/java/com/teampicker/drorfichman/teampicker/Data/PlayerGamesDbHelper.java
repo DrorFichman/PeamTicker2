@@ -50,6 +50,7 @@ public class PlayerGamesDbHelper {
         values.put(PlayerContract.PlayerGameEntry.PLAYER_GRADE, player.mGrade);
         values.put(PlayerContract.PlayerGameEntry.TEAM, team.ordinal());
         values.put(PlayerContract.PlayerGameEntry.PLAYER_AGE, player.getAge());
+        values.put(PlayerContract.PlayerGameEntry.ATTRIBUTES, player.getAttributes());
 
         // Insert the new row, returning the primary key value of the new row
         db.insert(PlayerContract.PlayerGameEntry.TABLE_NAME,
@@ -69,7 +70,8 @@ public class PlayerGamesDbHelper {
                 PlayerContract.PlayerGameEntry.GOALS,
                 PlayerContract.PlayerGameEntry.ASSISTS,
                 PlayerContract.PlayerGameEntry.TEAM,
-                PlayerContract.PlayerGameEntry.PLAYER_RESULT
+                PlayerContract.PlayerGameEntry.PLAYER_RESULT,
+                PlayerContract.PlayerGameEntry.ATTRIBUTES
         };
 
         String sortOrder = PlayerContract.PlayerGameEntry.PLAYER_GRADE + " DESC";
@@ -95,12 +97,12 @@ public class PlayerGamesDbHelper {
             if (c.moveToFirst()) {
                 do {
                     // TODO set rest of the fields - goals, grades...
-                    Player p = PlayerDbHelper.createPlayerFromCursor(c, context,
+                    Player p = PlayerDbHelper.createPlayerFromCursor(c,
                             PlayerContract.PlayerGameEntry.NAME,
                             null,
                             null,
                             PlayerContract.PlayerGameEntry.PLAYER_GRADE,
-                            null);
+                            null, PlayerContract.PlayerGameEntry.ATTRIBUTES);
 
                     // age is saved at the time the game was played
                     p.setAge(c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_AGE)));
@@ -287,6 +289,7 @@ public class PlayerGamesDbHelper {
                         " player.birth_year as birth_year, " +
                         " player.birth_month as birth_month, " +
                         " player.grade as player_grade, " +
+                        " player.attributes as player_attributes, " +
                         " sum(result) as results_sum, " +
                         " sum(did_win) as results_wins, " +
                         " count(result) as results_count " +
@@ -305,12 +308,13 @@ public class PlayerGamesDbHelper {
         try {
             if (c.moveToFirst()) {
                 do {
-                    Player p = PlayerDbHelper.createPlayerFromCursor(c, context,
+                    Player p = PlayerDbHelper.createPlayerFromCursor(c,
                             "player_name",
                             "birth_year",
                             "birth_month",
                             "player_grade",
-                            null);
+                            null,
+                            "player_attributes");
 
                     int games = c.getInt(c.getColumnIndex("results_count"));
                     int success = c.getInt(c.getColumnIndex("results_sum"));

@@ -97,22 +97,22 @@ public class EditPlayerActivity extends AppCompatActivity {
                 setResult(1);
                 boolean playerUpdated = false;
 
-                String grade = vGrade.getText().toString();
-                String name = vName.getText().toString();
+                String newGradeNumber = vGrade.getText().toString();
+                String newName = vName.getText().toString();
 
-                if (!TextUtils.isEmpty(grade)) {
-                    Integer newGrade = Integer.valueOf(grade);
+                if (!TextUtils.isEmpty(newGradeNumber)) { // update grade
+                    Integer newGradeString = Integer.valueOf(newGradeNumber);
 
-                    if (newGrade > 99 || newGrade < 0) {
+                    if (newGradeString > 99 || newGradeString < 0) {
                         Toast.makeText(getApplicationContext(), "Score must be between 0-99", Toast.LENGTH_LONG).show();
                         return;
                     }
-                    DbHelper.updatePlayerGrade(getApplicationContext(), pPlayer.mName, newGrade);
+                    DbHelper.updatePlayerGrade(getApplicationContext(), pPlayer.mName, newGradeString);
                     playerUpdated = true;
                 }
 
-                if (!TextUtils.isEmpty(name)) {
-                    boolean updated = DbHelper.updatePlayerName(getApplicationContext(), pPlayer, name);
+                if (!TextUtils.isEmpty(newName) && !pPlayer.mName.equals(newName)) { // update name
+                    boolean updated = DbHelper.updatePlayerName(getApplicationContext(), pPlayer, newName);
                     if (updated) {
                         playerUpdated = true;
                     } else {
@@ -121,7 +121,7 @@ public class EditPlayerActivity extends AppCompatActivity {
                     }
                 }
 
-                if (vBirth.getTag() != null) {
+                if (vBirth.getTag() != null) { // update birth
                     String date = (String) vBirth.getTag();
                     Integer newYear = Integer.valueOf(date.split("/")[1]);
                     Integer newMonth = Integer.valueOf(date.split("/")[0]);
@@ -135,6 +135,9 @@ public class EditPlayerActivity extends AppCompatActivity {
                     DbHelper.updatePlayerBirth(getApplicationContext(), pPlayer.mName, newYear, newMonth);
                     playerUpdated = true;
                 }
+
+                // update attributes
+                setAttributes(pPlayer);
 
                 if (playerUpdated)
                     Toast.makeText(getApplicationContext(), "Player updated", Toast.LENGTH_LONG).show();
@@ -182,38 +185,14 @@ public class EditPlayerActivity extends AppCompatActivity {
         isDefender.setChecked(pPlayer.isDefender);
         isPlaymaker.setChecked(pPlayer.isPlaymaker);
         isUnbreakable.setChecked(pPlayer.isUnbreakable);
+    }
 
-        isGK.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PlayerDbHelper.setAttribute(EditPlayerActivity.this, pPlayer.mName, PlayerAttribute.isGK, isGK.isChecked());
-                Toast.makeText(EditPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        isDefender.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PlayerDbHelper.setAttribute(EditPlayerActivity.this, pPlayer.mName, PlayerAttribute.isDefender, isDefender.isChecked());
-                Toast.makeText(EditPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        isPlaymaker.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PlayerDbHelper.setAttribute(EditPlayerActivity.this, pPlayer.mName, PlayerAttribute.isPlaymaker, isPlaymaker.isChecked());
-                Toast.makeText(EditPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        isUnbreakable.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                PlayerDbHelper.setAttribute(EditPlayerActivity.this, pPlayer.mName, PlayerAttribute.isUnbreakable, isUnbreakable.isChecked());
-                Toast.makeText(EditPlayerActivity.this, "Player's attribute saved", Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void setAttributes(Player p) {
+        p.isGK = isGK.isChecked();
+        p.isDefender = isDefender.isChecked();
+        p.isPlaymaker = isPlaymaker.isChecked();
+        p.isUnbreakable = isUnbreakable.isChecked();
+        DbHelper.updatePlayerAttributes(this, p);
     }
 
     @Override

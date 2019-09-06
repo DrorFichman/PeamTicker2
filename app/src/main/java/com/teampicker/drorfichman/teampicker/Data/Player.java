@@ -160,4 +160,20 @@ public class Player implements Serializable, Comparable {
         if (isDefender) attributes += "D,";
         return attributes.substring(0,attributes.length()-1);
     }
+
+    public boolean isAttribute(PlayerAttribute attribute) {
+        if (attribute != null) {
+            switch (attribute) {
+                case isDefender:
+                    return isDefender;
+                case isGK:
+                    return isGK;
+                case isPlaymaker:
+                    return isPlaymaker;
+                case isUnbreakable:
+                    return isUnbreakable;
+            }
+        }
+        return false;
+    }
 }

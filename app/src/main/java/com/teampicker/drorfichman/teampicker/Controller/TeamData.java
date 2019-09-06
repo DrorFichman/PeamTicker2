@@ -72,7 +72,7 @@ public class TeamData {
         int count = 0;
         for (Player player : players) {
             for (PlayerAttribute att : attributes) {
-                if (PlayerDbHelper.isAttribute(ctx, player.mName, att)) {
+                if (player.isAttribute(att)) {
                     count++;
                     break;
                 }
@@ -88,7 +88,7 @@ public class TeamData {
 
         int count = 0;
         for (Player player : players) {
-            if (PlayerDbHelper.isAttribute(ctx, player.mName, attribute)) {
+            if (player.isAttribute(attribute)) {
                 count++;
             }
         }

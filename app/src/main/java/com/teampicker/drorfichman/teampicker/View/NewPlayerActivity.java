@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
+import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerAttribute;
 import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
 import com.teampicker.drorfichman.teampicker.R;
@@ -44,11 +45,6 @@ public class NewPlayerActivity extends AppCompatActivity {
         isPlaymaker = (CheckBox) findViewById(R.id.player_is_playmaker);
         isUnbreakable = (CheckBox) findViewById(R.id.player_is_unbreaking);
 
-        isGK.setVisibility(View.GONE);
-        isDefender.setVisibility(View.GONE);
-        isPlaymaker.setVisibility(View.GONE);
-        isUnbreakable.setVisibility(View.GONE);
-
         findViewById(R.id.player_participation_btn).setVisibility(View.INVISIBLE);
 
         findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
@@ -75,11 +71,12 @@ public class NewPlayerActivity extends AppCompatActivity {
                     return;
                 }
 
-                boolean isCreated = createNewPlayer(newName, newGrade,
-                        isGK.isChecked(), isDefender.isChecked(), isPlaymaker.isChecked(), isUnbreakable.isChecked());
+                Player p = new Player(newName, newGrade);
+                boolean isCreated = createNewPlayer(p);
 
                 if (isCreated) {
-                    setPlayerBirthday(newName);
+                    setPlayerBirthday(p);
+                    setAttributes(p);
 
                     Toast.makeText(getApplicationContext(), "Player added", Toast.LENGTH_LONG).show();
 
@@ -101,7 +98,15 @@ public class NewPlayerActivity extends AppCompatActivity {
         });
     }
 
-    private void setPlayerBirthday(String name) {
+    private void setAttributes(Player p) {
+        p.isGK = isGK.isChecked();
+        p.isDefender = isDefender.isChecked();
+        p.isPlaymaker = isPlaymaker.isChecked();
+        p.isUnbreakable = isUnbreakable.isChecked();
+        DbHelper.updatePlayerAttributes(this, p);
+    }
+
+    private void setPlayerBirthday(Player p) {
         if (vBirth.getTag() != null) {
             Calendar date =  (Calendar) vBirth.getTag();
             Integer newYear = date.get(Calendar.YEAR);
@@ -112,19 +117,12 @@ public class NewPlayerActivity extends AppCompatActivity {
                 return;
             }
 
-            DbHelper.updatePlayerBirth(getApplicationContext(), name, newYear, newMonth);
+            DbHelper.updatePlayerBirth(getApplicationContext(), p.mName, newYear, newMonth);
         }
     }
 
-    private boolean createNewPlayer(String name, int grade, boolean isGK, boolean isDefender, boolean isPlaymaker, boolean isUnbreakable) {
-        boolean inserted = DbHelper.insertPlayer(NewPlayerActivity.this, name, grade);
-        if (inserted) {
-            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PlayerAttribute.isGK, isGK);
-            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PlayerAttribute.isPlaymaker, isPlaymaker);
-            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PlayerAttribute.isDefender, isDefender);
-            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PlayerAttribute.isUnbreakable, isUnbreakable);
-        }
-        return inserted;
+    private boolean createNewPlayer(Player p) {
+        return DbHelper.insertPlayer(NewPlayerActivity.this, p.mName, p.mGrade);
     }
 
     @Override

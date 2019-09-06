@@ -9,8 +9,6 @@ import android.support.annotation.NonNull;
 import android.text.format.DateFormat;
 import android.util.Log;
 
-import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,7 +19,7 @@ import java.util.HashMap;
 public class DbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 3; // TODO scheme changes
+    public static final int DATABASE_VERSION = 4;
     public static final String DATABASE_NAME = "Players.db";
 
     private static SQLiteDatabase writableDatabase;
@@ -53,7 +51,8 @@ public class DbHelper extends SQLiteOpenHelper {
         addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.BIRTH_MONTH, "INTEGER", null);
         addColumn(db, PlayerContract.PlayerGameEntry.TABLE_NAME, PlayerContract.PlayerGameEntry.PLAYER_AGE, "INTEGER", null);
         addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.ARCHIVED, "INTEGER", "0");
-        addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.ATTRIBUTES, "TEXT", "");
+        addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.ATTRIBUTES, "TEXT", "''");
+        addColumn(db, PlayerContract.PlayerGameEntry.TABLE_NAME, PlayerContract.PlayerGameEntry.ATTRIBUTES, "TEXT", "''");
         // TODO add game index
     }
 
@@ -101,13 +100,11 @@ public class DbHelper extends SQLiteOpenHelper {
 
         PlayerDbHelper.updatePlayerName(getSqLiteDatabase(context), player.mName, newName);
 
-        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PlayerAttribute.isUnbreakable, player.isUnbreakable);
-        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PlayerAttribute.isDefender, player.isDefender);
-        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PlayerAttribute.isPlaymaker, player.isPlaymaker);
-        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PlayerAttribute.isGK, player.isGK);
-        PreferenceAttributesHelper.deletePlayerAttributes(context, player.mName);
-
         return true;
+    }
+
+    public static void updatePlayerAttributes(Context context, Player p) {
+        PlayerDbHelper.setPlayerAttributes(getSqLiteDatabase(context), p.mName, p.getAttributes());
     }
 
     public static void updatePlayerBirth(Context context, String name, int year, int month) {
@@ -119,7 +116,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static Player getPlayer(Context context, String name) {
-        final Player player = PlayerDbHelper.getPlayer(context, getSqLiteDatabase(context), name);
+        final Player player = PlayerDbHelper.getPlayer(getSqLiteDatabase(context), name);
         if (player != null) {
             ArrayList<Player> players = new ArrayList<>(Arrays.asList(player));
             addLastGameStats(context, -1, players, true);
@@ -137,7 +134,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     @NonNull
     public static ArrayList<Player> getPlayers(Context context, int gamesCount, boolean showArchived) {
-        ArrayList<Player> players = PlayerDbHelper.getPlayers(context, getSqLiteDatabase(context), showArchived);
+        ArrayList<Player> players = PlayerDbHelper.getPlayers(getSqLiteDatabase(context), showArchived);
         DbHelper.addLastGameStats(context, gamesCount, players, false);
         return players;
     }
@@ -147,14 +144,13 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static ArrayList<Player> getComingPlayers(Context context, int countLastGames) {
-        ArrayList<Player> comingPlayers = PlayerDbHelper.getComingPlayers(context, getSqLiteDatabase(context));
+        ArrayList<Player> comingPlayers = PlayerDbHelper.getComingPlayers(getSqLiteDatabase(context));
         addLastGameStats(context, countLastGames, comingPlayers, countLastGames > 0);
         return comingPlayers;
     }
 
     public static void deletePlayer(Context context, String playerName) {
         PlayerDbHelper.deletePlayer(getSqLiteDatabase(context), playerName);
-        PreferenceAttributesHelper.deletePlayerAttributes(context, playerName);
     }
 
     public static void archivePlayer(Context context, String name, boolean archiveValue) {
