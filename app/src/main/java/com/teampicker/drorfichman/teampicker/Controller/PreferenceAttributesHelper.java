@@ -2,25 +2,14 @@ package com.teampicker.drorfichman.teampicker.Controller;
 
 import android.content.Context;
 
+import com.teampicker.drorfichman.teampicker.Data.PlayerAttribute;
+
 /**
  * Created by drorfichman on 7/29/16.
  */
 public class PreferenceAttributesHelper {
 
-    public static String PREF_PLAYER = "PREF_PLAYER_";
-
-    public enum PlayerAttribute {
-        isGK("_is_gk"),
-        isDefender("_is_defender"),
-        isPlaymaker("_is_playmaker"),
-        isUnbreakable("_is_breakable");
-
-        String attribute;
-
-        PlayerAttribute(String att) {
-            attribute = att;
-        }
-    }
+    static String PREF_PLAYER = "PREF_PLAYER_";
 
     public static boolean getPlayerPreferences(Context context, String player, PlayerAttribute attribute) {
         String pref = getPlayerPrefix(player, attribute);

@@ -129,19 +129,19 @@ public class PlayerDbHelper {
         p.isComing = (is_coming != null) ? c.getInt(c.getColumnIndex(is_coming)) == 1 : true;
         p.mBirthYear = (year != null && c.getColumnIndex(year) > 0) ? c.getInt(c.getColumnIndex(year)) : 0;
         p.mBirthMonth = (month != null && c.getColumnIndex(month) > 0) ? c.getInt(c.getColumnIndex(month)) : 0;
-        p.isGK = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isGK);
-        p.isDefender = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isDefender);
-        p.isPlaymaker = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker);
-        p.isUnbreakable = isAttribute(ctx, p.mName, PreferenceAttributesHelper.PlayerAttribute.isUnbreakable);
+        p.isGK = isAttribute(ctx, p.mName, PlayerAttribute.isGK);
+        p.isDefender = isAttribute(ctx, p.mName, PlayerAttribute.isDefender);
+        p.isPlaymaker = isAttribute(ctx, p.mName, PlayerAttribute.isPlaymaker);
+        p.isUnbreakable = isAttribute(ctx, p.mName, PlayerAttribute.isUnbreakable);
         return p;
     }
 
-    public static boolean isAttribute(Context ctx, String playerName, PreferenceAttributesHelper.PlayerAttribute attribute) {
+    public static boolean isAttribute(Context ctx, String playerName, PlayerAttribute attribute) {
         return PreferenceAttributesHelper.getPlayerPreferences(ctx, playerName, attribute);
     }
 
     public static void setAttribute(Context ctx, String playerName,
-                                       PreferenceAttributesHelper.PlayerAttribute attribute, boolean set) {
+                                    PlayerAttribute attribute, boolean set) {
         PreferenceAttributesHelper.setPlayerPreferences(ctx, playerName, attribute, set);
     }
 

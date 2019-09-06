@@ -2,8 +2,8 @@ package com.teampicker.drorfichman.teampicker.Controller;
 
 import android.content.Context;
 
-import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.PlayerAttribute;
 import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
 
 import java.math.BigDecimal;
@@ -68,10 +68,10 @@ public class TeamData {
         return players.size();
     }
 
-    public int getCount(Context ctx, List<PreferenceAttributesHelper.PlayerAttribute> attributes) {
+    public int getCount(Context ctx, List<PlayerAttribute> attributes) {
         int count = 0;
         for (Player player : players) {
-            for (PreferenceAttributesHelper.PlayerAttribute att : attributes) {
+            for (PlayerAttribute att : attributes) {
                 if (PlayerDbHelper.isAttribute(ctx, player.mName, att)) {
                     count++;
                     break;
@@ -81,7 +81,7 @@ public class TeamData {
         return count;
     }
 
-    public int getCount(Context ctx, PreferenceAttributesHelper.PlayerAttribute attribute) {
+    public int getCount(Context ctx, PlayerAttribute attribute) {
         if (attribute == null) {
             return getCount();
         }

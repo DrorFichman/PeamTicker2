@@ -14,8 +14,8 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.teampicker.drorfichman.teampicker.Controller.PreferenceAttributesHelper;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
+import com.teampicker.drorfichman.teampicker.Data.PlayerAttribute;
 import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
 import com.teampicker.drorfichman.teampicker.R;
 
@@ -119,10 +119,10 @@ public class NewPlayerActivity extends AppCompatActivity {
     private boolean createNewPlayer(String name, int grade, boolean isGK, boolean isDefender, boolean isPlaymaker, boolean isUnbreakable) {
         boolean inserted = DbHelper.insertPlayer(NewPlayerActivity.this, name, grade);
         if (inserted) {
-            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isGK, isGK);
-            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker, isPlaymaker);
-            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isDefender, isDefender);
-            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PreferenceAttributesHelper.PlayerAttribute.isUnbreakable, isUnbreakable);
+            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PlayerAttribute.isGK, isGK);
+            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PlayerAttribute.isPlaymaker, isPlaymaker);
+            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PlayerAttribute.isDefender, isDefender);
+            PlayerDbHelper.setAttribute(NewPlayerActivity.this, name, PlayerAttribute.isUnbreakable, isUnbreakable);
         }
         return inserted;
     }

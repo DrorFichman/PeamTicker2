@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.PlayerAttribute;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,15 +104,15 @@ public class TeamDivision {
         Collections.sort(others);
     }
 
-    static ArrayList<PreferenceAttributesHelper.PlayerAttribute> specials =
-            new ArrayList<PreferenceAttributesHelper.PlayerAttribute>() {{
-        add(PreferenceAttributesHelper.PlayerAttribute.isDefender);
-        add(PreferenceAttributesHelper.PlayerAttribute.isGK);
+    static ArrayList<PlayerAttribute> specials =
+            new ArrayList<PlayerAttribute>() {{
+        add(PlayerAttribute.isDefender);
+        add(PlayerAttribute.isGK);
     }};
 
     private static TeamData nextTeamToAdd(Context ctx,
                                           OptionalDivision option,
-                                          PreferenceAttributesHelper.PlayerAttribute attribute) {
+                                          PlayerAttribute attribute) {
 
         int team1Players = option.players1.getCount(ctx, attribute);
         int team2Players = option.players2.getCount(ctx, attribute);
@@ -143,10 +144,10 @@ public class TeamDivision {
         ArrayList<Player> Defenders = cloneList(iDefenders);
         ArrayList<Player> Playmakers = cloneList(iPlaymakers);
 
-        addSpecialPlayers(ctx, option, GKs, PreferenceAttributesHelper.PlayerAttribute.isGK);
-        addSpecialPlayers(ctx, option, Defenders, PreferenceAttributesHelper.PlayerAttribute.isDefender);
-        addSpecialPlayers(ctx, option, Playmakers, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker);
-        addSpecialPlayers(ctx, option, Divs, PreferenceAttributesHelper.PlayerAttribute.isUnbreakable);
+        addSpecialPlayers(ctx, option, GKs, PlayerAttribute.isGK);
+        addSpecialPlayers(ctx, option, Defenders, PlayerAttribute.isDefender);
+        addSpecialPlayers(ctx, option, Playmakers, PlayerAttribute.isPlaymaker);
+        addSpecialPlayers(ctx, option, Divs, PlayerAttribute.isUnbreakable);
         addSpecialPlayers(ctx, option, Others, null);
 
         return option;
@@ -154,7 +155,7 @@ public class TeamDivision {
 
     private static void addSpecialPlayers(Context ctx, OptionalDivision option,
                                           ArrayList<Player> attributePlayers,
-                                          PreferenceAttributesHelper.PlayerAttribute attribute) {
+                                          PlayerAttribute attribute) {
         Random r = new Random();
         while (attributePlayers.size() > 0) {
             int a = r.nextInt(attributePlayers.size());

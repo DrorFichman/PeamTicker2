@@ -53,7 +53,7 @@ public class DbHelper extends SQLiteOpenHelper {
         addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.BIRTH_MONTH, "INTEGER", null);
         addColumn(db, PlayerContract.PlayerGameEntry.TABLE_NAME, PlayerContract.PlayerGameEntry.PLAYER_AGE, "INTEGER", null);
         addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.ARCHIVED, "INTEGER", "0");
-        // TODO add player attributes column
+        addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.ATTRIBUTES, "TEXT", "");
         // TODO add game index
     }
 
@@ -101,10 +101,10 @@ public class DbHelper extends SQLiteOpenHelper {
 
         PlayerDbHelper.updatePlayerName(getSqLiteDatabase(context), player.mName, newName);
 
-        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isUnbreakable, player.isUnbreakable);
-        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isDefender, player.isDefender);
-        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isPlaymaker, player.isPlaymaker);
-        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PreferenceAttributesHelper.PlayerAttribute.isGK, player.isGK);
+        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PlayerAttribute.isUnbreakable, player.isUnbreakable);
+        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PlayerAttribute.isDefender, player.isDefender);
+        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PlayerAttribute.isPlaymaker, player.isPlaymaker);
+        PreferenceAttributesHelper.setPlayerPreferences(context, newName, PlayerAttribute.isGK, player.isGK);
         PreferenceAttributesHelper.deletePlayerAttributes(context, player.mName);
 
         return true;
