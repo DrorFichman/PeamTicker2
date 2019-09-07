@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.ajts.androidmads.library.ExcelToSQLite;
@@ -86,6 +87,11 @@ public class DBSnapshotUtils {
                                                 final ImportListener listener) {
 
         Log.d("IMPORT", "Import from " + snapshotPath);
+
+        if (TextUtils.isEmpty(snapshotPath)) {
+            listener.importError("attempt importing local files");
+            return;
+        }
 
         // Remove all existing DB content
         DbHelper.deleteTableContents(ctx);

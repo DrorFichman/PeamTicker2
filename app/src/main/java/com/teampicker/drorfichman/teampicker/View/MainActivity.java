@@ -437,7 +437,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void importError(String msg) {
-                Toast.makeText(MainActivity.this, "Import Failed " + msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Import Failed : " + msg, Toast.LENGTH_LONG).show();
             }
         };
     }
@@ -459,7 +459,7 @@ public class MainActivity extends AppCompatActivity
 
             @Override
             public void exportError(String msg) {
-                Toast.makeText(MainActivity.this, "Data export failed " + msg, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Data export failed " + msg, Toast.LENGTH_LONG).show();
             }
         };
     }
