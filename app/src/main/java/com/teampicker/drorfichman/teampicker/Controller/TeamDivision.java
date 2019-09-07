@@ -1,7 +1,5 @@
 package com.teampicker.drorfichman.teampicker.Controller;
 
-import android.content.Context;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Data.Player;
@@ -11,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by drorfichman on 9/16/16.

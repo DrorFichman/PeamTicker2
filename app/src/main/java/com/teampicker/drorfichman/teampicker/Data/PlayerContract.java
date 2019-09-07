@@ -1,8 +1,8 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
-import android.support.annotation.NonNull;
-
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
 
 /**
  * Created by drorfichman on 7/30/16.

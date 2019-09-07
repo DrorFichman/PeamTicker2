@@ -3,7 +3,6 @@ package com.teampicker.drorfichman.teampicker.View;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -31,6 +30,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MakeTeamsActivity extends AppCompatActivity {
 

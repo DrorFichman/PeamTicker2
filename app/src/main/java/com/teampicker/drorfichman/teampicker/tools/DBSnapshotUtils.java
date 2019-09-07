@@ -5,8 +5,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -14,10 +12,10 @@ import com.ajts.androidmads.library.ExcelToSQLite;
 import com.ajts.androidmads.library.SQLiteToExcel;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.PlayerContract;
-import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
 
 import java.io.File;
-import java.util.ArrayList;
+
+import androidx.core.app.ActivityCompat;
 
 /**
  * Created by drorfichman on 4/14/18.

@@ -1,6 +1,6 @@
-package com.teampicker.drorfichman.teampicker.provider;
+package com.teampicker.drorfichman.teampicker.Provider;
 
-import android.support.v4.content.FileProvider;
+import androidx.core.content.FileProvider;
 
 /**
  * Created by drorfichman on 4/14/18.
