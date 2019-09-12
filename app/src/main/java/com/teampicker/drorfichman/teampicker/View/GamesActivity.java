@@ -86,7 +86,7 @@ public class GamesActivity extends AppCompatActivity {
 
         // Create and show the dialog.
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        DialogFragment newFragment = GameDetailsDialogFragment.newInstance(this, gameId, details);
+        DialogFragment newFragment = GameDetailsDialogFragment.newInstance(gameId, details);
         newFragment.show(ft, "game_dialog");
     }
 

@@ -29,6 +29,19 @@ public class DbHelper extends SQLiteOpenHelper {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    public static void saveTeams(Context ctx, ArrayList<Player> firstTeam, ArrayList<Player> secondTeam) {
+        DbHelper.clearOldGameTeams(ctx);
+
+        int currGame = DbHelper.getMaxGame(ctx) + 1;
+
+        for (Player a : firstTeam) {
+            DbHelper.insertPlayerGame(ctx, a, currGame, TeamEnum.Team1);
+        }
+        for (Player b : secondTeam) {
+            DbHelper.insertPlayerGame(ctx, b, currGame, TeamEnum.Team2);
+        }
+    }
+
     public void onCreate(SQLiteDatabase db) {
         try {
             db.execSQL(PlayerDbHelper.getSqlCreate());
@@ -84,6 +97,12 @@ public class DbHelper extends SQLiteOpenHelper {
         getSqLiteDatabase(context).execSQL(GameDbHelper.SQL_DROP_GAMES_TABLE);
         getSqLiteDatabase(context).execSQL(PlayerDbHelper.SQL_DROP_PLAYER_TABLE);
         getSqLiteDatabase(context).execSQL(PlayerGamesDbHelper.SQL_DROP_PLAYER_GAMES_TABLE);
+    }
+
+    public static void setPlayerComing(Context context, ArrayList<Player> team) {
+        for (Player p : team) {
+            PlayerDbHelper.updatePlayerComing(getSqLiteDatabase(context), p.mName, true);
+        }
     }
 
     public static void updatePlayerComing(Context context, String name, boolean isComing) {

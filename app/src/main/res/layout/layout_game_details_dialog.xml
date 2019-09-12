@@ -44,16 +44,23 @@
             android:layout_weight="1"
             android:background="@android:color/holo_blue_light"
             android:padding="5dp" />
-
-
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/copy_game"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/send_copy"
+        android:layout_marginTop="10dp"
+        android:layout_gravity="start"
+        android:padding="10dp" />
 
     <TextView
         android:id="@+id/game_details_ok"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
         android:layout_margin="10dp"
+        android:layout_gravity="right"
         android:padding="10dp"
         android:text="@android:string/ok" />
 

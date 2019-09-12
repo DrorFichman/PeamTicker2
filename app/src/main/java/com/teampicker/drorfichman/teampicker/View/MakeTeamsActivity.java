@@ -115,7 +115,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 Log.d("teams", "Enter send mode");
-                saveTeams();
+                DbHelper.saveTeams(MakeTeamsActivity.this, players1, players2);
                 enterSendMode();
 
                 final Runnable r = new Runnable() {
@@ -285,20 +285,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
         return isChanged;
     }
 
-    private void saveTeams() {
-
-        DbHelper.clearOldGameTeams(this);
-
-        int currGame = DbHelper.getMaxGame(this) + 1;
-
-        for (Player a : players1) {
-            DbHelper.insertPlayerGame(this, a, currGame, TeamEnum.Team1);
-        }
-        for (Player b : players2) {
-            DbHelper.insertPlayerGame(this, b, currGame, TeamEnum.Team2);
-        }
-    }
-
     private void enterSendMode() {
 
         clearMovedPlayers();
@@ -342,7 +328,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        saveTeams();
+        DbHelper.saveTeams(this, players1, players2);
         super.onBackPressed();
     }
 

@@ -5,6 +5,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +29,6 @@ import androidx.annotation.NonNull;
  */
 public class GameDetailsDialogFragment extends DialogFragment {
 
-    private static Context ctx;
-
     private ArrayList<Player> mTeam1;
     private ArrayList<Player> mTeam2;
     private String mDetails;
@@ -43,12 +42,11 @@ public class GameDetailsDialogFragment extends DialogFragment {
     private PlayerTeamAdapter adapter2;
     private ListView team1List;
     private ListView team2List;
+    private View copyGame;
 
-    static GameDetailsDialogFragment newInstance(Context context,
-                                                 int gameId, String details) {
+    static GameDetailsDialogFragment newInstance(int gameId, String details) {
 
         GameDetailsDialogFragment f = new GameDetailsDialogFragment();
-        ctx = context;
 
         Bundle args = new Bundle();
         args.putSerializable(PARAM_DETAILS, details);
@@ -91,6 +89,18 @@ public class GameDetailsDialogFragment extends DialogFragment {
         team1List.setOnItemLongClickListener(onPlayerClick);
         team2List.setOnItemLongClickListener(onPlayerClick);
 
+        copyGame = view.findViewById(R.id.copy_game);
+        copyGame.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DbHelper.clearComingPlayers(getActivity());
+                DbHelper.setPlayerComing(getActivity(), mTeam1);
+                DbHelper.setPlayerComing(getActivity(), mTeam2);
+                DbHelper.saveTeams(getActivity(), mTeam1, mTeam2);
+                dismiss();
+            }
+        });
+
         view.findViewById(R.id.game_details_ok).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 dismiss();
@@ -102,7 +112,7 @@ public class GameDetailsDialogFragment extends DialogFragment {
 
     private void checkPlayerChange(final Player player) {
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
 
         alertDialogBuilder.setTitle("Modify");
 
@@ -122,15 +132,15 @@ public class GameDetailsDialogFragment extends DialogFragment {
 
     private void movePlayer(Player player) {
 
-        DbHelper.modifyPlayerResult(ctx, mGameId, player.mName);
+        DbHelper.modifyPlayerResult(getActivity(), mGameId, player.mName);
 
         refreshTeams();
     }
 
     private void refreshTeams() {
 
-        mTeam1 = DbHelper.getCurrTeam(ctx, mGameId, TeamEnum.Team1, 0);
-        mTeam2 = DbHelper.getCurrTeam(ctx, mGameId, TeamEnum.Team2, 0);
+        mTeam1 = DbHelper.getCurrTeam(getActivity(), mGameId, TeamEnum.Team1, 0);
+        mTeam2 = DbHelper.getCurrTeam(getActivity(), mGameId, TeamEnum.Team2, 0);
 
         ArrayList missedPlayers = findMissedPlayers();
 
