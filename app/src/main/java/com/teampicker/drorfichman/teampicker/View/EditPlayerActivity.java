@@ -231,7 +231,7 @@ public class EditPlayerActivity extends AppCompatActivity {
     }
 
     private void setBirthday(int year, int month) {
-        vBirth.setText(month + "/" + year);
+        vBirth.setText("Age : "  + pPlayer.getAge());
         vBirth.setTag(month + "/" + year);
     }
 }
