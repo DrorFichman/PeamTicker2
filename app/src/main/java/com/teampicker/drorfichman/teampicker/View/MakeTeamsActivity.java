@@ -95,6 +95,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 }
             }
         });
+        moveView.setOnLongClickListener(explainOperation);
 
         list1.setOnItemClickListener(playerSelected);
         list2.setOnItemClickListener(playerSelected);
@@ -129,6 +130,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 new Handler().postDelayed(r, 200);
             }
         });
+        sendView.setOnLongClickListener(explainOperation);
 
         shuffleView = findViewById(R.id.shuffle);
         shuffleView.setOnClickListener(new View.OnClickListener() {
@@ -137,6 +139,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 initialDivision();
             }
         });
+        shuffleView.setOnLongClickListener(explainOperation);
 
         team1Score = (Button) findViewById(R.id.team_1_score);
         team2Score = (Button) findViewById(R.id.team_2_score);
@@ -167,6 +170,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 }
             }
         });
+        analysisView.setOnLongClickListener(explainOperation);
 
         if (getIntent().getBooleanExtra(INTENT_SET_RESULT, false)) {
             if (DbHelper.getActiveGame(this) > 0) {
@@ -423,7 +427,27 @@ public class MakeTeamsActivity extends AppCompatActivity {
         return moveView != null && moveView.isChecked();
     }
 
-    //region player clicked
+    View.OnLongClickListener explainOperation = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            switch (view.getId()) {
+                case R.id.game_prediction_button:
+                    Toast.makeText(MakeTeamsActivity.this, "Enter players collaboration analysis mode", Toast.LENGTH_LONG).show();
+                    return true;
+                case R.id.send:
+                    Toast.makeText(MakeTeamsActivity.this, "Share teams", Toast.LENGTH_LONG).show();
+                    return true;
+                case R.id.shuffle:
+                    Toast.makeText(MakeTeamsActivity.this, "Shuffle teams", Toast.LENGTH_LONG).show();
+                    return true;
+                case R.id.move:
+                    Toast.makeText(MakeTeamsActivity.this, "Enter manual players moving mode", Toast.LENGTH_LONG).show();
+                    return true;
+            }
+            return false;
+        }
+    };
+
     AdapterView.OnItemClickListener playerSelected = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {

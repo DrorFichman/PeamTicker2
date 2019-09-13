@@ -2,16 +2,15 @@ package com.teampicker.drorfichman.teampicker.View;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
@@ -100,6 +99,7 @@ public class GameDetailsDialogFragment extends DialogFragment {
                 dismiss();
             }
         });
+        copyGame.setOnLongClickListener(longClick);
 
         view.findViewById(R.id.game_details_ok).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -109,6 +109,18 @@ public class GameDetailsDialogFragment extends DialogFragment {
 
         return view;
     }
+
+    View.OnLongClickListener longClick = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            switch (view.getId()) {
+                case R.id.copy_game:
+                    Toast.makeText(getActivity(), "Copy coming players and teams", Toast.LENGTH_LONG).show();
+                    return true;
+            }
+            return false;
+        }
+    };
 
     private void checkPlayerChange(final Player player) {
 
