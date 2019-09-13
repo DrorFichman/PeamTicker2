@@ -119,17 +119,23 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
     private void setColoredPlayers(View rowView, ImageView suggestion, Player player) {
         suggestion.setVisibility(View.GONE);
         if (mSelectedPlayer == null && mCollaboration != null) {
-            int successDiff = mCollaboration.getPlayer(player.mName).getSuccessDiff();
-            if (mHighPlayers.contains(player.mName) && successDiff > SUCCESS_DIFF_ISSUE) {
-                rowView.setBackgroundColor(Color.YELLOW);
-            } else if (successDiff > SUCCESS_DIFF_EXCESSIVE) {
-                suggestion.setImageResource(R.drawable.increase);
-                suggestion.setVisibility(View.VISIBLE);
-            } else if (mLowPlayers.contains(player.mName) && successDiff < -SUCCESS_DIFF_ISSUE) {
-                rowView.setBackgroundColor(Color.RED);
-            } else if (successDiff < -SUCCESS_DIFF_EXCESSIVE) {
-                suggestion.setImageResource(R.drawable.decrease);
-                suggestion.setVisibility(View.VISIBLE);
+            CollaborationHelper.PlayerCollaboration playerData = mCollaboration.getPlayer(player.mName);
+            CollaborationHelper.EffectType expectedWinRateType = playerData.getExpectedWinRateType();
+
+            if (expectedWinRateType.equals(CollaborationHelper.EffectType.Positive)) {
+                if (mHighPlayers.contains(player.mName)) {
+                    rowView.setBackgroundColor(Color.YELLOW);
+                } else {
+                    suggestion.setImageResource(R.drawable.increase);
+                    suggestion.setVisibility(View.VISIBLE);
+                }
+            } else if (expectedWinRateType.equals(CollaborationHelper.EffectType.Negative)) {
+                if (mLowPlayers.contains(player.mName)) {
+                    rowView.setBackgroundColor(Color.RED);
+                } else {
+                    suggestion.setImageResource(R.drawable.decrease);
+                    suggestion.setVisibility(View.VISIBLE);
+                }
             } else {
                 rowView.setBackgroundColor(Color.TRANSPARENT);
             }
@@ -190,12 +196,11 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
                 stats = context.getString(R.string.player_analysis_selected,
                         selectedPlayerData.winRate,
                         selectedPlayerData.games,
-                        String.valueOf(selectedPlayerData.success),
-                        selectedPlayerData.getSuccessDiffString());
+                        selectedPlayerData.getExpectedWinRateString());
             } else { // collaborator of selected player stats
                 CollaborationHelper.EffectMargin collaboratorEffect = selectedPlayerData.getEffect(player.mName);
                 if (collaboratorEffect != null) {
-                    stats = context.getString(R.string.player_analysis,
+                    stats = context.getString(R.string.player_analysis_collaborator,
                             collaboratorEffect.winRateWith,
                             collaboratorEffect.gamesWith,
                             String.valueOf(collaboratorEffect.getSuccessWithString()));
@@ -206,8 +211,11 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
                         case Negative:
                             rowView.setBackgroundColor(Color.RED);
                             break;
-                        default:
+                        case NotEnoughData:
                             rowView.setBackgroundColor(Color.TRANSPARENT);
+                            break;
+                        default:
+                            rowView.setBackgroundColor(Color.GRAY);
                             break;
                     }
                 }
@@ -220,10 +228,10 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             String stats = context.getString(R.string.player_analysis,
                     data.winRate,
                     data.games,
-                    data.getSuccessDiffString());
+                    data.getExpectedWinRateString());
             analysis.setVisibility(View.VISIBLE);
             analysis.setText(stats);
-        } else {
+        } else { // not analysis mode
             analysis.setVisibility(View.GONE);
         }
     }

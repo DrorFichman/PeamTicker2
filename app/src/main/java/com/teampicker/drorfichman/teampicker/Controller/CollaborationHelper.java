@@ -60,9 +60,12 @@ public class CollaborationHelper {
         HashMap<String, EffectMargin> collaborators = new HashMap<>();
         HashMap<String, EffectMargin> opponents = new HashMap<>();
 
-        public int overallCollaboratorsGames = 0;
-        public int overallCollaboratorsWins = 0;
+        int overallCollaboratorsGames = 0;
+        int overallCollaboratorsWins = 0;
         int overallCollaboratorsSuccess = 0;
+
+        int overallCollaboratorsWinRate = 0;
+        int overallCollaboratorsWinRateCount = 0;
 
         // TODO use for win rate with opponents?
         int overallOpponentsGames = 0;
@@ -84,6 +87,11 @@ public class CollaborationHelper {
             overallCollaboratorsGames += effectData.gamesWith;
             overallCollaboratorsWins += effectData.winsWith;
             overallCollaboratorsSuccess += effectData.successWith;
+
+            if (effectData.gamesWith > MIN_GAMES_TOGETHER) {
+                overallCollaboratorsWinRateCount++;
+                overallCollaboratorsWinRate += effectData.winRateWith;
+            }
         }
 
         void addOpponent(String name, EffectMargin effectData) {
@@ -93,11 +101,11 @@ public class CollaborationHelper {
             overallOpponentsSuccess += effectData.successWith;
         }
 
-        public EffectMargin getCollaboratorEffect(String name) {
+        EffectMargin getCollaboratorEffect(String name) {
             return collaborators.get(name);
         }
 
-        public EffectMargin getOpponentEffect(String name) {
+        EffectMargin getOpponentEffect(String name) {
             return opponents.get(name);
         }
 
@@ -109,24 +117,40 @@ public class CollaborationHelper {
                 return getOpponentEffect(name);
         }
 
-        public int getSuccessDiff() {
-            return overallCollaboratorsSuccess - success;
+        int getExpectedWinRate() {
+            if (overallCollaboratorsWinRateCount > 0)
+                return overallCollaboratorsWinRate / overallCollaboratorsWinRateCount;
+            else
+                return -1;
         }
 
-        public String getSuccessDiffString() {
-            int diff = getSuccessDiff();
-            if (diff > 0) return '+' + String.valueOf(diff);
-            return String.valueOf(diff);
+        public EffectType getExpectedWinRateType() {
+            int expectedWinRate = getExpectedWinRate();
+            if (expectedWinRate < 0)
+                return EffectType.NotEnoughData;
+            else if (expectedWinRate > (winRate + WIN_RATE_MARGIN))
+                return EffectType.Positive;
+            else if (expectedWinRate < (winRate - WIN_RATE_MARGIN))
+                return EffectType.Negative;
+            else
+                return EffectType.Equal;
+        }
+
+        public String getExpectedWinRateString() {
+            int n = getExpectedWinRate();
+            if (n > 0) return String.valueOf(n) + '%';
+            return "-";
         }
     }
 
     public static class EffectMargin {
-        public String player;
         String collaborator;
+        public String player;
         public EffectType effect;
         public int gamesWith;
-        public int winsWith;
-        public int successWith;
+
+        int winsWith;
+        int successWith;
         public int winRateWith;
 
         int winRateMarginWith;
