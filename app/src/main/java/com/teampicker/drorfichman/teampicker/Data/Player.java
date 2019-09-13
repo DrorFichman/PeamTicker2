@@ -17,6 +17,7 @@ public class Player implements Serializable, Comparable {
     private int mAge;
 
     public boolean isComing;
+    public boolean archived;
 
     public ArrayList<PlayerGameStat> results = new ArrayList<>();
     public StatisticsData statistics;

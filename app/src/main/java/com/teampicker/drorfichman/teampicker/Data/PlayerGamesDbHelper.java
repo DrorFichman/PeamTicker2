@@ -102,7 +102,7 @@ public class PlayerGamesDbHelper {
                             null,
                             null,
                             PlayerContract.PlayerGameEntry.PLAYER_GRADE,
-                            null, PlayerContract.PlayerGameEntry.ATTRIBUTES);
+                            null, null, PlayerContract.PlayerGameEntry.ATTRIBUTES);
 
                     // age is saved at the time the game was played
                     p.setAge(c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_AGE)));
@@ -313,7 +313,7 @@ public class PlayerGamesDbHelper {
                             "birth_year",
                             "birth_month",
                             "player_grade",
-                            null,
+                            null, null,
                             "player_attributes");
 
                     int games = c.getInt(c.getColumnIndex("results_count"));

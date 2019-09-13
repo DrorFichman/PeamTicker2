@@ -70,6 +70,7 @@ public class PlayerDbHelper {
                 PlayerContract.PlayerEntry.BIRTH_YEAR,
                 PlayerContract.PlayerEntry.BIRTH_MONTH,
                 PlayerContract.PlayerEntry.IS_COMING,
+                PlayerContract.PlayerEntry.ARCHIVED,
                 PlayerContract.PlayerEntry.ATTRIBUTES
         };
 
@@ -106,6 +107,7 @@ public class PlayerDbHelper {
                             PlayerContract.PlayerEntry.BIRTH_MONTH,
                             PlayerContract.PlayerEntry.GRADE,
                             PlayerContract.PlayerEntry.IS_COMING,
+                            PlayerContract.PlayerEntry.ARCHIVED,
                             PlayerContract.PlayerEntry.ATTRIBUTES);
                     players.add(p);
                 } while (c.moveToNext());
@@ -123,10 +125,13 @@ public class PlayerDbHelper {
                                                 String year,
                                                 String month,
                                                 String player_grade,
-                                                String is_coming, String attributes) {
+                                                String is_coming,
+                                                String archived,
+                                                String attributes) {
 
         Player p = new Player(c.getString(c.getColumnIndex(player_name)), c.getInt(c.getColumnIndex(player_grade)));
         p.isComing = (is_coming != null) ? c.getInt(c.getColumnIndex(is_coming)) == 1 : true;
+        p.archived = (archived != null) ? c.getInt(c.getColumnIndex(archived)) == 1 : false;
         p.mBirthYear = (year != null && c.getColumnIndex(year) > 0) ? c.getInt(c.getColumnIndex(year)) : 0;
         p.mBirthMonth = (month != null && c.getColumnIndex(month) > 0) ? c.getInt(c.getColumnIndex(month)) : 0;
 
@@ -174,6 +179,7 @@ public class PlayerDbHelper {
                 PlayerContract.PlayerEntry.BIRTH_YEAR,
                 PlayerContract.PlayerEntry.BIRTH_MONTH,
                 PlayerContract.PlayerEntry.IS_COMING,
+                PlayerContract.PlayerEntry.ARCHIVED,
                 PlayerContract.PlayerEntry.ATTRIBUTES
         };
 
@@ -280,7 +286,8 @@ public class PlayerDbHelper {
                 PlayerContract.PlayerEntry.IS_COMING,
                 PlayerContract.PlayerEntry.BIRTH_YEAR,
                 PlayerContract.PlayerEntry.BIRTH_MONTH,
-                PlayerContract.PlayerEntry.ATTRIBUTES
+                PlayerContract.PlayerEntry.ATTRIBUTES,
+                PlayerContract.PlayerEntry.ARCHIVED
         };
 
         String where = PlayerContract.PlayerEntry.NAME + " = ? ";
@@ -304,7 +311,9 @@ public class PlayerDbHelper {
                         PlayerContract.PlayerEntry.BIRTH_YEAR,
                         PlayerContract.PlayerEntry.BIRTH_MONTH,
                         PlayerContract.PlayerEntry.GRADE,
-                        PlayerContract.PlayerEntry.IS_COMING, PlayerContract.PlayerEntry.ATTRIBUTES);
+                        PlayerContract.PlayerEntry.IS_COMING,
+                        PlayerContract.PlayerEntry.ARCHIVED,
+                        PlayerContract.PlayerEntry.ATTRIBUTES);
             }
         } finally {
             c.close();
