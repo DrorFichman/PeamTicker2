@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -31,13 +32,21 @@ public class PlayerParticipationActivity extends AppCompatActivity {
     private PlayerParticipationAdapter playersAdapter;
 
     private static final String PLAYER = "PLAYER";
+    private static final String BLUE = "BLUE";
+    private static final String ORANGE = "ORANGE";
     private int games = 50;
+
     private Player pPlayer;
+    private ArrayList<Player> blue;
+    private ArrayList<Player> orange;
 
     @NonNull
-    public static Intent getPlayerParticipationActivity(Context context, String playerName) {
+    public static Intent getPlayerParticipationActivity(Context context, String playerName,
+                                                        ArrayList<Player> blue, ArrayList<Player> orange) {
         Intent intent = new Intent(context, PlayerParticipationActivity.class);
         intent.putExtra(PlayerParticipationActivity.PLAYER, playerName);
+        intent.putExtra(PlayerParticipationActivity.BLUE, blue);
+        intent.putExtra(PlayerParticipationActivity.ORANGE, orange);
         return intent;
     }
 
@@ -49,6 +58,8 @@ public class PlayerParticipationActivity extends AppCompatActivity {
         Intent intent = getIntent();
         if (intent.hasExtra(PLAYER)) {
             pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(PLAYER));
+            orange = (ArrayList<Player>) intent.getSerializableExtra(ORANGE);
+            blue = (ArrayList<Player>) intent.getSerializableExtra(BLUE);
         }
 
         ((TextView) findViewById(R.id.player_name)).setText(pPlayer.mName + " + ");
@@ -58,6 +69,17 @@ public class PlayerParticipationActivity extends AppCompatActivity {
 
         ((TextView) findViewById(R.id.part_games_count_against)).setText("Games\nVs");
         ((TextView) findViewById(R.id.part_wins_percentage_against)).setText("Success\nVs");
+
+        ImageView teamIcon = findViewById(R.id.team_icon);
+        if (orange != null && orange.contains(pPlayer)) {
+            teamIcon.setImageResource(R.drawable.circle_orange);
+            teamIcon.setVisibility(View.VISIBLE);
+        } else if (blue != null && blue.contains(pPlayer)) {
+            teamIcon.setImageResource(R.drawable.circle_blue);
+            teamIcon.setVisibility(View.VISIBLE);
+        } else {
+            teamIcon.setVisibility(View.INVISIBLE);
+        }
 
         playersList = (ListView) findViewById(R.id.players_participation_list);
 
@@ -119,7 +141,7 @@ public class PlayerParticipationActivity extends AppCompatActivity {
     }
 
     private void updateList(ArrayList<PlayerParticipation> players) {
-        playersAdapter = new PlayerParticipationAdapter(PlayerParticipationActivity.this, players);
+        playersAdapter = new PlayerParticipationAdapter(PlayerParticipationActivity.this, players, blue, orange);
         playersList.setAdapter(playersAdapter);
     }
 

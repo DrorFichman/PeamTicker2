@@ -64,4 +64,12 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="14sp" />
 
+    <ImageView
+        android:id="@+id/team_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/circle_blue"
+        android:padding="1dp"
+        android:visibility="invisible" />
+
 </LinearLayout>

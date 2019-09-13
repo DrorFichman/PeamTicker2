@@ -5,12 +5,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
 import com.teampicker.drorfichman.teampicker.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,11 +22,16 @@ public class PlayerParticipationAdapter extends ArrayAdapter<PlayerParticipation
 
     private final Context context;
     private final List<PlayerParticipation> mPlayers;
+    private final ArrayList<Player> mBlue;
+    private final ArrayList<Player> mOrange;
 
-    public PlayerParticipationAdapter(Context ctx, List<PlayerParticipation> players) {
+    public PlayerParticipationAdapter(Context ctx, List<PlayerParticipation> players,
+                                      ArrayList<Player> blue, ArrayList<Player> orange) {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
+        mBlue = blue;
+        mOrange = orange;
     }
 
     @Override
@@ -54,6 +61,17 @@ public class PlayerParticipationAdapter extends ArrayAdapter<PlayerParticipation
             winRateVs.setText(context.getString(R.string.player_wins_participation, String.valueOf(p.statisticsVs.successRate), p.statisticsVs.getWinRateDisplay()));
         else
             winRateVs.setText(p.statisticsVs.getWinRateDisplay());
+
+        ImageView teamIcon = view.findViewById(R.id.team_icon);
+        teamIcon.setVisibility(View.INVISIBLE);
+        Player player = new Player(p.mName, 0);
+        if (mBlue != null && mBlue.contains(player)) {
+            teamIcon.setImageResource(R.drawable.circle_blue);
+            teamIcon.setVisibility(View.VISIBLE);
+        } else if (mOrange != null && mOrange.contains(player)) {
+            teamIcon.setImageResource(R.drawable.circle_orange);
+            teamIcon.setVisibility(View.VISIBLE);
+        }
 
         view.setTag(R.id.player_id, p.mName);
 

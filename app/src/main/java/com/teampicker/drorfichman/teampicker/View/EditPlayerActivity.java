@@ -150,7 +150,7 @@ public class EditPlayerActivity extends AppCompatActivity {
             public void onClick(View view) {
                 hideKeyboard();
 
-                Intent intent = PlayerParticipationActivity.getPlayerParticipationActivity(EditPlayerActivity.this, pPlayer.mName);
+                Intent intent = PlayerParticipationActivity.getPlayerParticipationActivity(EditPlayerActivity.this, pPlayer.mName, null, null);
                 startActivity(intent);
             }
         });

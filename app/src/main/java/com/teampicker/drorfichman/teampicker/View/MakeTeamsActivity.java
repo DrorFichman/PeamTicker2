@@ -1,5 +1,6 @@
 package com.teampicker.drorfichman.teampicker.View;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -97,8 +98,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
         });
         moveView.setOnLongClickListener(explainOperation);
 
-        list1.setOnItemClickListener(playerSelected);
-        list2.setOnItemClickListener(playerSelected);
+        list1.setOnItemClickListener(playerClicked);
+        list2.setOnItemClickListener(playerClicked);
 
         saveView = findViewById(R.id.save);
         saveView.setOnClickListener(new View.OnClickListener() {
@@ -448,7 +449,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         }
     };
 
-    AdapterView.OnItemClickListener playerSelected = new AdapterView.OnItemClickListener() {
+    AdapterView.OnItemClickListener playerClicked = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
 
@@ -487,6 +488,11 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 }
 
                 refreshPlayers();
+
+            } else {
+
+                Intent intent = PlayerParticipationActivity.getPlayerParticipationActivity(MakeTeamsActivity.this, player.mName, players1, players2);
+                startActivity(intent);
             }
         }
     };

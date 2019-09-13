@@ -6,6 +6,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import androidx.annotation.Nullable;
+
 /**
  * Created by drorfichman on 7/27/16.
  */
@@ -176,5 +178,13 @@ public class Player implements Serializable, Comparable {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof Player && this.mName != null) {
+            return this.mName.equals(((Player)obj).mName);
+        }
+        return super.equals(obj);
     }
 }

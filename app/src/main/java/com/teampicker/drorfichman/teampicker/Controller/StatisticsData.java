@@ -1,12 +1,13 @@
 package com.teampicker.drorfichman.teampicker.Controller;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 
 /**
  * Created by drorfichman on 10/8/16.
  */
-public class StatisticsData {
+public class StatisticsData implements Serializable {
 
     public int wins;
     public int gamesCount;

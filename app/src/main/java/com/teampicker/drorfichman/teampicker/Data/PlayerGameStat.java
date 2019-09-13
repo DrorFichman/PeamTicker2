@@ -1,6 +1,8 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
-public class PlayerGameStat {
+import java.io.Serializable;
+
+public class PlayerGameStat implements Serializable {
 
     public PlayerGameStat(ResultEnum res, int currGrade) {
         result = res;
