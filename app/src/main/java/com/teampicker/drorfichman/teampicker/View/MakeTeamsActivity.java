@@ -491,7 +491,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
             } else {
 
-                Intent intent = PlayerParticipationActivity.getPlayerParticipationActivity(MakeTeamsActivity.this, player.mName, players1, players2);
+                Intent intent = PlayerParticipationActivity.getPlayerParticipationActivity(MakeTeamsActivity.this, player.mName, players2, players1);
                 startActivity(intent);
             }
         }

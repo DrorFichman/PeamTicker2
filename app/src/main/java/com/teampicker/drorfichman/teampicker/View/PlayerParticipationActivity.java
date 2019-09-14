@@ -62,8 +62,6 @@ public class PlayerParticipationActivity extends AppCompatActivity {
             blue = (ArrayList<Player>) intent.getSerializableExtra(BLUE);
         }
 
-        ((TextView) findViewById(R.id.player_name)).setText(pPlayer.mName + " + ");
-
         ((TextView) findViewById(R.id.part_games_count_with)).setText("Games\nWith");
         ((TextView) findViewById(R.id.part_wins_percentage_with)).setText("Success\nWith");
 
@@ -126,6 +124,13 @@ public class PlayerParticipationActivity extends AppCompatActivity {
         HashMap<String, PlayerParticipation> result = DbHelper.getPlayersParticipationsStatistics(getApplicationContext(), games, pPlayer.mName);
         ArrayList<PlayerParticipation> players = new ArrayList<>();
         players.addAll(result.values());
+
+        Player player = DbHelper.getPlayer(this, pPlayer.mName, games);
+        ((TextView) findViewById(R.id.player_name)).setText(
+                getString(R.string.player_participation_statistics,
+                        player.mName,
+                        player.statistics.gamesCount,
+                        player.statistics.wins));
 
         Collections.sort(players, new Comparator<PlayerParticipation>() {
             @Override
