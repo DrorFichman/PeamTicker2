@@ -13,6 +13,9 @@ public class StatisticsData implements Serializable {
     public int gamesCount;
     public int successRate;
 
+    // games = wins + loses + ties => ties = games - wins - loses
+    // success = wins - loses => loses = wins - success
+
     public StatisticsData() {
     }
 
@@ -24,14 +27,15 @@ public class StatisticsData implements Serializable {
 
     public int getWinRate() {
         if (gamesCount > 0) {
-            return (wins * 100 / gamesCount);
+            int loses = wins - successRate;
+            return (wins * 100 / (wins + loses));
         }
         return 0;
     }
 
     public String getWinRateDisplay() {
         if (gamesCount > 0) {
-            return String.valueOf(getWinRate()) + "%";
+            return getWinRate() + "%";
         }
         return "-";
     }

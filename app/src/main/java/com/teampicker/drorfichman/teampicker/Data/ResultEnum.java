@@ -6,9 +6,9 @@ import android.app.Application;
  * Created by drorfichman on 10/3/16.
  */
 public enum ResultEnum {
-    Win("W", 1),
-    Lose("L", -1),
-    Tie("T", 0),
+    Win("W", PlayerGamesDbHelper.WIN),
+    Lose("L", PlayerGamesDbHelper.LOSE),
+    Tie("T", PlayerGamesDbHelper.TIE),
     NA("?", PlayerGamesDbHelper.EMPTY_RESULT),
     Missed("M", PlayerGamesDbHelper.MISSED_GAME);
 

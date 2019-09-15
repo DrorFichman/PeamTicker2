@@ -18,6 +18,9 @@ public class PlayerGamesDbHelper {
 
     public static final int EMPTY_RESULT = -10;
     public static final int MISSED_GAME = -9;
+    public static final int TIE = 0;
+    public static final int WIN = 1;
+    public static final int LOSE = -1;
 
     private static final String SQL_CREATE_PLAYERS_GAMES =
             "CREATE TABLE " + PlayerContract.PlayerGameEntry.TABLE_NAME + " (" +
@@ -319,6 +322,7 @@ public class PlayerGamesDbHelper {
                     int games = c.getInt(c.getColumnIndex("results_count"));
                     int success = c.getInt(c.getColumnIndex("results_sum"));
                     int wins = c.getInt(c.getColumnIndex("results_wins"));
+
                     StatisticsData s = new StatisticsData(games, success, wins);
                     p.setStatistics(s);
 
