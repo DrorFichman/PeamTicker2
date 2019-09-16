@@ -26,8 +26,8 @@ public class StatisticsData implements Serializable {
     }
 
     public int getWinRate() {
-        if (gamesCount > 0) {
-            int loses = wins - successRate;
+        int loses = wins - successRate;
+        if (wins + loses > 0) {
             return (wins * 100 / (wins + loses));
         }
         return 0;
