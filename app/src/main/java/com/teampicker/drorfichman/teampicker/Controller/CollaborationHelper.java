@@ -18,7 +18,7 @@ public class CollaborationHelper {
     private static final int RECENT_GAMES = 50;         // games back to look for
     public static final int MIN_GAMES_ANALYSIS = 7;     //
     private static final int MIN_GAMES_TOGETHER = 5;    // games played with another player to consider effect
-    private static final int WIN_RATE_MARGIN = 5;       // win rate exceeded by to count effect
+    private static final int WIN_RATE_MARGIN = 0;       // win rate exceeded by to count effect
 
     public enum EffectType {
         Positive,
@@ -117,23 +117,20 @@ public class CollaborationHelper {
                 return getOpponentEffect(name);
         }
 
-        int getExpectedWinRate() {
+        public int getExpectedWinRate() {
             if (overallCollaboratorsWinRateCount > 0)
                 return overallCollaboratorsWinRate / overallCollaboratorsWinRateCount;
             else
                 return -1;
         }
 
-        public EffectType getExpectedWinRateType() {
+        public int getExpectedWinRateDiff() {
             int expectedWinRate = getExpectedWinRate();
-            if (expectedWinRate < 0)
-                return EffectType.NotEnoughData;
-            else if (expectedWinRate > (winRate + WIN_RATE_MARGIN))
-                return EffectType.Positive;
-            else if (expectedWinRate < (winRate - WIN_RATE_MARGIN))
-                return EffectType.Negative;
-            else
-                return EffectType.Equal;
+            if (expectedWinRate < 0) {
+                return 0;
+            } else {
+                return expectedWinRate - winRate;
+            }
         }
 
         public String getExpectedWinRateString() {

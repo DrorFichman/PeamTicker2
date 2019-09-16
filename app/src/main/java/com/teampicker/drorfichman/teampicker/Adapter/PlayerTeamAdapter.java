@@ -30,8 +30,6 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
     private List<Player> mPlayers;
     private List<Player> mMovedPlayers;
     private List<Player> mMarkedPlayers;
-    private List<String> mHighPlayers = new ArrayList<>();
-    private List<String> mLowPlayers = new ArrayList<>();
     private String mSelectedPlayer;
     private CollaborationHelper.Collaboration mCollaboration;
 
@@ -48,29 +46,12 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         mPlayers = players;
         mMovedPlayers = coloredPlayers != null ? coloredPlayers : new ArrayList<Player>();
         mMarkedPlayers = markedPlayers != null ? markedPlayers : new ArrayList<Player>();
+        mCollaboration = collaboration;
         mSelectedPlayer = selectedPlayer;
-
-        initCollaboration(collaboration);
 
         isGradeVisible = showInternalData;
         isAttributesVisible = showInternalData && mCollaboration == null;
         isGameHistoryVisible = mCollaboration == null;
-    }
-
-    private void initCollaboration(CollaborationHelper.Collaboration collaboration) {
-        if (collaboration != null) {
-            mCollaboration = collaboration;
-            for (CollaborationHelper.PlayerCollaboration effect : collaboration.players.values()) {
-
-                if (effect.games > CollaborationHelper.MIN_GAMES_ANALYSIS) {
-                    if (effect.winRate > HIGH_WIN_RATE) {
-                        mHighPlayers.add(effect.name);
-                    } else if (effect.winRate < LOW_WIN_RATE) {
-                        mLowPlayers.add(effect.name);
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -120,24 +101,39 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         suggestion.setVisibility(View.GONE);
         if (mSelectedPlayer == null && mCollaboration != null) {
             CollaborationHelper.PlayerCollaboration playerData = mCollaboration.getPlayer(player.mName);
-            CollaborationHelper.EffectType expectedWinRateType = playerData.getExpectedWinRateType();
 
-            if (expectedWinRateType.equals(CollaborationHelper.EffectType.Positive)) {
-                if (mHighPlayers.contains(player.mName)) {
-                    rowView.setBackgroundColor(Color.YELLOW);
-                } else {
-                    suggestion.setImageResource(R.drawable.increase);
-                    suggestion.setVisibility(View.VISIBLE);
+            int games = playerData.games;
+            int expectedWinRateDiff = playerData.getExpectedWinRateDiff();
+            rowView.setBackgroundColor(Color.TRANSPARENT);
+
+            if (games > CollaborationHelper.MIN_GAMES_ANALYSIS) {
+                if (expectedWinRateDiff > 0) {
+                    if (playerData.winRate > 60) {
+                        // Show yellow high warning
+                        rowView.setBackgroundColor(Color.GREEN);
+                    } else if (playerData.winRate > 55) {
+                        // Show high warning
+                        suggestion.setImageResource(R.drawable.increase_warn);
+                        suggestion.setVisibility(View.VISIBLE);
+                    } else if (expectedWinRateDiff > 10) {
+                        // Show high effect
+                        suggestion.setImageResource(R.drawable.increase);
+                        suggestion.setVisibility(View.VISIBLE);
+                    }
+                } else if (expectedWinRateDiff < 0) {
+                    if (playerData.winRate < 40) {
+                        // Show red high warning
+                        rowView.setBackgroundColor(Color.RED);
+                    } else if (playerData.winRate < 45) {
+                        // Show low warning
+                        suggestion.setImageResource(R.drawable.decrease_warn);
+                        suggestion.setVisibility(View.VISIBLE);
+                    } else if (expectedWinRateDiff < -10) {
+                        // Show high effect
+                        suggestion.setImageResource(R.drawable.decrease);
+                        suggestion.setVisibility(View.VISIBLE);
+                    }
                 }
-            } else if (expectedWinRateType.equals(CollaborationHelper.EffectType.Negative)) {
-                if (mLowPlayers.contains(player.mName)) {
-                    rowView.setBackgroundColor(Color.RED);
-                } else {
-                    suggestion.setImageResource(R.drawable.decrease);
-                    suggestion.setVisibility(View.VISIBLE);
-                }
-            } else {
-                rowView.setBackgroundColor(Color.TRANSPARENT);
             }
         }
     }
