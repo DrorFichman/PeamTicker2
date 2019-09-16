@@ -1,6 +1,7 @@
 package com.teampicker.drorfichman.teampicker.View;
 
 enum sortType {
+    // Main Activity
     name,
     grade,
     suggestedGrade,
@@ -8,7 +9,14 @@ enum sortType {
     age,
     attributes,
 
+    // Statistics
     success,
     winPercentage,
-    games
+    games,
+
+    // Participation
+    gamesWith,
+    successWith,
+    gamesVs,
+    successVs
 }

@@ -30,6 +30,7 @@ public class PlayerParticipationActivity extends AppCompatActivity {
 
     private ListView playersList;
     private PlayerParticipationAdapter playersAdapter;
+    private ArrayList<PlayerParticipation> players = new ArrayList<>();
 
     private static final String PLAYER = "PLAYER";
     private static final String BLUE = "BLUE";
@@ -39,6 +40,8 @@ public class PlayerParticipationActivity extends AppCompatActivity {
     private Player pPlayer;
     private ArrayList<Player> blue;
     private ArrayList<Player> orange;
+
+    sortType sort = sortType.gamesWith;
 
     @NonNull
     public static Intent getPlayerParticipationActivity(Context context, String playerName,
@@ -62,12 +65,6 @@ public class PlayerParticipationActivity extends AppCompatActivity {
             blue = (ArrayList<Player>) intent.getSerializableExtra(BLUE);
         }
 
-        ((TextView) findViewById(R.id.part_games_count_with)).setText("Games\nWith");
-        ((TextView) findViewById(R.id.part_wins_percentage_with)).setText("Success\nWith");
-
-        ((TextView) findViewById(R.id.part_games_count_against)).setText("Games\nVs");
-        ((TextView) findViewById(R.id.part_wins_percentage_against)).setText("Success\nVs");
-
         ImageView teamIcon = findViewById(R.id.team_icon);
         if (orange != null && orange.contains(pPlayer)) {
             teamIcon.setImageResource(R.drawable.circle_orange);
@@ -81,7 +78,21 @@ public class PlayerParticipationActivity extends AppCompatActivity {
 
         playersList = (ListView) findViewById(R.id.players_participation_list);
 
-        refreshList();
+        refreshPlayers();
+
+        setHeadlineSorting(R.id.player_name, sortType.name);
+
+        ((TextView) findViewById(R.id.part_games_count_with)).setText("Games\nWith");
+        setHeadlineSorting(R.id.part_games_count_with, sortType.gamesWith);
+
+        ((TextView) findViewById(R.id.part_wins_percentage_with)).setText("Success\nWith");
+        setHeadlineSorting(R.id.part_wins_percentage_with, sortType.successWith);
+
+        ((TextView) findViewById(R.id.part_games_count_against)).setText("Games\nVs");
+        setHeadlineSorting(R.id.part_games_count_against, sortType.gamesVs);
+
+        ((TextView) findViewById(R.id.part_wins_percentage_against)).setText("Success\nVs");
+        setHeadlineSorting(R.id.part_wins_percentage_against, sortType.successVs);
     }
 
     @Override
@@ -104,25 +115,25 @@ public class PlayerParticipationActivity extends AppCompatActivity {
                 break;
             case R.id.action_last_10_games:
                 games = 10;
-                refreshList();
+                refreshPlayers();
                 break;
             case R.id.action_last_50_games:
                 games = 50;
-                refreshList();
+                refreshPlayers();
                 break;
             case R.id.action_no_limit:
                 games = -1;
-                refreshList();
+                refreshPlayers();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void refreshList() {
+    public void refreshPlayers() {
 
         HashMap<String, PlayerParticipation> result = DbHelper.getPlayersParticipationsStatistics(getApplicationContext(), games, pPlayer.mName);
-        ArrayList<PlayerParticipation> players = new ArrayList<>();
+        players.clear();
         players.addAll(result.values());
 
         Player player = DbHelper.getPlayer(this, pPlayer.mName, games);
@@ -130,107 +141,50 @@ public class PlayerParticipationActivity extends AppCompatActivity {
                 getString(R.string.player_participation_statistics,
                         player.mName,
                         player.statistics.gamesCount,
-                        player.statistics.wins));
+                        player.statistics.getWinRate()));
 
         Collections.sort(players, new Comparator<PlayerParticipation>() {
             @Override
             public int compare(PlayerParticipation p1, PlayerParticipation p2) {
-                return Integer.compare(p2.statisticsWith.gamesCount, p1.statisticsWith.gamesCount);
+                if (sort.equals(sortType.name)) {
+                    return p1.mName.compareTo(p2.mName);
+                } else if (sort.equals(sortType.gamesWith)) {
+                    if (p2.statisticsWith.gamesCount == p1.statisticsWith.gamesCount)
+                        return Integer.compare(p2.statisticsWith.successRate, p1.statisticsWith.successRate);
+                    else
+                        return Integer.compare(p2.statisticsWith.gamesCount, p1.statisticsWith.gamesCount);
+                } else if (sort.equals(sortType.gamesVs)) {
+                    if (p2.statisticsVs.gamesCount == p1.statisticsVs.gamesCount)
+                        return Integer.compare(p2.statisticsVs.successRate, p1.statisticsVs.successRate);
+                    else
+                        return Integer.compare(p2.statisticsVs.gamesCount, p1.statisticsVs.gamesCount);
+                } else if (sort.equals(sortType.successWith)) {
+                    if (p2.statisticsWith.successRate == p1.statisticsWith.successRate)
+                        return Integer.compare(p2.statisticsWith.getWinRate(), p1.statisticsWith.getWinRate());
+                    else
+                        return Integer.compare(p2.statisticsWith.successRate, p1.statisticsWith.successRate);
+                } else if (sort.equals(sortType.successVs)) {
+                    if (p2.statisticsVs.successRate == p1.statisticsVs.successRate)
+                        return Integer.compare(p2.statisticsVs.getWinRate(), p1.statisticsVs.getWinRate());
+                    else
+                        return Integer.compare(p2.statisticsVs.successRate, p1.statisticsVs.successRate);
+                } else {
+                    return p1.mName.compareTo(p2.mName);
+                }
             }
         });
-        updateList(players);
 
-        sortByNameHandler(players);
-        sortByGamesHandler(players);
-        sortByWinRateHandler(players);
-    }
-
-    private void updateList(ArrayList<PlayerParticipation> players) {
         playersAdapter = new PlayerParticipationAdapter(PlayerParticipationActivity.this, players, blue, orange);
         playersList.setAdapter(playersAdapter);
     }
 
-    private void sortByWinRateHandler(final ArrayList<PlayerParticipation> players) {
-        View.OnClickListener sort = new View.OnClickListener() {
+    private void setHeadlineSorting(int field, final sortType sorting) {
+        findViewById(field).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Collections.sort(players, new Comparator<PlayerParticipation>() {
-                    @Override
-                    public int compare(PlayerParticipation p1, PlayerParticipation p2) {
-                        // sort by success (instead of win percentage)
-                        if (p2.statisticsWith.successRate != p1.statisticsWith.successRate)
-                            return Integer.compare(p2.statisticsWith.successRate, p1.statisticsWith.successRate);
-                        else
-                            return Integer.compare(p2.statisticsWith.gamesCount, p1.statisticsWith.gamesCount);
-                    }
-                });
-                updateList(players);
+                sort = sorting;
+                refreshPlayers();
             }
-        };
-        findViewById(R.id.part_wins_percentage_with).setOnClickListener(sort);
-
-        View.OnClickListener sortVs = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Collections.sort(players, new Comparator<PlayerParticipation>() {
-                    @Override
-                    public int compare(PlayerParticipation p1, PlayerParticipation p2) {
-                        // sort by success (instead of win percentage)
-                        if (p2.statisticsVs.successRate != p1.statisticsVs.successRate)
-                            return Integer.compare(p2.statisticsVs.successRate, p1.statisticsVs.successRate);
-                        else
-                            return Integer.compare(p2.statisticsVs.gamesCount, p1.statisticsVs.gamesCount);
-                    }
-                });
-                updateList(players);
-            }
-        };
-        findViewById(R.id.part_wins_percentage_against).setOnClickListener(sortVs);
-    }
-
-    private void sortByGamesHandler(final ArrayList<PlayerParticipation> players) {
-        View.OnClickListener sort = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Collections.sort(players, new Comparator<PlayerParticipation>() {
-                    @Override
-                    public int compare(PlayerParticipation p1, PlayerParticipation p2) {
-                        return Integer.compare(p2.statisticsWith.gamesCount, p1.statisticsWith.gamesCount);
-                    }
-                });
-                updateList(players);
-            }
-        };
-        findViewById(R.id.part_games_count_with).setOnClickListener(sort);
-
-        View.OnClickListener sortVs = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Collections.sort(players, new Comparator<PlayerParticipation>() {
-                    @Override
-                    public int compare(PlayerParticipation p1, PlayerParticipation p2) {
-                        return Integer.compare(p2.statisticsVs.gamesCount, p1.statisticsVs.gamesCount);
-                    }
-                });
-                updateList(players);
-            }
-        };
-        findViewById(R.id.part_games_count_against).setOnClickListener(sortVs);
-    }
-
-    private void sortByNameHandler(final ArrayList<PlayerParticipation> players) {
-        View.OnClickListener sort = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Collections.sort(players, new Comparator<PlayerParticipation>() {
-                    @Override
-                    public int compare(PlayerParticipation p1, PlayerParticipation p2) {
-                        return p1.mName.compareTo(p2.mName);
-                    }
-                });
-                updateList(players);
-            }
-        };
-        findViewById(R.id.player_name).setOnClickListener(sort);
+        });
     }
 }
