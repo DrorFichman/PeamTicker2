@@ -42,6 +42,7 @@ public class PlayerParticipationActivity extends AppCompatActivity {
     private ArrayList<Player> orange;
 
     sortType sort = sortType.gamesWith;
+    boolean originalOrder = true;
 
     @NonNull
     public static Intent getPlayerParticipationActivity(Context context, String playerName,
@@ -143,48 +144,82 @@ public class PlayerParticipationActivity extends AppCompatActivity {
                         player.statistics.gamesCount,
                         player.statistics.getWinRate()));
 
+        defineSorting();
+
+        playersAdapter = new PlayerParticipationAdapter(PlayerParticipationActivity.this, players, blue, orange);
+        playersList.setAdapter(playersAdapter);
+    }
+
+    //region sort
+    private void defineSorting() {
         Collections.sort(players, new Comparator<PlayerParticipation>() {
             @Override
-            public int compare(PlayerParticipation p1, PlayerParticipation p2) {
+            public int compare(PlayerParticipation first, PlayerParticipation second) {
+                PlayerParticipation p1 = first;
+                PlayerParticipation p2 = second;
+                if (!originalOrder) {
+                    p1 = second;
+                    p2 = first;
+                }
+
                 if (sort.equals(sortType.name)) {
                     return p1.mName.compareTo(p2.mName);
                 } else if (sort.equals(sortType.gamesWith)) {
-                    if (p2.statisticsWith.gamesCount == p1.statisticsWith.gamesCount)
-                        return Integer.compare(p2.statisticsWith.successRate, p1.statisticsWith.successRate);
-                    else
-                        return Integer.compare(p2.statisticsWith.gamesCount, p1.statisticsWith.gamesCount);
+                    return byGames(p1, p2);
                 } else if (sort.equals(sortType.gamesVs)) {
-                    if (p2.statisticsVs.gamesCount == p1.statisticsVs.gamesCount)
-                        return Integer.compare(p2.statisticsVs.successRate, p1.statisticsVs.successRate);
-                    else
-                        return Integer.compare(p2.statisticsVs.gamesCount, p1.statisticsVs.gamesCount);
+                    return nyGamesVs(p1, p2);
                 } else if (sort.equals(sortType.successWith)) {
-                    if (p2.statisticsWith.successRate == p1.statisticsWith.successRate)
-                        return Integer.compare(p2.statisticsWith.getWinRate(), p1.statisticsWith.getWinRate());
-                    else
-                        return Integer.compare(p2.statisticsWith.successRate, p1.statisticsWith.successRate);
+                    return bySuccessWith(p1, p2);
                 } else if (sort.equals(sortType.successVs)) {
-                    if (p2.statisticsVs.successRate == p1.statisticsVs.successRate)
-                        return Integer.compare(p2.statisticsVs.getWinRate(), p1.statisticsVs.getWinRate());
-                    else
-                        return Integer.compare(p2.statisticsVs.successRate, p1.statisticsVs.successRate);
+                    return bySuccessVs(p1, p2);
                 } else {
                     return p1.mName.compareTo(p2.mName);
                 }
             }
         });
+    }
 
-        playersAdapter = new PlayerParticipationAdapter(PlayerParticipationActivity.this, players, blue, orange);
-        playersList.setAdapter(playersAdapter);
+    private int bySuccessVs(PlayerParticipation p1, PlayerParticipation p2) {
+        if (p2.statisticsVs.successRate == p1.statisticsVs.successRate)
+            return Integer.compare(p2.statisticsVs.getWinRate(), p1.statisticsVs.getWinRate());
+        else
+            return Integer.compare(p2.statisticsVs.successRate, p1.statisticsVs.successRate);
+    }
+
+    private int bySuccessWith(PlayerParticipation p1, PlayerParticipation p2) {
+        if (p2.statisticsWith.successRate == p1.statisticsWith.successRate)
+            return Integer.compare(p2.statisticsWith.getWinRate(), p1.statisticsWith.getWinRate());
+        else
+            return Integer.compare(p2.statisticsWith.successRate, p1.statisticsWith.successRate);
+    }
+
+    private int nyGamesVs(PlayerParticipation p1, PlayerParticipation p2) {
+        if (p2.statisticsVs.gamesCount == p1.statisticsVs.gamesCount)
+            return Integer.compare(p2.statisticsVs.successRate, p1.statisticsVs.successRate);
+        else
+            return Integer.compare(p2.statisticsVs.gamesCount, p1.statisticsVs.gamesCount);
+    }
+
+    private int byGames(PlayerParticipation p1, PlayerParticipation p2) {
+        if (p2.statisticsWith.gamesCount == p1.statisticsWith.gamesCount)
+            return Integer.compare(p2.statisticsWith.successRate, p1.statisticsWith.successRate);
+        else
+            return Integer.compare(p2.statisticsWith.gamesCount, p1.statisticsWith.gamesCount);
     }
 
     private void setHeadlineSorting(int field, final sortType sorting) {
         findViewById(field).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sort = sorting;
+                if (sort == sorting) {
+                    originalOrder = !originalOrder;
+                } else {
+                    originalOrder = true;
+                    sort = sorting;
+                }
                 refreshPlayers();
             }
         });
     }
+    //endregion
 }
