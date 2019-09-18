@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerStatisticsAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.ScreenshotHelper;
+import com.teampicker.drorfichman.teampicker.Controller.Sorting;
+import com.teampicker.drorfichman.teampicker.Controller.sortType;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
@@ -25,14 +27,15 @@ import java.util.Comparator;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class StatisticsActivity extends AppCompatActivity {
+public class StatisticsActivity extends AppCompatActivity implements Sorting.sortingCallbacks {
 
     private ListView playersList;
     private PlayerStatisticsAdapter playersAdapter;
 
     TextView gradeTitle;
     private int games = 50;
-    private sortType sort = sortType.success;
+
+    Sorting sorting = new Sorting(this, sortType.success);
 
     private static final int ACTIVITY_RESULT_PLAYER = 1;
 
@@ -70,32 +73,12 @@ public class StatisticsActivity extends AppCompatActivity {
 
     private void setHeadlines() {
         gradeTitle = (TextView) findViewById(R.id.stat_player_grade);
-        ((TextView) findViewById(R.id.stat_player_grade)).setText("Grade");
-        setHeadlineSorting(R.id.stat_player_grade, sortType.grade);
-
-        ((TextView) findViewById(R.id.player_name)).setText("Name");
-        setHeadlineSorting(R.id.player_name, sortType.name);
-
-        ((TextView) findViewById(R.id.stat_success)).setText("Success");
-        setHeadlineSorting(R.id.stat_success, sortType.success);
-
-        ((TextView) findViewById(R.id.stat_games_count)).setText("Games");
-        setHeadlineSorting(R.id.stat_games_count, sortType.games);
-
-        ((TextView) findViewById(R.id.stat_wins_percentage)).setText("Win rate");
-        setHeadlineSorting(R.id.stat_wins_percentage, sortType.winPercentage);
+        sorting.setHeadlineSorting(this, R.id.stat_player_grade, "Grade", sortType.grade);
+        sorting.setHeadlineSorting(this, R.id.player_name, "Name", sortType.name);
+        sorting.setHeadlineSorting(this, R.id.stat_success, "Success", sortType.success);
+        sorting.setHeadlineSorting(this, R.id.stat_games_count, "Games", sortType.games);
+        sorting.setHeadlineSorting(this, R.id.stat_wins_percentage, "Win rate", sortType.winPercentage);
     }
-
-    private void setHeadlineSorting(int field, final sortType sorting) {
-        findViewById(field).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sort = sorting;
-                refreshPlayers();
-            }
-        });
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -180,32 +163,14 @@ public class StatisticsActivity extends AppCompatActivity {
 
         ArrayList<Player> players = DbHelper.getPlayersStatistics(getApplicationContext(), games);
 
-        Collections.sort(players, new Comparator<Player>() {
-            @Override
-            public int compare(Player p1, Player p2) {
-                if (sort.equals(sortType.grade)) {
-                    return Integer.compare(p2.mGrade, p1.mGrade);
-                } else if (sort.equals(sortType.suggestedGrade)) {
-                    return Integer.compare(p2.getSuggestedGradeDiff(), p1.getSuggestedGradeDiff());
-                } else if (sort.equals(sortType.name)) {
-                    return p1.mName.compareTo(p2.mName);
-                } else if (sort.equals(sortType.age)) {
-                    return Integer.compare(p2.getAge(), p1.getAge());
-                } else if (sort.equals(sortType.attributes)) {
-                    return Boolean.compare(p2.hasAttributes(), p1.hasAttributes());
-                } else if (sort.equals(sortType.winPercentage)) {
-                    return (Float.compare(p2.statistics.getWinRate(), p1.statistics.getWinRate()));
-                } else if (sort.equals(sortType.games)) {
-                    return Integer.compare(p2.statistics.gamesCount, p1.statistics.gamesCount);
-                } else if (sort.equals(sortType.success)) {
-                    return Integer.compare(p2.statistics.successRate, p1.statistics.successRate);
-                } else {
-                    return p1.mName.compareTo(p2.mName);
-                }
-            }
-        });
+        sorting.sort(players);
 
         playersAdapter = new PlayerStatisticsAdapter(this, players, showInternalData);
         playersList.setAdapter(playersAdapter);
+    }
+
+    @Override
+    public void refresh() {
+        refreshPlayers();
     }
 }

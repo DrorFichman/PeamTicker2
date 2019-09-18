@@ -1,6 +1,6 @@
-package com.teampicker.drorfichman.teampicker.View;
+package com.teampicker.drorfichman.teampicker.Controller;
 
-enum sortType {
+public enum sortType {
     // Main Activity
     name,
     grade,

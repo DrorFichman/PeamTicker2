@@ -15,13 +15,14 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.navigation.NavigationView;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerAdapter;
+import com.teampicker.drorfichman.teampicker.Controller.Sorting;
+import com.teampicker.drorfichman.teampicker.Controller.sortType;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
@@ -30,8 +31,6 @@ import com.teampicker.drorfichman.teampicker.tools.FileHelper;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -43,7 +42,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, Sorting.sortingCallbacks {
 
     private ListView playersList;
     private PlayerAdapter playersAdapter;
@@ -54,8 +53,9 @@ public class MainActivity extends AppCompatActivity
     private static final int ACTIVITY_RESULT_IMPORT_FILE_SELECTED = 2;
 
     private static final int RECENT_GAMES_COUNT = 10;
-    private sortType sort = sortType.grade; // TOOO sort by games
     private boolean showArchivedPlayers = false;
+
+    Sorting sorting = new Sorting(this, sortType.grade);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,40 +163,22 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setHeadlines() {
-        ((TextView) findViewById(R.id.player_name)).setText("Name");
-        setHeadlineSorting(R.id.player_name, sortType.name);
 
-        ((TextView) findViewById(R.id.player_age)).setText("Age");
-        setHeadlineSorting(R.id.player_age, sortType.age);
-
-        ((TextView) findViewById(R.id.player_attributes)).setText("Att");
-        setHeadlineSorting(R.id.player_attributes, sortType.attributes);
-
-        ((TextView) findViewById(R.id.player_recent_performance)).setText("+/-");
-        setHeadlineSorting(R.id.player_recent_performance, sortType.suggestedGrade);
-
-        ((TextView) findViewById(R.id.player_grade)).setText("Grade");
-        setHeadlineSorting(R.id.player_grade, sortType.grade);
+        sorting.setHeadlineSorting(this, R.id.player_name, "Name", sortType.name);
+        sorting.setHeadlineSorting(this, R.id.player_age, "Age", sortType.age);
+        sorting.setHeadlineSorting(this, R.id.player_attributes, "Attr", sortType.attributes);
+        sorting.setHeadlineSorting(this, R.id.player_recent_performance, "+/-", sortType.suggestedGrade);
+        sorting.setHeadlineSorting(this, R.id.player_grade, "Grade", sortType.grade);
+        sorting.setHeadlineSorting(this, R.id.player_grade, "Grade", sortType.grade);
+        sorting.setHeadlineSorting(this, R.id.player_coming, null, sortType.coming);
 
         ((CheckBox) findViewById(R.id.player_coming)).setTextColor(Color.BLACK);
-        findViewById(R.id.player_coming).setOnClickListener(new View.OnClickListener() {
+        /*findViewById(R.id.player_coming).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ((CheckBox) view).setChecked(true);
-                sort = sortType.coming;
-                refreshPlayers();
             }
-        });
-    }
-
-    private void setHeadlineSorting(int field, final sortType sorting) {
-        findViewById(field).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sort = sorting;
-                refreshPlayers();
-            }
-        });
+        })*/;
     }
 
     @Override
@@ -300,25 +282,7 @@ public class MainActivity extends AppCompatActivity
     public void refreshPlayers() {
         ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT, showArchivedPlayers);
 
-        Collections.sort(players, new Comparator<Player>() {
-            @Override
-            public int compare(Player p1, Player p2) {
-                if (sort.equals(sortType.grade)) {
-                    return Integer.compare(p2.mGrade, p1.mGrade);
-                } else if (sort.equals(sortType.suggestedGrade)) {
-                    return Integer.compare(p2.getSuggestedGradeDiff(), p1.getSuggestedGradeDiff());
-                } else if (sort.equals(sortType.name)) {
-                    return p1.mName.compareTo(p2.mName);
-                } else if (sort.equals(sortType.age)) {
-                    return Integer.compare(p2.getAge(), p1.getAge());
-                } else if (sort.equals(sortType.attributes)) {
-                    return Boolean.compare(p2.hasAttributes(), p1.hasAttributes());
-                } else {
-                    int i = Boolean.compare(p2.isComing, p1.isComing);
-                    return (i != 0) ? i : p1.mName.compareTo(p2.mName);
-                }
-            }
-        });
+        sorting.sort(players);
 
         playersAdapter.clear();
         playersAdapter.addAll(players);
@@ -520,4 +484,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
     //endregion
+
+    @Override
+    public void refresh() {
+        refreshPlayers();
+    }
 }

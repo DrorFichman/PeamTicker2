@@ -1,5 +1,6 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
+import com.teampicker.drorfichman.teampicker.Controller.Sorting;
 import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
 
 import java.io.Serializable;
@@ -11,7 +12,7 @@ import androidx.annotation.Nullable;
 /**
  * Created by drorfichman on 7/27/16.
  */
-public class Player implements Serializable, Comparable {
+public class Player implements Serializable, Comparable, Sorting.Sortable {
     public String mName;
     public int mGrade;
     public int mBirthYear;
@@ -187,4 +188,81 @@ public class Player implements Serializable, Comparable {
         }
         return super.equals(obj);
     }
+
+    //region Sortable
+    @Override
+    public String name() {
+        return mName;
+    }
+
+    @Override
+    public int gamesWithCount() {
+        return 0;
+    }
+
+    @Override
+    public int successWith() {
+        return 0;
+    }
+
+    @Override
+    public int winRateWith() {
+        return 0;
+    }
+
+    @Override
+    public int successVs() {
+        return 0;
+    }
+
+    @Override
+    public int gamesVsCount() {
+        return 0;
+    }
+
+    @Override
+    public int winRateVs() {
+        return 0;
+    }
+
+    @Override
+    public int grade() {
+        return mGrade;
+    }
+
+    @Override
+    public int suggestedGrade() {
+        return getSuggestedGradeDiff();
+    }
+
+    @Override
+    public int age() {
+        return getAge();
+    }
+
+    @Override
+    public boolean attributes() {
+        return hasAttributes();
+    }
+
+    @Override
+    public boolean coming() {
+        return isComing;
+    }
+
+    @Override
+    public int winRate() {
+        return statistics.getWinRate();
+    }
+
+    @Override
+    public int games() {
+        return statistics.gamesCount;
+    }
+
+    @Override
+    public int success() {
+        return statistics.successRate;
+    }
+    //endregion
 }
