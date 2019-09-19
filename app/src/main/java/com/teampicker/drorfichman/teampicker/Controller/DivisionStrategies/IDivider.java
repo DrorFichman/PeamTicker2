@@ -7,7 +7,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 
-interface IDivider {
+public interface IDivider {
 
     void divide(@NonNull ArrayList<Player> comingPlayers,
                 @NonNull List<Player> players1,

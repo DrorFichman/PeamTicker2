@@ -2,6 +2,7 @@ package com.teampicker.drorfichman.teampicker.Controller;
 
 import com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies.DivideByAge;
 import com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies.DivideByGrade;
+import com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies.IDivider;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 
 import java.util.ArrayList;
@@ -15,9 +16,22 @@ import androidx.annotation.NonNull;
  */
 public class TeamDivision {
 
+    public enum DivisionStrategy {
+        Grade(new DivideByGrade()),
+        Age(new DivideByAge()),
+        Optimize(new DivideByGrade()); // TODO implement
+
+        IDivider divider;
+
+        DivisionStrategy(IDivider selected) {
+            divider = selected;
+        }
+    }
+
     public static void dividePlayers(@NonNull List<Player> comingPlayers,
                                      @NonNull List<Player> resultPlayers1,
-                                     @NonNull List<Player> resultPlayers2) {
+                                     @NonNull List<Player> resultPlayers2,
+                                     DivisionStrategy strategy) {
 
         resultPlayers1.clear();
         resultPlayers2.clear();
@@ -25,7 +39,7 @@ public class TeamDivision {
         ArrayList<Player> players = cloneList(comingPlayers);
         Collections.sort(players);
 
-        new DivideByAge().divide(players, resultPlayers1, resultPlayers2);
+        strategy.divider.divide(players, resultPlayers1, resultPlayers2);
     }
 
     public static ArrayList<Player> cloneList(List<Player> players) {

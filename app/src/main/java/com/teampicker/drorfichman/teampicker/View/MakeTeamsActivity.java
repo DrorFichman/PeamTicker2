@@ -2,6 +2,7 @@ package com.teampicker.drorfichman.teampicker.View;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.squareup.seismic.ShakeDetector;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.CollaborationHelper;
 import com.teampicker.drorfichman.teampicker.Controller.ScreenshotHelper;
@@ -32,6 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MakeTeamsActivity extends AppCompatActivity {
@@ -67,6 +70,9 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private boolean mSetResult;
     private View teamsScreenArea;
+
+    private AlertDialog makeTeamsDialog;
+    private ShakeDetector sd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,12 +140,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         sendView.setOnLongClickListener(explainOperation);
 
         shuffleView = findViewById(R.id.shuffle);
-        shuffleView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                initialDivision();
-            }
-        });
+        shuffleView.setOnClickListener(view -> divideComingPlayers(TeamDivision.DivisionStrategy.Grade));
         shuffleView.setOnLongClickListener(explainOperation);
 
         team1Score = (Button) findViewById(R.id.team_1_score);
@@ -182,7 +183,21 @@ public class MakeTeamsActivity extends AppCompatActivity {
             }
         }
 
-        initialData();
+        initialData(TeamDivision.DivisionStrategy.Grade);
+
+        initShake();
+    }
+
+    private void initShake() {
+        SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sd = new ShakeDetector(this::showMakeTeamOptionsDialog);
+        sd.start(sensorManager);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (sd != null) sd.stop();
     }
 
     private void initCollaboration() {
@@ -232,13 +247,13 @@ public class MakeTeamsActivity extends AppCompatActivity {
         return Integer.valueOf(b.getText().toString());
     }
 
-    private void initialData() {
+    private void initialData(TeamDivision.DivisionStrategy selectedDivision) {
 
         int currGame = DbHelper.getActiveGame(this);
         if (currGame < 0) {
             Toast.makeText(this, "Initial teams", Toast.LENGTH_SHORT).show();
             Log.d("teams", "Initial shuffled teams");
-            initialDivision();
+            divideComingPlayers(selectedDivision);
         } else {
             Log.d("teams", "Initial data curr game > 0 - so getting from DB");
             players1 = DbHelper.getCurrTeam(this, currGame, TeamEnum.Team1, RECENT_GAMES);
@@ -253,7 +268,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
                     Toast.makeText(this, "Changes in coming players applied", Toast.LENGTH_SHORT).show();
             } else {
                 Log.e("TEAMS", "Unable to find teams for curr game " + currGame);
-                initialDivision();
+                divideComingPlayers(selectedDivision);
             }
         }
     }
@@ -305,7 +320,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         refreshPlayers(true);
     }
 
-    private void initialDivision() {
+    private void divideComingPlayers(TeamDivision.DivisionStrategy selectedDivision) {
 
         ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, RECENT_GAMES);
 
@@ -317,7 +332,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
             Toast.makeText(this, "Why you wanna play alone?!?", Toast.LENGTH_LONG).show();
         }
 
-        TeamDivision.dividePlayers(comingPlayers, players1, players2);
+        TeamDivision.dividePlayers(comingPlayers, players1, players2, selectedDivision);
 
         scramble();
 
@@ -515,5 +530,37 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         refreshPlayers();
     }
-    //endregion
+
+    private void showMakeTeamOptionsDialog() {
+
+        if (makeTeamsDialog != null && makeTeamsDialog.isShowing()) {
+            return;
+        }
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        alertDialogBuilder.setTitle("Shake things up?");
+
+        alertDialogBuilder
+                .setCancelable(true)
+                .setItems(new CharSequence[]
+                                {"Divide by grade (default)", "Divide by age", "AI - beep boop beep"},
+                        (dialog, which) -> {
+                            switch (which) {
+                                case 0:
+                                    divideComingPlayers(TeamDivision.DivisionStrategy.Grade);
+                                    break;
+                                case 1:
+                                    divideComingPlayers(TeamDivision.DivisionStrategy.Age);
+                                    break;
+                                case 2:
+                                    divideComingPlayers(TeamDivision.DivisionStrategy.Optimize);
+                                    break;
+                            }
+                        });
+
+        makeTeamsDialog = alertDialogBuilder.create();
+
+        makeTeamsDialog.show();
+    }
 }
