@@ -1,12 +1,12 @@
 package com.teampicker.drorfichman.teampicker.Controller;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -48,6 +48,25 @@ public class CollaborationHelper {
                 return (wins * 100 / games);
             else
                 return 0;
+        }
+
+        public int getExpectedWinRateStdDiv(List<Player> players) {
+            int diff = 0;
+            int count = 0;
+            for (Player p : players) {
+                CollaborationHelper.PlayerCollaboration player = getPlayer(p.mName);
+                if (player != null) {
+                    int expectedWinRate = player.getExpectedWinRate();
+                    if (expectedWinRate != -1) {
+                        Log.d("STAT", "Adding " + player.name + " diff=" + Math.abs(50 - expectedWinRate) + " from " + expectedWinRate);
+                        diff += Math.abs(50 - expectedWinRate);
+                        count++;
+                    }
+                }
+            }
+            Log.d("STAT", "Team total " + diff);
+            if (count > 0) return diff / count;
+            else return -1;
         }
     }
 
@@ -180,7 +199,7 @@ public class CollaborationHelper {
         }
     }
 
-    public static Collaboration getCollaborationData(Context context, ArrayList<Player> team1, ArrayList<Player> team2) {
+    public static Collaboration getCollaborationData(Context context, List<Player> team1, List<Player> team2) {
         Collaboration result = new Collaboration();
         processTeam(context, result, team1, team2);
         processTeam(context, result, team2, team1);
@@ -188,7 +207,7 @@ public class CollaborationHelper {
         return result;
     }
 
-    private static void processTeam(Context context, Collaboration result, ArrayList<Player> team, ArrayList<Player> other) {
+    private static void processTeam(Context context, Collaboration result, List<Player> team, List<Player> other) {
 
         for (Player currPlayer : team) {
             HashMap<String, PlayerParticipation> collaborationMap = DbHelper.getPlayersParticipationsStatistics(context, RECENT_GAMES, currPlayer.mName);

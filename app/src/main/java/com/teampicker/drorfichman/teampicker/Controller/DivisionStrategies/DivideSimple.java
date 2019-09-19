@@ -1,5 +1,7 @@
 package com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies;
 
+import android.content.Context;
+
 import com.teampicker.drorfichman.teampicker.Data.Player;
 
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ import androidx.annotation.NonNull;
 public class DivideSimple implements IDivider {
 
     @Override
-    public void divide(@NonNull ArrayList<Player> comingPlayers,
+    public void divide(Context ctx, @NonNull ArrayList<Player> comingPlayers,
                        @NonNull List<Player> players1,
                        @NonNull List<Player> players2) {
 

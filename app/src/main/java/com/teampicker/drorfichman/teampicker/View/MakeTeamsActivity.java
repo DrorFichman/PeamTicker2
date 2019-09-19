@@ -332,7 +332,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
             Toast.makeText(this, "Why you wanna play alone?!?", Toast.LENGTH_LONG).show();
         }
 
-        TeamDivision.dividePlayers(comingPlayers, players1, players2, selectedDivision);
+        TeamDivision.dividePlayers(this, comingPlayers, players1, players2, selectedDivision);
 
         scramble();
 
@@ -404,10 +404,15 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void updateTeamData(TextView stats, TextView publicStats, TeamData players) {
 
         String collaborationWinRate = "";
+        String collaborationStdDev = "";
         if (isAnalysisMode()) {
             int winRate = analysisResult.getCollaborationWinRate(players.players);
+            int stdDev = analysisResult.getExpectedWinRateStdDiv(players.players);
             if (winRate != 0) {
                 collaborationWinRate = " (" + winRate + "%)";
+            }
+            if (stdDev > 0) {
+                collaborationStdDev = String.valueOf(stdDev);
             }
         }
 
@@ -416,7 +421,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 String.valueOf(players.getAverage()),
                 String.valueOf(players.getWinRate() + collaborationWinRate),
                 String.valueOf(players.getSuccess()),
-                String.valueOf(players.getStdDev())));
+                String.valueOf(players.getStdDev()),
+                collaborationStdDev));
 
         publicStats.setText(getString(R.string.team_public_stats,
                 String.valueOf(players.getAge())));

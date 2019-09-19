@@ -1,7 +1,10 @@
 package com.teampicker.drorfichman.teampicker.Controller;
 
+import android.content.Context;
+
 import com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies.DivideByAge;
 import com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies.DivideByGrade;
+import com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies.DivideCollaboration;
 import com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies.IDivider;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 
@@ -19,7 +22,7 @@ public class TeamDivision {
     public enum DivisionStrategy {
         Grade(new DivideByGrade()),
         Age(new DivideByAge()),
-        Optimize(new DivideByGrade()); // TODO implement
+        Optimize(new DivideCollaboration());
 
         IDivider divider;
 
@@ -28,7 +31,7 @@ public class TeamDivision {
         }
     }
 
-    public static void dividePlayers(@NonNull List<Player> comingPlayers,
+    public static void dividePlayers(Context ctx, @NonNull List<Player> comingPlayers,
                                      @NonNull List<Player> resultPlayers1,
                                      @NonNull List<Player> resultPlayers2,
                                      DivisionStrategy strategy) {
@@ -39,7 +42,9 @@ public class TeamDivision {
         ArrayList<Player> players = cloneList(comingPlayers);
         Collections.sort(players);
 
-        strategy.divider.divide(players, resultPlayers1, resultPlayers2);
+        // TODO unify the random split and loop, keep the comparing logic to divider
+
+        strategy.divider.divide(ctx, players, resultPlayers1, resultPlayers2);
     }
 
     public static ArrayList<Player> cloneList(List<Player> players) {

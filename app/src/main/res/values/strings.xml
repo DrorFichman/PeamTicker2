@@ -19,7 +19,7 @@
     <string name="show_archived">Players Archive</string>
     <string name="make_teams">Make teams</string>
     <string name="enter_results">Enter Results</string>
-    <string name="team_data">" Count: %1$s \n Average: %2$s \n Win Rate : %3$s \n Success : %4$s \n Grade StdDev: %5$s  "</string>
+    <string name="team_data">" Count: %1$s \n Average: %2$s \n Win Rate : %3$s \n Success : %4$s \n Grade StdDev: %5$s \n AI: (%6$s) "</string>
     <string name="team_public_stats">" Age: %1$s "</string>
     <string name="delete">Delete</string>
     <string name="win_rate">Win rate</string>

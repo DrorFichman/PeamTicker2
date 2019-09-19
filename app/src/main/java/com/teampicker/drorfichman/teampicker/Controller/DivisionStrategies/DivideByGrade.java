@@ -1,5 +1,6 @@
 package com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Controller.OptionalDivision;
@@ -16,7 +17,7 @@ import androidx.annotation.NonNull;
 
 public class DivideByGrade implements IDivider {
 
-    public void divide(@NonNull ArrayList<Player> comingPlayers,
+    public void divide(Context ctx, @NonNull ArrayList<Player> comingPlayers,
                        @NonNull List<Player> players1,
                        @NonNull List<Player> players2) {
 
