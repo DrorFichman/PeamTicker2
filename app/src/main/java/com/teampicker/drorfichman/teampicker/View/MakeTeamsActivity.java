@@ -2,7 +2,6 @@ package com.teampicker.drorfichman.teampicker.View;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.hardware.SensorManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,10 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import com.squareup.seismic.ShakeDetector;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.CollaborationHelper;
-import com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies.DivideCollaboration;
 import com.teampicker.drorfichman.teampicker.Controller.ScreenshotHelper;
 import com.teampicker.drorfichman.teampicker.Controller.TeamData;
 import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
@@ -39,8 +36,6 @@ import java.util.Random;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-
-import static com.squareup.seismic.ShakeDetector.SENSITIVITY_LIGHT;
 
 public class MakeTeamsActivity extends AppCompatActivity {
 
@@ -76,7 +71,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private View teamsScreenArea;
 
     private AlertDialog makeTeamsDialog;
-    private ShakeDetector sd;
     View progressBarTeamDivision;
     private View teamStatsLayout;
     private View buttonsLayout;
@@ -99,7 +93,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isMoveMode()) {
-                    Toast.makeText(MakeTeamsActivity.this, getString(R.string.operation_move), Toast.LENGTH_LONG).show();
+                    Toast.makeText(MakeTeamsActivity.this, R.string.operation_move, Toast.LENGTH_LONG).show();
                 } else {
                     movedPlayers.clear();
                     refreshPlayers();
@@ -145,7 +139,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         shuffleView = findViewById(R.id.shuffle);
         shuffleView.setOnClickListener(view -> divideComingPlayers(TeamDivision.DivisionStrategy.Grade));
-        shuffleView.setOnLongClickListener(explainOperation);
+        shuffleView.setOnLongClickListener(showShuffleDialog);
 
         team1Score = (Button) findViewById(R.id.team_1_score);
         team2Score = (Button) findViewById(R.id.team_2_score);
@@ -157,8 +151,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 if (isAnalysisPlayerSelectedMode()) { // cancel player analysis selection
                     analysisSelectedPlayer = null;
                     analysisView.setImageResource(R.drawable.analysis_selected);
-                    if (!isMoveMode())
-                        Toast.makeText(MakeTeamsActivity.this, getString(R.string.operation_analysis), Toast.LENGTH_LONG).show();
                     refreshPlayers();
                 } else if (isAnalysisMode()) { // cancel analysis
                     analysisResult = null;
@@ -167,7 +159,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
                     refreshPlayers();
                 } else { // enter analysis mode
                     if (!isMoveMode())
-                        Toast.makeText(MakeTeamsActivity.this, getString(R.string.operation_analysis), Toast.LENGTH_LONG).show();
+                        Toast.makeText(MakeTeamsActivity.this, R.string.operation_analysis, Toast.LENGTH_LONG).show();
                     analysisView.setImageResource(R.drawable.analysis_selected);
 
                     analysisSelectedPlayer = null;
@@ -192,21 +184,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
         buttonsLayout = findViewById(R.id.buttons_layout);
 
         initialData(TeamDivision.DivisionStrategy.Grade);
-
-        initShake();
-    }
-
-    private void initShake() {
-        SensorManager sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
-        sd = new ShakeDetector(this::showMakeTeamOptionsDialog);
-        sd.setSensitivity(SENSITIVITY_LIGHT);
-        sd.start(sensorManager);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (sd != null) sd.stop();
     }
 
     private void initCollaboration() {
@@ -464,6 +441,11 @@ public class MakeTeamsActivity extends AppCompatActivity {
         return moveView != null && moveView.isChecked();
     }
 
+    View.OnLongClickListener showShuffleDialog = v -> {
+        showMakeTeamOptionsDialog();
+        return true;
+    };
+
     View.OnLongClickListener explainOperation = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View view) {
@@ -575,6 +557,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
                                     divideComingPlayers(TeamDivision.DivisionStrategy.Age);
                                     break;
                                 case 2:
+                                    Toast.makeText(this, R.string.operation_divide_by_collaboration, Toast.LENGTH_LONG).show();
                                     dividePlayersAsync();
                             }
                         });
