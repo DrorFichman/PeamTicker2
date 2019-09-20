@@ -1,12 +1,13 @@
 package com.teampicker.drorfichman.teampicker.Controller;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
+import com.teampicker.drorfichman.teampicker.tools.MathTools;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,37 +36,34 @@ public class CollaborationHelper {
         }
 
         public int getCollaborationWinRate(List<Player> players) {
-            int games = 0;
+            int winsAndLoses = 0;
             int wins = 0;
             for (Player p : players) {
                 CollaborationHelper.PlayerCollaboration player = getPlayer(p.mName);
                 if (player != null) {
-                    games += player.overallCollaboratorsGames;
+                    winsAndLoses += player.overallCollaboratorsWinsAndLoses;
                     wins += player.overallCollaboratorsWins;
                 }
             }
-            if (games > 0)
-                return (wins * 100 / games);
+            if (winsAndLoses > 0)
+                return (wins * 100 / winsAndLoses);
             else
                 return 0;
         }
 
         public int getExpectedWinRateStdDiv(List<Player> players) {
-            int diff = 0;
-            int count = 0;
+            ArrayList<Integer> diffs = new ArrayList<>();
             for (Player p : players) {
                 CollaborationHelper.PlayerCollaboration player = getPlayer(p.mName);
                 if (player != null) {
                     int expectedWinRate = player.getExpectedWinRate();
                     if (expectedWinRate != -1) {
-                        Log.d("STAT", "Adding " + player.name + " diff=" + Math.abs(50 - expectedWinRate) + " from " + expectedWinRate);
-                        diff += Math.abs(50 - expectedWinRate);
-                        count++;
+                        diffs.add(Math.abs(50 - expectedWinRate));
                     }
                 }
             }
-            Log.d("STAT", "Team total " + diff);
-            if (count > 0) return diff / count;
+
+            if (diffs.size() > 0) return (int) MathTools.getStdDevFromDiffs(diffs);
             else return -1;
         }
     }
@@ -76,6 +74,7 @@ public class CollaborationHelper {
         public int success;
         public int winRate;
         int wins;
+
         HashMap<String, EffectMargin> collaborators = new HashMap<>();
         HashMap<String, EffectMargin> opponents = new HashMap<>();
 
@@ -90,6 +89,7 @@ public class CollaborationHelper {
         int overallOpponentsGames = 0;
         int overallOpponentsWins = 0;
         int overallOpponentsSuccess = 0;
+        int overallCollaboratorsWinsAndLoses;
 
         PlayerCollaboration(Player p) {
             name = p.mName;
@@ -104,6 +104,7 @@ public class CollaborationHelper {
         void addCollaborator(String name, EffectMargin effectData) {
             collaborators.put(name, effectData);
             overallCollaboratorsGames += effectData.gamesWith;
+            overallCollaboratorsWinsAndLoses += effectData.winsAndLosesWith;
             overallCollaboratorsWins += effectData.winsWith;
             overallCollaboratorsSuccess += effectData.successWith;
 
@@ -164,6 +165,7 @@ public class CollaborationHelper {
         public String player;
         public EffectType effect;
         public int gamesWith;
+        public int winsAndLosesWith; // TODO improve logic copy win rate from statistics
 
         int winsWith;
         int successWith;
@@ -176,6 +178,7 @@ public class CollaborationHelper {
             this.player = player.mName;
             collaborator = with.mName;
             gamesWith = with.statisticsWith.gamesCount;
+            winsAndLosesWith = with.statisticsWith.getWinsAndLosesCount();
             winsWith = with.statisticsWith.wins;
             successWith = with.statisticsWith.successRate;
             winRateWith = with.statisticsWith.getWinRate();

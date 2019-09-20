@@ -18,9 +18,11 @@ public class DivideByAge implements IDivider {
                        @NonNull List<Player> players1,
                        @NonNull List<Player> players2) {
 
-        Collections.sort(comingPlayers, Comparator.comparingInt(Player::getAge));
+        ArrayList<Player> players = DividerBase.cloneList(comingPlayers);
 
-        players1.addAll(comingPlayers.subList(0, comingPlayers.size() / 2));
-        players2.addAll(comingPlayers.subList(comingPlayers.size() / 2, comingPlayers.size()));
+        Collections.sort(players, Comparator.comparingInt(Player::getAge));
+
+        players1.addAll(players.subList(0, players.size() / 2));
+        players2.addAll(players.subList(players.size() / 2, players.size()));
     }
 }

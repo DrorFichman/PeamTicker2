@@ -19,7 +19,7 @@
     <string name="show_archived">Players Archive</string>
     <string name="make_teams">Make teams</string>
     <string name="enter_results">Enter Results</string>
-    <string name="team_data">" Count: %1$s \n Average: %2$s \n Win Rate : %3$s \n Success : %4$s \n Grade StdDev: %5$s \n AI: (%6$s) "</string>
+    <string name="team_data">" Count: %1$s \n Average: %2$s \n Win Rate: %3$s%% \n Success: %4$s \n Grade StdDev: %5$s \n %6$s "</string>
     <string name="team_public_stats">" Age: %1$s "</string>
     <string name="delete">Delete</string>
     <string name="win_rate">Win rate</string>
@@ -36,6 +36,7 @@
     <string name="player_analysis_collaborator">"(W:%1$02d%% G:%2$02d) [S:%3$s]"</string>
     <string name="player_analysis_selected">"(W:%1$02d%% G:%2$02d) [%3$s]"</string>
 
-    <string name="operation_move">* Click the players you want to move \n* Click the blue icon to exit move mode</string>
-    <string name="operation_analysis">* Click the players for deeper analysis \n* Click the analysis icon to exit analysis mode</string>
+    <string name="operation_move">* Click the players you want to move \n* Click icon to exit move mode</string>
+    <string name="operation_divide_by_collaboration">* AI in progress :)</string>
+    <string name="operation_analysis">* Click the players for deeper analysis \n* Click icon to exit analysis mode</string>
 </resources>

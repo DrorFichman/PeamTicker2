@@ -10,6 +10,15 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
+        <ProgressBar
+            android:id="@+id/calculating_teams_progress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:visibility="gone" />
+
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -104,6 +113,7 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/buttons_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -139,23 +149,6 @@
             android:layout_weight="1"
             android:src="@drawable/save"
             android:visibility="gone" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="10dp"
-        android:gravity="center">
-
-        <TextView
-            android:id="@+id/operation_explanation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:lines="2"
-            android:text="@string/operation_move"
-            android:visibility="invisible" />
 
     </LinearLayout>
 

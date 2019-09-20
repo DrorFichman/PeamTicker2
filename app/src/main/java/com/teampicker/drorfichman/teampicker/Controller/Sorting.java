@@ -59,6 +59,7 @@ public class Sorting {
     }
 
     public void sort(ArrayList<? extends Sortable> players) {
+        // TODO improve sorting with lambda compare and secondary
         Collections.sort(players, new Comparator<Sortable>() {
             @Override
             public int compare(Sortable first, Sortable second) {

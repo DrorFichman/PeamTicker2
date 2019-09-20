@@ -25,10 +25,15 @@ public class StatisticsData implements Serializable {
         this.wins = wins;
     }
 
-    public int getWinRate() {
+    public int getWinsAndLosesCount() {
         int loses = wins - successRate;
-        if (wins + loses > 0) {
-            return (wins * 100 / (wins + loses));
+        return (wins + loses);
+    }
+
+    public int getWinRate() {
+        int countableGames = getWinsAndLosesCount();
+        if (countableGames > 0) {
+            return (wins * 100 / countableGames);
         }
         return 0;
     }

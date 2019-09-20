@@ -151,7 +151,7 @@ public class TeamData {
         int totalWins = 0;
         for (Player p : players) {
             if (p.statistics != null) {
-                totalGames += p.statistics.gamesCount;
+                totalGames += p.statistics.getWinsAndLosesCount();
                 totalWins += p.statistics.wins;
             }
         }

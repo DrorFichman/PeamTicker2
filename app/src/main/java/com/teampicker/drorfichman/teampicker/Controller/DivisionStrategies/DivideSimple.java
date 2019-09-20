@@ -2,26 +2,22 @@ package com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies;
 
 import android.content.Context;
 
-import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Controller.OptionalDivision;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import androidx.annotation.NonNull;
-
-public class DivideSimple implements IDivider {
+public class DivideSimple extends DividerBase {
 
     @Override
-    public void divide(Context ctx, @NonNull ArrayList<Player> comingPlayers,
-                       @NonNull List<Player> players1,
-                       @NonNull List<Player> players2) {
+    int gradeOption(Context ctx, OptionalDivision option) {
+        return 0;
+    }
 
-        for (Player currPlayer : comingPlayers) {
-            if (players1.size() == players2.size()) {
-                players1.add(currPlayer);
-            } else {
-                players2.add(currPlayer);
-            }
-        }
+    @Override
+    boolean preferNewOption(int selected, int another) {
+        return false;
+    }
+
+    @Override
+    int optionsCount() {
+        return 1;
     }
 }
