@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.CollaborationHelper;
 import com.teampicker.drorfichman.teampicker.Controller.ScreenshotHelper;
@@ -93,7 +94,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isMoveMode()) {
-                    Toast.makeText(MakeTeamsActivity.this, R.string.operation_move, Toast.LENGTH_LONG).show();
+                    Snackbar.make(view, R.string.operation_move, Snackbar.LENGTH_LONG).show();
                 } else {
                     movedPlayers.clear();
                     refreshPlayers();
@@ -159,7 +160,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
                     refreshPlayers();
                 } else { // enter analysis mode
                     if (!isMoveMode())
-                        Toast.makeText(MakeTeamsActivity.this, R.string.operation_analysis, Toast.LENGTH_LONG).show();
+                        Snackbar.make(view, R.string.operation_analysis, Snackbar.LENGTH_LONG).show();
                     analysisView.setImageResource(R.drawable.analysis_selected);
 
                     analysisSelectedPlayer = null;
@@ -451,16 +452,16 @@ public class MakeTeamsActivity extends AppCompatActivity {
         public boolean onLongClick(View view) {
             switch (view.getId()) {
                 case R.id.game_prediction_button:
-                    Toast.makeText(MakeTeamsActivity.this, "Enter players collaboration analysis mode", Toast.LENGTH_LONG).show();
+                    Snackbar.make(sendView, "Enter players collaboration analysis mode", Snackbar.LENGTH_LONG).show();
                     return true;
                 case R.id.send:
-                    Toast.makeText(MakeTeamsActivity.this, "Share teams", Toast.LENGTH_LONG).show();
+                    Snackbar.make(sendView, "Share teams", Snackbar.LENGTH_LONG).show();
                     return true;
                 case R.id.shuffle:
-                    Toast.makeText(MakeTeamsActivity.this, "Shuffle teams", Toast.LENGTH_LONG).show();
+                    Snackbar.make(sendView, "Shuffle teams", Snackbar.LENGTH_LONG).show();
                     return true;
                 case R.id.move:
-                    Toast.makeText(MakeTeamsActivity.this, "Enter manual players moving mode", Toast.LENGTH_LONG).show();
+                    Snackbar.make(sendView, "Enter manual players moving mode", Snackbar.LENGTH_LONG).show();
                     return true;
             }
             return false;
