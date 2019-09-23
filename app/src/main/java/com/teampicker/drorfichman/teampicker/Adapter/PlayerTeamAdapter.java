@@ -21,11 +21,6 @@ import java.util.List;
  * Created by drorfichman on 7/30/16.
  */
 public class PlayerTeamAdapter extends ArrayAdapter<Player> {
-    static final int SUCCESS_DIFF_ISSUE = 5;
-    static final int SUCCESS_DIFF_EXCESSIVE = 10;
-    static final int LOW_WIN_RATE = 40;
-    static final int HIGH_WIN_RATE = 60;
-
     private Context context;
     private List<Player> mPlayers;
     private List<Player> mMovedPlayers;
@@ -33,9 +28,9 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
     private String mSelectedPlayer;
     private CollaborationHelper.Collaboration mCollaboration;
 
-    boolean isAttributesVisible;
-    boolean isGameHistoryVisible;
-    boolean isGradeVisible;
+    private boolean isAttributesVisible;
+    private boolean isGameHistoryVisible;
+    private boolean isGradeVisible;
 
     public PlayerTeamAdapter(Context ctx, List<Player> players,
                              List<Player> coloredPlayers, List<Player> markedPlayers,
@@ -44,8 +39,8 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
-        mMovedPlayers = coloredPlayers != null ? coloredPlayers : new ArrayList<Player>();
-        mMarkedPlayers = markedPlayers != null ? markedPlayers : new ArrayList<Player>();
+        mMovedPlayers = coloredPlayers != null ? coloredPlayers : new ArrayList<>();
+        mMarkedPlayers = markedPlayers != null ? markedPlayers : new ArrayList<>();
         mCollaboration = collaboration;
         mSelectedPlayer = selectedPlayer;
 
@@ -60,21 +55,18 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
         Player player = mPlayers.get(position);
 
-        TextView name = (TextView) rowView.findViewById(R.id.player_team_name);
-        setName(player, name);
+        TextView name = rowView.findViewById(R.id.player_team_name);
+        setName(rowView, player, name);
 
         setAttributes(rowView, player);
 
         setGamesHistory(rowView, player);
 
-        TextView grade = (TextView) rowView.findViewById(R.id.player_team_grade);
+        TextView grade = rowView.findViewById(R.id.player_team_grade);
         setGrade(player, grade);
 
-        TextView playerMarker = (TextView) rowView.findViewById(R.id.player_moved_marker);
-        playerMarker.setVisibility(mMovedPlayers.contains(player) ? View.VISIBLE : View.GONE);
-
-        TextView analysis = (TextView) rowView.findViewById(R.id.player_analysis);
-        ImageView suggestion = (ImageView) rowView.findViewById(R.id.player_analysis_suggestion);
+        TextView analysis = rowView.findViewById(R.id.player_analysis);
+        ImageView suggestion = rowView.findViewById(R.id.player_analysis_suggestion);
         setCollaborationAnalysis(rowView, player, analysis);
         setSelectedPlayer(rowView, player);
         setColoredPlayers(rowView, suggestion, player);
@@ -82,11 +74,19 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         return rowView;
     }
 
-    private void setName(Player player, TextView name) {
+    private void setName(View rowView, Player player, TextView name) {
         if (mCollaboration != null) {
             name.setText(player.mName.substring(0, Math.min(6, player.mName.length())));
         } else {
-            name.setText(player.mName + (mMarkedPlayers.contains(player) ? " **" : ""));
+            name.setText(player.mName);
+        }
+
+        if (mMarkedPlayers.contains(player)) {
+            rowView.setAlpha(0.4F);
+        } else if (mMovedPlayers.contains(player)) {
+            rowView.setAlpha(0.4F);
+        } else {
+            rowView.setAlpha(1F);
         }
     }
 
@@ -156,11 +156,11 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
     private void setGamesHistory(View rowView, Player player) {
         ArrayList<ImageView> starView = new ArrayList();
-        starView.add((ImageView) rowView.findViewById(R.id.res_1));
-        starView.add((ImageView) rowView.findViewById(R.id.res_2));
-        starView.add((ImageView) rowView.findViewById(R.id.res_3));
-        starView.add((ImageView) rowView.findViewById(R.id.res_4));
-        starView.add((ImageView) rowView.findViewById(R.id.res_5));
+        starView.add(rowView.findViewById(R.id.res_1));
+        starView.add(rowView.findViewById(R.id.res_2));
+        starView.add(rowView.findViewById(R.id.res_3));
+        starView.add(rowView.findViewById(R.id.res_4));
+        starView.add(rowView.findViewById(R.id.res_5));
 
         for (ImageView im : starView) {
             im.setVisibility(View.INVISIBLE);
