@@ -2,7 +2,6 @@ package com.teampicker.drorfichman.teampicker.View;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -27,7 +26,6 @@ import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,9 +42,9 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     public static String INTENT_SET_RESULT = "INTENT_SET_RESULT";
 
-    private ArrayList<Player> players1 = new ArrayList<>();
-    private ArrayList<Player> players2 = new ArrayList<>();
-    private CollaborationHelper.Collaboration analysisResult;
+    public ArrayList<Player> players1 = new ArrayList<>();
+    public ArrayList<Player> players2 = new ArrayList<>();
+    public CollaborationHelper.Collaboration analysisResult;
     private String analysisSelectedPlayer;
 
     private ListView list2;
@@ -73,8 +71,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private AlertDialog makeTeamsDialog;
     View progressBarTeamDivision;
-    private View teamStatsLayout;
-    private View buttonsLayout;
+    protected View teamStatsLayout;
+    protected View buttonsLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +92,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (isMoveMode()) {
-                    Snackbar.make(view, R.string.operation_move, Snackbar.LENGTH_LONG).show();
+                    // TODO remove? Snackbar.make(view, R.string.operation_move, Snackbar.LENGTH_LONG).show();
                 } else {
                     movedPlayers.clear();
                     refreshPlayers();
@@ -139,35 +137,14 @@ public class MakeTeamsActivity extends AppCompatActivity {
         sendView.setOnLongClickListener(explainOperation);
 
         shuffleView = findViewById(R.id.shuffle);
-        shuffleView.setOnClickListener(view -> divideComingPlayers(TeamDivision.DivisionStrategy.Grade));
-        shuffleView.setOnLongClickListener(showShuffleDialog);
+        shuffleView.setOnClickListener(v -> showMakeTeamOptionsDialog());
+        shuffleView.setOnLongClickListener(explainOperation);
 
         team1Score = (Button) findViewById(R.id.team_1_score);
         team2Score = (Button) findViewById(R.id.team_2_score);
 
         analysisView = (ImageView) findViewById(R.id.game_prediction_button);
-        analysisView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isAnalysisPlayerSelectedMode()) { // cancel player analysis selection
-                    analysisSelectedPlayer = null;
-                    analysisView.setImageResource(R.drawable.analysis_selected);
-                    refreshPlayers();
-                } else if (isAnalysisMode()) { // cancel analysis
-                    analysisResult = null;
-                    analysisSelectedPlayer = null;
-                    analysisView.setImageResource(R.drawable.analysis);
-                    refreshPlayers();
-                } else { // enter analysis mode
-                    if (!isMoveMode())
-                        Snackbar.make(view, R.string.operation_analysis, Snackbar.LENGTH_LONG).show();
-                    analysisView.setImageResource(R.drawable.analysis_selected);
-
-                    analysisSelectedPlayer = null;
-                    initCollaboration();
-                }
-            }
-        });
+        analysisView.setOnClickListener(v -> showAnalysis(v));
         analysisView.setOnLongClickListener(explainOperation);
 
         if (getIntent().getBooleanExtra(INTENT_SET_RESULT, false)) {
@@ -185,6 +162,27 @@ public class MakeTeamsActivity extends AppCompatActivity {
         buttonsLayout = findViewById(R.id.buttons_layout);
 
         initialData(TeamDivision.DivisionStrategy.Grade);
+    }
+
+    private void showAnalysis(View view) {
+
+        if (isAnalysisPlayerSelectedMode()) { // cancel player analysis selection
+            analysisSelectedPlayer = null;
+            analysisView.setImageResource(R.drawable.analysis_selected);
+            refreshPlayers();
+        } else if (isAnalysisMode()) { // cancel analysis
+            analysisResult = null;
+            analysisSelectedPlayer = null;
+            analysisView.setImageResource(R.drawable.analysis);
+            refreshPlayers();
+        } else { // enter analysis mode
+            if (!isMoveMode())
+                // TODO remove? Snackbar.make(view, R.string.operation_analysis, Snackbar.LENGTH_LONG).show();
+            analysisView.setImageResource(R.drawable.analysis_selected);
+
+            AsyncTeamsAnalysis async = new AsyncTeamsAnalysis(this);
+            async.execute();
+        }
     }
 
     private void initCollaboration() {
@@ -311,7 +309,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         divideComingPlayers(selectedDivision, true);
     }
 
-    private void divideComingPlayers(TeamDivision.DivisionStrategy selectedDivision, boolean refreshPlayersView) {
+    protected void divideComingPlayers(TeamDivision.DivisionStrategy selectedDivision, boolean refreshPlayersView) {
 
         ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(this, RECENT_GAMES);
 
@@ -332,7 +330,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         }
     }
 
-    private void postDividePlayers() {
+    protected void postDividePlayers() {
         if (isAnalysisMode()) {
             analysisSelectedPlayer = null;
             initCollaboration();
@@ -374,7 +372,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         updateStats();
     }
 
-    private void refreshPlayers() {
+    public void refreshPlayers() {
         refreshPlayers(true);
     }
 
@@ -398,25 +396,31 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void updateTeamData(TextView stats, TextView publicStats, TeamData players) {
 
+        // TODO improve visual stats table
+        // TODO display collaborationWinRate as % out of collaborationWinRate1+collaborationWinRate2
+
         String collaborationWinRate = "";
+        String teamStdDev = "";
         if (isAnalysisMode()) {
             int winRate = analysisResult.getCollaborationWinRate(players.players);
             int stdDev = analysisResult.getExpectedWinRateStdDiv(players.players);
             if (winRate != 0) {
-                collaborationWinRate = "Forecast: " + winRate + "% (+/- " + stdDev + ")";
+                collaborationWinRate = getString(R.string.team_data_forecast, winRate);
+                teamStdDev = getString(R.string.team_data_win_rate_stddev, stdDev);
             }
         }
 
         stats.setText(getString(R.string.team_data,
-                String.valueOf(players.getAllCount()),
-                String.valueOf(players.getAverage()),
-                String.valueOf(players.getWinRate()),
-                String.valueOf(players.getSuccess()),
-                String.valueOf(players.getStdDev()),
+                players.getAllCount(),
+                players.getAverage(),
+                players.getStdDev(),
+                players.getWinRate(),
+                players.getSuccess(),
+                teamStdDev,
                 collaborationWinRate));
 
         publicStats.setText(getString(R.string.team_public_stats,
-                String.valueOf(players.getAge())));
+                players.getAge()));
 
         publicStats.setVisibility(View.VISIBLE);
     }
@@ -442,11 +446,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
         return moveView != null && moveView.isChecked();
     }
 
-    View.OnLongClickListener showShuffleDialog = v -> {
-        showMakeTeamOptionsDialog();
-        return true;
-    };
-
     View.OnLongClickListener explainOperation = new View.OnLongClickListener() {
         @Override
         public boolean onLongClick(View view) {
@@ -455,13 +454,13 @@ public class MakeTeamsActivity extends AppCompatActivity {
                     Snackbar.make(sendView, "Enter players collaboration analysis mode", Snackbar.LENGTH_LONG).show();
                     return true;
                 case R.id.send:
-                    Snackbar.make(sendView, "Share teams", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(sendView, "Share teams", Snackbar.LENGTH_SHORT).show();
                     return true;
                 case R.id.shuffle:
-                    Snackbar.make(sendView, "Shuffle teams", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(sendView, "Shuffle teams", Snackbar.LENGTH_SHORT).show();
                     return true;
                 case R.id.move:
-                    Snackbar.make(sendView, "Enter manual players moving mode", Snackbar.LENGTH_LONG).show();
+                    Snackbar.make(sendView, "Enter manual players moving mode", Snackbar.LENGTH_SHORT).show();
                     return true;
             }
             return false;
@@ -548,7 +547,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         alertDialogBuilder
                 .setCancelable(true)
                 .setItems(new CharSequence[]
-                                {"Divide by grade (default)", "Divide by age", "AI - beep boop beep"},
+                                {"Divide by grade", "Divide by age", "AI - beep boop beep"},
                         (dialog, which) -> {
                             switch (which) {
                                 case 0:
@@ -568,49 +567,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
         makeTeamsDialog.show();
     }
 
-    private static class DivideCollaborationAsync extends AsyncTask<Void, Void, String> {
-
-        private WeakReference<MakeTeamsActivity> ref;
-
-        DivideCollaborationAsync(MakeTeamsActivity activity) {
-            ref = new WeakReference<>(activity);
-        }
-
-        @Override
-        protected String doInBackground(Void... params) {
-            MakeTeamsActivity activity = ref.get();
-            if (activity == null || activity.isFinishing()) return null;
-
-            activity.divideComingPlayers(TeamDivision.DivisionStrategy.Optimize, false);
-            return null;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            MakeTeamsActivity activity = ref.get();
-            if (activity == null || activity.isFinishing()) return;
-
-            activity.progressBarTeamDivision.setVisibility(View.VISIBLE);
-            activity.teamStatsLayout.setVisibility(View.INVISIBLE);
-            activity.buttonsLayout.setVisibility(View.INVISIBLE);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            MakeTeamsActivity activity = ref.get();
-            if (activity == null || activity.isFinishing()) return;
-
-            activity.postDividePlayers();
-            activity.progressBarTeamDivision.setVisibility(View.GONE);
-            activity.teamStatsLayout.setVisibility(View.VISIBLE);
-            activity.buttonsLayout.setVisibility(View.VISIBLE);
-        }
-    }
-
     private void dividePlayersAsync() {
-        DivideCollaborationAsync divide = new DivideCollaborationAsync(this);
+        AsyncDivideCollaboration divide = new AsyncDivideCollaboration(this);
         divide.execute();
     }
 }
