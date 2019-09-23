@@ -28,7 +28,6 @@ import com.teampicker.drorfichman.teampicker.R;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Random;
@@ -39,6 +38,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MakeTeamsActivity extends AppCompatActivity {
 
     private static final int RECENT_GAMES = 50;
+    public static final int MAX_SCORE = 15;
 
     public static String INTENT_SET_RESULT = "INTENT_SET_RESULT";
 
@@ -53,7 +53,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
     ArrayList<Player> movedPlayers = new ArrayList<>();
     ArrayList<Player> missedPlayers = new ArrayList<>();
 
-    private View totalData;
     private TextView teamData2;
     private TextView teamData1;
 
@@ -80,23 +79,20 @@ public class MakeTeamsActivity extends AppCompatActivity {
         setContentView(R.layout.layout_make_teams_activity);
         Log.d("teams", "onCreate");
 
-        totalData = findViewById(R.id.total_scores);
-        teamData1 = (TextView) findViewById(R.id.total_list1);
-        teamData2 = (TextView) findViewById(R.id.total_list2);
+        teamStatsLayout = findViewById(R.id.total_scores);
+        teamData1 = findViewById(R.id.total_list1);
+        teamData2 = findViewById(R.id.total_list2);
 
-        list1 = (ListView) findViewById(R.id.team_1);
-        list2 = (ListView) findViewById(R.id.team_2);
+        list1 = findViewById(R.id.team_1);
+        list2 = findViewById(R.id.team_2);
 
-        moveView = (ToggleButton) findViewById(R.id.move);
-        moveView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (isMoveMode()) {
-                    // TODO remove? Snackbar.make(view, R.string.operation_move, Snackbar.LENGTH_LONG).show();
-                } else {
-                    movedPlayers.clear();
-                    refreshPlayers();
-                }
+        moveView = findViewById(R.id.move);
+        moveView.setOnClickListener(view -> {
+            if (isMoveMode()) {
+                // TODO remove? Snackbar.make(view, R.string.operation_move, Snackbar.LENGTH_LONG).show();
+            } else {
+                movedPlayers.clear();
+                refreshPlayers();
             }
         });
         moveView.setOnLongClickListener(explainOperation);
@@ -105,34 +101,24 @@ public class MakeTeamsActivity extends AppCompatActivity {
         list2.setOnItemClickListener(playerClicked);
 
         saveView = findViewById(R.id.save);
-        saveView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveResults();
-            }
-        });
+        saveView.setOnClickListener(view -> saveResults());
 
         teamsScreenArea = findViewById(R.id.teams_list_area);
 
         sendView = findViewById(R.id.send);
-        sendView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        sendView.setOnClickListener(view -> {
 
-                Log.d("teams", "Enter send mode");
-                DbHelper.saveTeams(MakeTeamsActivity.this, players1, players2);
-                enterSendMode();
+            Log.d("teams", "Enter send mode");
+            DbHelper.saveTeams(MakeTeamsActivity.this, players1, players2);
+            enterSendMode();
 
-                final Runnable r = new Runnable() {
-                    public void run() {
-                        ScreenshotHelper.takeScreenshot(MakeTeamsActivity.this, teamsScreenArea);
-                        Log.d("teams", "Exit send mode - Shot taken");
-                        exitSendMode();
-                    }
-                };
+            final Runnable r = () -> {
+                ScreenshotHelper.takeScreenshot(MakeTeamsActivity.this, teamsScreenArea);
+                Log.d("teams", "Exit send mode - Shot taken");
+                exitSendMode();
+            };
 
-                new Handler().postDelayed(r, 200);
-            }
+            new Handler().postDelayed(r, 200);
         });
         sendView.setOnLongClickListener(explainOperation);
 
@@ -140,11 +126,11 @@ public class MakeTeamsActivity extends AppCompatActivity {
         shuffleView.setOnClickListener(v -> showMakeTeamOptionsDialog());
         shuffleView.setOnLongClickListener(explainOperation);
 
-        team1Score = (Button) findViewById(R.id.team_1_score);
-        team2Score = (Button) findViewById(R.id.team_2_score);
+        team1Score = findViewById(R.id.team_1_score);
+        team2Score = findViewById(R.id.team_2_score);
 
-        analysisView = (ImageView) findViewById(R.id.game_prediction_button);
-        analysisView.setOnClickListener(v -> showAnalysis(v));
+        analysisView = findViewById(R.id.game_prediction_button);
+        analysisView.setOnClickListener(this::showAnalysis);
         analysisView.setOnLongClickListener(explainOperation);
 
         if (getIntent().getBooleanExtra(INTENT_SET_RESULT, false)) {
@@ -158,7 +144,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         progressBarTeamDivision = findViewById(R.id.calculating_teams_progress);
 
-        teamStatsLayout = findViewById(R.id.total_scores);
         buttonsLayout = findViewById(R.id.buttons_layout);
 
         initialData(TeamDivision.DivisionStrategy.Grade);
@@ -207,25 +192,15 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         shuffleView.setVisibility(View.GONE);
         sendView.setVisibility(View.GONE);
+        analysisView.setVisibility(View.GONE);
 
         saveView.setVisibility(View.VISIBLE);
 
         team1Score.setVisibility(View.VISIBLE);
         team2Score.setVisibility(View.VISIBLE);
 
-        team1Score.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                team1Score.setText(String.valueOf((getScoreValue(team1Score) + 1) % 11));
-            }
-        });
-
-        team2Score.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                team2Score.setText(String.valueOf((getScoreValue(team2Score) + 1) % 11));
-            }
-        });
+        team1Score.setOnClickListener(view -> team1Score.setText(String.valueOf((getScoreValue(team1Score) + 1) % MAX_SCORE)));
+        team2Score.setOnClickListener(view -> team2Score.setText(String.valueOf((getScoreValue(team2Score) + 1) % MAX_SCORE)));
     }
 
     int getScoreValue(Button b) {
@@ -293,14 +268,14 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void enterSendMode() {
 
         clearMovedPlayers();
-        totalData.setVisibility(View.INVISIBLE);
+        teamStatsLayout.setVisibility(View.INVISIBLE);
 
         refreshPlayers(false);
     }
 
     private void exitSendMode() {
 
-        totalData.setVisibility(View.VISIBLE);
+        teamStatsLayout.setVisibility(View.VISIBLE);
 
         refreshPlayers(true);
     }
@@ -381,8 +356,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
         TeamData team1Data = new TeamData(players1, count);
         TeamData team2Data = new TeamData(players2, count);
 
-        updateTeamData(teamData1, (TextView) findViewById(R.id.team1_public_stats), team1Data);
-        updateTeamData(teamData2, (TextView) findViewById(R.id.team2_public_stats), team2Data);
+        updateTeamData(teamData1, findViewById(R.id.team1_public_stats), team1Data);
+        updateTeamData(teamData2, findViewById(R.id.team2_public_stats), team2Data);
     }
 
     private void scramble() {
@@ -426,12 +401,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void sortPlayerNames(ArrayList<Player> playersList) {
-        Collections.sort(playersList, new Comparator<Player>() {
-            @Override
-            public int compare(Player p1, Player t1) {
-                return p1.mName.compareTo(t1.mName);
-            }
-        });
+        Collections.sort(playersList, (p1, t1) -> p1.mName.compareTo(t1.mName));
     }
 
     private boolean isAnalysisMode() {

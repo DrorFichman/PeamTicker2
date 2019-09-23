@@ -31,10 +31,10 @@ public class GameAdapter extends ArrayAdapter<Game> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = LayoutInflater.from(context).inflate(R.layout.game_item, parent, false);
-        TextView dateView = (TextView) view.findViewById(R.id.game_date);
-        TextView resultSet = (TextView) view.findViewById(R.id.game_result_set);
-        ImageView res = (ImageView) view.findViewById(R.id.res_1);
-        TextView playerGrade = (TextView) view.findViewById(R.id.game_player_grade);
+        TextView dateView = view.findViewById(R.id.game_date);
+        TextView resultSet = view.findViewById(R.id.game_result_set);
+        ImageView res = view.findViewById(R.id.res_1);
+        TextView playerGrade = view.findViewById(R.id.game_player_grade);
 
         Game g = mGames.get(position);
 
@@ -45,7 +45,7 @@ public class GameAdapter extends ArrayAdapter<Game> {
 
         dateView.setText(date);
 
-        String details = String.valueOf(team1 + " - " + team2);
+        String details = team1 + " - " + team2;
         resultSet.setText(details);
 
         setPlayerResult(res, g);
@@ -59,9 +59,9 @@ public class GameAdapter extends ArrayAdapter<Game> {
     }
 
     private void setPlayerGrade(TextView playerGrade, Game g) {
-        if (g.playerGrade > 0) {
+        if (g.playerGrade > 0) { // player grade at the time of the game
             playerGrade.setVisibility(View.VISIBLE);
-            playerGrade.setText(String.valueOf(g.playerGrade));
+            playerGrade.setText(context.getString(R.string.parentheses, g.playerGrade));
         } else {
             playerGrade.setVisibility(View.GONE);
         }
@@ -69,7 +69,6 @@ public class GameAdapter extends ArrayAdapter<Game> {
 
     private void setPlayerResult(ImageView starView, Game g) {
         if (g.playerResult != null) {
-
             ResultEnum res = g.playerResult;
             if (res == ResultEnum.Win) {
                 starView.setImageResource(R.drawable.circle_win);
@@ -81,7 +80,6 @@ public class GameAdapter extends ArrayAdapter<Game> {
                 starView.setImageResource(R.drawable.circle_na);
             }
             starView.setVisibility(View.VISIBLE);
-
         } else {
             starView.setVisibility(View.GONE);
         }

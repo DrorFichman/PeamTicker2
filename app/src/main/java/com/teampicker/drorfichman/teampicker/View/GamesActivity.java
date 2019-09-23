@@ -4,11 +4,8 @@ import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.teampicker.drorfichman.teampicker.Adapter.GameAdapter;
@@ -27,7 +24,6 @@ public class GamesActivity extends AppCompatActivity {
     private static final String PLAYER = "PLAYER";
 
     private ListView gamesList;
-    private GameAdapter gamesAdapter;
     private Player pPlayer;
 
     @NonNull
@@ -47,29 +43,27 @@ public class GamesActivity extends AppCompatActivity {
             pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(PLAYER));
         }
 
+        gamesList = findViewById(R.id.games_list);
+
+        gamesList.setOnItemClickListener((adapterView, view, i, l) -> {
+            String details = (String) view.getTag(R.id.game_details);
+            int gameId = (int) view.getTag(R.id.game_id);
+            showTeamsDialog(gameId, details);
+        });
+
+        gamesList.setOnItemLongClickListener((adapterView, view, i, l) -> {
+            checkGameDeletion((Integer) view.getTag(R.id.game_id));
+            return true;
+        });
+
+        refreshGames();
+    }
+
+    private void refreshGames() {
         ArrayList<Game> games = getGames();
-        gamesAdapter = new GameAdapter(this, games);
 
-        gamesList = (ListView) findViewById(R.id.games_list);
-
-        gamesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String details = (String) view.getTag(R.id.game_details);
-                int gameId = (int) view.getTag(R.id.game_id);
-                showTeamsDialog(gameId, details);
-            }
-        });
-
-        gamesList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                checkGameDeletion((Integer) view.getTag(R.id.game_id));
-                return true;
-            }
-        });
-
-        gamesList.setAdapter(gamesAdapter);
+        // Attach cursor adapter to the ListView
+        gamesList.setAdapter(new GameAdapter(this, games));
     }
 
     @NonNull
@@ -100,22 +94,13 @@ public class GamesActivity extends AppCompatActivity {
         alertDialogBuilder
                 .setMessage("Do you want to remove this game?")
                 .setCancelable(true)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
 
-                        DbHelper.deleteGame(GamesActivity.this, game);
-                        refreshGames();
-                        dialog.dismiss();
-                    }
+                    DbHelper.deleteGame(GamesActivity.this, game);
+                    refreshGames();
+                    dialog.dismiss();
                 });
 
         alertDialogBuilder.create().show();
-    }
-
-    private void refreshGames() {
-        ArrayList<Game> games = getGames();
-
-        // Attach cursor adapter to the ListView
-        gamesList.setAdapter(new GameAdapter(this, games));
     }
 }

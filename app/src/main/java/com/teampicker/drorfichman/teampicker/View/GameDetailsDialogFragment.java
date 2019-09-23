@@ -2,7 +2,6 @@ package com.teampicker.drorfichman.teampicker.View;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
+import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapterGameHistory;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
@@ -36,9 +35,8 @@ public class GameDetailsDialogFragment extends DialogFragment {
     private static final String PARAM_DETAILS = "details";
     private static final String PARAM_GAME_ID = "game_id";
 
-    private AdapterView.OnItemLongClickListener onPlayerClick;
-    private PlayerTeamAdapter adapter1;
-    private PlayerTeamAdapter adapter2;
+    private PlayerTeamAdapterGameHistory adapter1;
+    private PlayerTeamAdapterGameHistory adapter2;
     private ListView team1List;
     private ListView team2List;
     private View copyGame;
@@ -69,57 +67,41 @@ public class GameDetailsDialogFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.layout_game_details_dialog, container, false);
 
         ((TextView) view.findViewById(R.id.game_details_title)).setText(mDetails);
-        team1List = (ListView) view.findViewById(R.id.game_details_team1);
-        team2List = (ListView) view.findViewById(R.id.game_details_team2);
+        team1List = view.findViewById(R.id.game_details_team1);
+        team2List = view.findViewById(R.id.game_details_team2);
 
-        refreshTeams();
-
-        team1List.setAdapter(adapter1);
-        team2List.setAdapter(adapter2);
-
-        onPlayerClick = new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Player player = (Player) adapterView.getItemAtPosition(i);
-                checkPlayerChange(player);
-                return false;
-            }
+        AdapterView.OnItemLongClickListener onPlayerClick = (adapterView, view1, i, l) -> {
+            Player player = (Player) adapterView.getItemAtPosition(i);
+            checkPlayerChange(player);
+            return false;
         };
         team1List.setOnItemLongClickListener(onPlayerClick);
         team2List.setOnItemLongClickListener(onPlayerClick);
 
         copyGame = view.findViewById(R.id.copy_game);
-        copyGame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DbHelper.clearComingPlayers(getActivity());
-                DbHelper.setPlayerComing(getActivity(), mTeam1);
-                DbHelper.setPlayerComing(getActivity(), mTeam2);
-                DbHelper.saveTeams(getActivity(), mTeam1, mTeam2);
-                dismiss();
-            }
+        copyGame.setOnClickListener(view12 -> {
+            DbHelper.clearComingPlayers(getActivity());
+            DbHelper.setPlayerComing(getActivity(), mTeam1);
+            DbHelper.setPlayerComing(getActivity(), mTeam2);
+            DbHelper.saveTeams(getActivity(), mTeam1, mTeam2);
+            dismiss();
         });
-        copyGame.setOnLongClickListener(longClick);
+        copyGame.setOnLongClickListener(operationExplanation);
 
-        view.findViewById(R.id.game_details_ok).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                dismiss();
-            }
-        });
+        view.findViewById(R.id.game_details_ok).setOnClickListener(v -> dismiss());
+
+        refreshTeams();
 
         return view;
     }
 
-    View.OnLongClickListener longClick = new View.OnLongClickListener() {
-        @Override
-        public boolean onLongClick(View view) {
-            switch (view.getId()) {
-                case R.id.copy_game:
-                    Toast.makeText(getActivity(), "Copy coming players and teams", Toast.LENGTH_LONG).show();
-                    return true;
-            }
-            return false;
+    View.OnLongClickListener operationExplanation = view -> {
+        switch (view.getId()) {
+            case R.id.copy_game:
+                Toast.makeText(getActivity(), "Copy coming players and teams", Toast.LENGTH_LONG).show();
+                return true;
         }
+        return false;
     };
 
     private void checkPlayerChange(final Player player) {
@@ -132,11 +114,9 @@ public class GameDetailsDialogFragment extends DialogFragment {
         alertDialogBuilder
                 .setMessage("Do you want to modify this player attendance?")
                 .setCancelable(true)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        movePlayer(player);
-                        dialog.dismiss();
-                    }
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
+                    movePlayer(player);
+                    dialog.dismiss();
                 });
 
         alertDialogBuilder.create().show();
@@ -150,14 +130,12 @@ public class GameDetailsDialogFragment extends DialogFragment {
     }
 
     private void refreshTeams() {
-
         mTeam1 = DbHelper.getCurrTeam(getActivity(), mGameId, TeamEnum.Team1, 0);
         mTeam2 = DbHelper.getCurrTeam(getActivity(), mGameId, TeamEnum.Team2, 0);
-
         ArrayList missedPlayers = findMissedPlayers();
 
-        adapter1 = new PlayerTeamAdapter(getActivity(), mTeam1, new ArrayList<Player>(), missedPlayers, null, null, false);
-        adapter2 = new PlayerTeamAdapter(getActivity(), mTeam2, new ArrayList<Player>(), missedPlayers, null, null, false);
+        adapter1 = new PlayerTeamAdapterGameHistory(getActivity(), mTeam1, missedPlayers);
+        adapter2 = new PlayerTeamAdapterGameHistory(getActivity(), mTeam2, missedPlayers);
 
         team1List.setAdapter(adapter1);
         team2List.setAdapter(adapter2);
