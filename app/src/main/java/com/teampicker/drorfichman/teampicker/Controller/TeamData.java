@@ -17,7 +17,10 @@ import java.util.List;
  */
 public class TeamData {
     List<Player> allPlayers = new ArrayList<>();
-    public List<Player> players = new ArrayList<>();
+    public List<Player> players = new ArrayList<>(); // TODO should take into account in getExpectedWinRateStdDiv
+
+    public int forecastWinRate;
+    public int forecastStdDev;
 
     /**
      * @param ps players data

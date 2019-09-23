@@ -356,6 +356,18 @@ public class MakeTeamsActivity extends AppCompatActivity {
         TeamData team1Data = new TeamData(players1, count);
         TeamData team2Data = new TeamData(players2, count);
 
+        if (isAnalysisMode()) {
+            team1Data.forecastWinRate = analysisResult.getCollaborationWinRate(team1Data.players);
+            team1Data.forecastStdDev = analysisResult.getExpectedWinRateStdDiv(team1Data.players);
+            team2Data.forecastWinRate = analysisResult.getCollaborationWinRate(team2Data.players);
+            team2Data.forecastStdDev = analysisResult.getExpectedWinRateStdDiv(team2Data.players);
+            if (team1Data.forecastWinRate > 0 && team2Data.forecastWinRate > 0) {
+                int sum = team1Data.forecastWinRate + team2Data.forecastWinRate;
+                team1Data.forecastWinRate = team1Data.forecastWinRate * 100 / sum;
+                team2Data.forecastWinRate = 100 - team1Data.forecastWinRate;
+            }
+        }
+
         updateTeamData(teamData1, findViewById(R.id.team1_public_stats), team1Data);
         updateTeamData(teamData2, findViewById(R.id.team2_public_stats), team2Data);
     }
@@ -372,16 +384,13 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void updateTeamData(TextView stats, TextView publicStats, TeamData players) {
 
         // TODO improve visual stats table
-        // TODO display collaborationWinRate as % out of collaborationWinRate1+collaborationWinRate2
 
         String collaborationWinRate = "";
         String teamStdDev = "";
         if (isAnalysisMode()) {
-            int winRate = analysisResult.getCollaborationWinRate(players.players);
-            int stdDev = analysisResult.getExpectedWinRateStdDiv(players.players);
-            if (winRate != 0) {
-                collaborationWinRate = getString(R.string.team_data_forecast, winRate);
-                teamStdDev = getString(R.string.team_data_win_rate_stddev, stdDev);
+            if (players.forecastWinRate != 0) {
+                collaborationWinRate = getString(R.string.team_data_forecast, players.forecastWinRate);
+                teamStdDev = getString(R.string.team_data_win_rate_stddev, players.forecastStdDev);
             }
         }
 
