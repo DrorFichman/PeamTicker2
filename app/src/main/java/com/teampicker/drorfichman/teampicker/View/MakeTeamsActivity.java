@@ -37,24 +37,30 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MakeTeamsActivity extends AppCompatActivity {
 
-    private static final int RECENT_GAMES = 50;
-    public static final int MAX_SCORE = 15;
+    static final int RECENT_GAMES = 50;
+    static final int MAX_SCORE = 15;
 
     public static String INTENT_SET_RESULT = "INTENT_SET_RESULT";
 
     public ArrayList<Player> players1 = new ArrayList<>();
     public ArrayList<Player> players2 = new ArrayList<>();
-    public CollaborationHelper.Collaboration analysisResult;
-    private String analysisSelectedPlayer;
-
-    private ListView list2;
-    private ListView list1;
-
     ArrayList<Player> movedPlayers = new ArrayList<>();
     ArrayList<Player> missedPlayers = new ArrayList<>();
 
+    public CollaborationHelper.Collaboration analysisResult;
+    private String analysisSelectedPlayer;
+    private boolean mSetResult;
+    private TeamDivision.DivisionStrategy selectedDivision = TeamDivision.DivisionStrategy.Grade;
+
+    private ListView list2;
+    private ListView list1;
     private TextView teamData2;
     private TextView teamData1;
+
+    private View teamsScreenArea;
+    View progressBarTeamDivision;
+    protected View teamStatsLayout;
+    protected View buttonsLayout;
 
     private View sendView;
     private ToggleButton moveView;
@@ -65,13 +71,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private Button team2Score;
     private View saveView;
 
-    private boolean mSetResult;
-    private View teamsScreenArea;
-
     private AlertDialog makeTeamsDialog;
-    View progressBarTeamDivision;
-    protected View teamStatsLayout;
-    protected View buttonsLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,8 +123,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
         sendView.setOnLongClickListener(explainOperation);
 
         shuffleView = findViewById(R.id.shuffle);
-        shuffleView.setOnClickListener(v -> showMakeTeamOptionsDialog());
-        shuffleView.setOnLongClickListener(explainOperation);
+        shuffleView.setOnClickListener(v -> divideComingPlayers(selectedDivision));
+        shuffleView.setOnLongClickListener(v -> showMakeTeamOptionsDialog());
 
         team1Score = findViewById(R.id.team_1_score);
         team2Score = findViewById(R.id.team_2_score);
@@ -280,8 +280,19 @@ public class MakeTeamsActivity extends AppCompatActivity {
         refreshPlayers(true);
     }
 
-    private void divideComingPlayers(TeamDivision.DivisionStrategy selectedDivision) {
-        divideComingPlayers(selectedDivision, true);
+    private void divideComingPlayers(TeamDivision.DivisionStrategy division) {
+        selectedDivision = division;
+
+        if (division == TeamDivision.DivisionStrategy.Optimize) {
+            Toast.makeText(this, R.string.operation_divide_by_collaboration, Toast.LENGTH_LONG).show();
+
+            dividePlayersAsync();
+        } else {
+            if (division == TeamDivision.DivisionStrategy.Age)
+                Toast.makeText(this, R.string.operation_divide_by_age, Toast.LENGTH_SHORT).show();
+
+            divideComingPlayers(division, true);
+        }
     }
 
     protected void divideComingPlayers(TeamDivision.DivisionStrategy selectedDivision, boolean refreshPlayersView) {
@@ -513,10 +524,10 @@ public class MakeTeamsActivity extends AppCompatActivity {
         refreshPlayers();
     }
 
-    private void showMakeTeamOptionsDialog() {
+    private boolean showMakeTeamOptionsDialog() {
 
         if (makeTeamsDialog != null && makeTeamsDialog.isShowing()) {
-            return;
+            return false;
         }
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
@@ -536,14 +547,15 @@ public class MakeTeamsActivity extends AppCompatActivity {
                                     divideComingPlayers(TeamDivision.DivisionStrategy.Age);
                                     break;
                                 case 2:
-                                    Toast.makeText(this, R.string.operation_divide_by_collaboration, Toast.LENGTH_LONG).show();
-                                    dividePlayersAsync();
+                                    divideComingPlayers(TeamDivision.DivisionStrategy.Optimize);
                             }
                         });
 
         makeTeamsDialog = alertDialogBuilder.create();
 
         makeTeamsDialog.show();
+
+        return true;
     }
 
     private void dividePlayersAsync() {
