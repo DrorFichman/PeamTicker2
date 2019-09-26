@@ -2,10 +2,8 @@ package com.teampicker.drorfichman.teampicker.View;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +22,8 @@ import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
 import com.teampicker.drorfichman.teampicker.tools.DBSnapshotUtils;
 import com.teampicker.drorfichman.teampicker.tools.FileHelper;
+import com.teampicker.drorfichman.teampicker.tools.PermissionTools;
+import com.teampicker.drorfichman.teampicker.tools.SnapshotHelper;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -32,8 +32,6 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.FileProvider;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -146,10 +144,12 @@ public class MainActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
 
         // Import data result
-        if (requestCode == ACTIVITY_RESULT_IMPORT_FILE_SELECTED && resultCode == RESULT_OK &&
+        if (requestCode == ACTIVITY_RESULT_IMPORT_FILE_SELECTED &&
+                resultCode == RESULT_OK &&
                 data != null && data.getData() != null) {
 
-            checkImportApproved(getImportListener(), FileHelper.getPath(this, data.getData()));
+            SnapshotHelper.checkImportApproved(this, getImportListener(),
+                    FileHelper.getPath(this, data.getData()));
         }
     }
 
@@ -389,7 +389,7 @@ public class MainActivity extends AppCompatActivity
             public void exportCompleted(File snapshot) {
                 Toast.makeText(MainActivity.this, "Export Completed " + snapshot, Toast.LENGTH_SHORT).show();
 
-                sendSnapshot(snapshot);
+                SnapshotHelper.sendSnapshot(MainActivity.this, snapshot);
             }
 
             @Override
@@ -399,49 +399,9 @@ public class MainActivity extends AppCompatActivity
         };
     }
 
-    private void sendSnapshot(File snapshotFile) {
-
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        Uri snapshotURI = FileProvider.getUriForFile(this,
-                this.getApplicationContext().getPackageName() + ".team.picker.share.screenshot",
-                snapshotFile);
-
-        intent.putExtra(Intent.EXTRA_STREAM, snapshotURI);
-        intent.setType("*/*");
-        startActivity(Intent.createChooser(intent, "Send snapshot"));
-    }
-
-    private void checkImportApproved(final DBSnapshotUtils.ImportListener handler, final String importPath) {
-
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-
-        alertDialogBuilder.setTitle("Import Data Warning");
-
-        alertDialogBuilder
-                .setMessage("Delete local data and import selected file?")
-                .setCancelable(true)
-                .setPositiveButton(R.string.yes, (dialog, id) -> {
-
-                    DBSnapshotUtils.importDBSnapshotSelected(MainActivity.this, importPath, handler);
-
-                    dialog.dismiss();
-                });
-
-        alertDialogBuilder.create().show();
-    }
-
     public void selectFileForImport() {
 
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 2);
-
-        } else {
+        PermissionTools.checkPermissionsForExecution(this, 2, () -> {
             Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
             chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
             chooseFile.setType("*/*"); // TODO xls?
@@ -449,7 +409,7 @@ public class MainActivity extends AppCompatActivity
                     Intent.createChooser(chooseFile, "Select xls snapshot file to import"),
                     MainActivity.ACTIVITY_RESULT_IMPORT_FILE_SELECTED
             );
-        }
+        }, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
     //endregion
 

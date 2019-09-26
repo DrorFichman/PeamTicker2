@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
+import com.teampicker.drorfichman.teampicker.tools.PermissionTools;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,61 +35,40 @@ public class ScreenshotHelper {
 
     public static void takeListScreenshot(Activity activity, ListView list, View titles, ArrayAdapter adapter) {
 
-        if (!checkScreenshotPermission(activity)) {
-            return;
-        }
+        PermissionTools.checkPermissionsForExecution(activity, 1, () -> {
+            try {
+                Bitmap bitmap = getWholeListViewItemsToBitmap(list, titles, adapter);
 
-        try {
-            Bitmap bitmap = getWholeListViewItemsToBitmap(list, titles, adapter);
+                File imageFile = getImageFromBitmap(bitmap, 100);
 
-            File imageFile = getImageFromBitmap(bitmap, 100);
+                openScreenshot(activity, imageFile);
 
-            openScreenshot(activity, imageFile);
+            } catch (Throwable e) {
 
-        } catch (Throwable e) {
-
-            // Several error may come out with file handling or OOM
-            Toast.makeText(activity, "Failed to take screenshot " + e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-
+                // Several error may come out with file handling or OOM
+                Toast.makeText(activity, "Failed to take screenshot " + e.getMessage(), Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
+        }, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     public static void takeScreenshot(Activity activity, View view) {
 
-        if (!checkScreenshotPermission(activity)) {
-            return;
-        }
+        PermissionTools.checkPermissionsForExecution(activity, 1, () -> {
+            try {
+                Bitmap bitmap = getBitmapFromView(view);
 
-        try {
-            Bitmap bitmap = getBitmapFromView(view);
+                File imageFile = getImageFromBitmap(bitmap, 50);
 
-            File imageFile = getImageFromBitmap(bitmap, 50);
+                openScreenshot(activity, imageFile);
 
-            openScreenshot(activity, imageFile);
+            } catch (Throwable e) {
 
-        } catch (Throwable e) {
-
-            // Several error may come out with file handling or OOM
-            Toast.makeText(activity, "Failed to take screenshot " + e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-    }
-
-    private static boolean checkScreenshotPermission(Activity activity) {
-
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-            return false;
-        } else {
-            return true;
-        }
+                // Several error may come out with file handling or OOM
+                Toast.makeText(activity, "Failed to take screenshot " + e.getMessage(), Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
+        }, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     private static File getImageFromBitmap(Bitmap bitmap, int quality) throws IOException {
