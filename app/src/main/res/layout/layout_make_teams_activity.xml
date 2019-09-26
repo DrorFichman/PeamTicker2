@@ -10,15 +10,6 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <ProgressBar
-            android:id="@+id/calculating_teams_progress"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:layout_gravity="center_vertical|center_horizontal"
-            android:visibility="gone" />
-
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -83,6 +74,15 @@
 
         </LinearLayout>
 
+        <ProgressBar
+            android:id="@+id/calculating_teams_progress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_weight="1"
+            android:visibility="gone" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -118,14 +118,12 @@
             android:layout_weight="1"
             android:src="@drawable/shuffle" />
 
-        <ToggleButton
+        <ImageView
             android:id="@+id/move"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/ic_move_toggle"
-            android:textOff=""
-            android:textOn="" />
+            android:background="@drawable/move" />
 
         <ImageView
             android:id="@+id/game_prediction_button"

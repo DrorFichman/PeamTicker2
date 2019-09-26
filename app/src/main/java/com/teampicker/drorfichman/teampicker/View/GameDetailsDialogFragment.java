@@ -84,6 +84,7 @@ public class GameDetailsDialogFragment extends DialogFragment {
             DbHelper.setPlayerComing(getActivity(), mTeam1);
             DbHelper.setPlayerComing(getActivity(), mTeam2);
             DbHelper.saveTeams(getActivity(), mTeam1, mTeam2);
+            Toast.makeText(getActivity(), R.string.copy_players_success, Toast.LENGTH_SHORT).show();
             dismiss();
         });
         copyGame.setOnLongClickListener(operationExplanation);

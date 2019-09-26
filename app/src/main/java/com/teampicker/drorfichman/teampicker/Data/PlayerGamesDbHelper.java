@@ -61,7 +61,7 @@ public class PlayerGamesDbHelper {
                 values);
     }
 
-    public static ArrayList<Player> getCurrTeam(Context context, SQLiteDatabase db, int currGame, TeamEnum team) {
+    public static ArrayList<Player> getCurrTeam(SQLiteDatabase db, int currGame, TeamEnum team) {
 
         String[] projection = {
                 PlayerContract.PlayerGameEntry.ID,
@@ -385,8 +385,8 @@ public class PlayerGamesDbHelper {
                     ResultEnum gameResult = ResultEnum.getResultFromOrdinal(c.getInt(c.getColumnIndex("result")));
                     int collaboratorTeam = c.getInt(c.getColumnIndex("team"));
 
-                    ArrayList<Player> team1 = getCurrTeam(context, db, currGame, TeamEnum.Team1);
-                    ArrayList<Player> team2 = getCurrTeam(context, db, currGame, TeamEnum.Team2);
+                    ArrayList<Player> team1 = getCurrTeam(db, currGame, TeamEnum.Team1);
+                    ArrayList<Player> team2 = getCurrTeam(db, currGame, TeamEnum.Team2);
 
                     if (TeamEnum.Team1.ordinal() == collaboratorTeam) {
                         for (Player p1 : team1) { // same team

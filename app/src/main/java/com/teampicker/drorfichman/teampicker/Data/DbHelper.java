@@ -190,7 +190,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static ArrayList<Player> getCurrTeam(Context context, int currGame, TeamEnum team, int countLastGames) {
-        ArrayList<Player> currTeam = PlayerGamesDbHelper.getCurrTeam(context, getSqLiteDatabase(context), currGame, team);
+        ArrayList<Player> currTeam = PlayerGamesDbHelper.getCurrTeam(getSqLiteDatabase(context), currGame, team);
 
         addLastGameStats(context, countLastGames, currTeam, countLastGames > 0);
 

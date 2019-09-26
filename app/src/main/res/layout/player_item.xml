@@ -44,7 +44,6 @@
         android:layout_weight="1"
         android:layout_marginLeft="3dp"
         android:layout_marginRight="3dp"
-        android:text="GK"
         android:textAppearance="@style/regularHeadline"
         android:textSize="14sp" />
 

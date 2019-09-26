@@ -1,18 +1,14 @@
 package com.teampicker.drorfichman.teampicker.View;
 
 import android.Manifest;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -44,15 +40,14 @@ import androidx.drawerlayout.widget.DrawerLayout;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, Sorting.sortingCallbacks {
 
-    private ListView playersList;
+    private static final int ACTIVITY_RESULT_PLAYER = 1;
+    private static final int ACTIVITY_RESULT_IMPORT_FILE_SELECTED = 2;
+    private static final int RECENT_GAMES_COUNT = 10;
+
     private PlayerAdapter playersAdapter;
 
     FloatingActionsMenu fab;
 
-    private static final int ACTIVITY_RESULT_PLAYER = 1;
-    private static final int ACTIVITY_RESULT_IMPORT_FILE_SELECTED = 2;
-
-    private static final int RECENT_GAMES_COUNT = 10;
     private boolean showArchivedPlayers = false;
 
     Sorting sorting = new Sorting(this, sortType.grade);
@@ -61,7 +56,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         setActivityTitle();
@@ -76,85 +71,56 @@ public class MainActivity extends AppCompatActivity
     private void setPlayersList() {
         setHeadlines();
 
-        playersList = (ListView) findViewById(R.id.players_list);
+        ListView playersList = findViewById(R.id.players_list);
 
         ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT, showArchivedPlayers);
         playersAdapter = new PlayerAdapter(this, players);
 
-        playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Player p = (Player) view.getTag();
-                Intent intent = EditPlayerActivity.getEditPlayerIntent(MainActivity.this, p.mName);
-                startActivityForResult(intent, ACTIVITY_RESULT_PLAYER);
-            }
+        playersList.setOnItemClickListener((adapterView, view, i, l) -> {
+            Player p = (Player) view.getTag();
+            Intent intent = EditPlayerActivity.getEditPlayerIntent(MainActivity.this, p.mName);
+            startActivityForResult(intent, ACTIVITY_RESULT_PLAYER);
         });
 
-        playersList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                checkPlayerDeletion((Player) view.getTag());
-                return true;
-            }
+        playersList.setOnItemLongClickListener((adapterView, view, i, l) -> {
+            checkPlayerDeletion((Player) view.getTag());
+            return true;
         });
 
         playersList.setAdapter(playersAdapter);
 
-        if (players == null || players.size() == 0) {
+        if (players.size() == 0) {
             showTutorialDialog();
         }
     }
 
-    private void setNavigationDrawer(Toolbar toolbar) {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        navigationView.setItemIconTintList(ColorStateList.valueOf(Color.BLUE));
-        navigationView.setItemTextColor(null);
-    }
-
     private void setFloatingActionButton() {
-        fab = (FloatingActionsMenu) findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
 
         FloatingActionButton enterResultsButton = new FloatingActionButton(this);
         enterResultsButton.setTitle("Results");
-        enterResultsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fab.collapse();
-                startEnterResultActivity();
-            }
+        enterResultsButton.setOnClickListener(v -> {
+            fab.collapse();
+            startEnterResultActivity();
         });
 
         FloatingActionButton makeTeamsButton = new FloatingActionButton(this);
         makeTeamsButton.setTitle("Teams");
-        makeTeamsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fab.collapse();
-                ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(MainActivity.this, 0);
-                if (comingPlayers.size() == 0) {
-                    Toast.makeText(MainActivity.this, "Why you wanna play alone?!?", Toast.LENGTH_LONG).show();
-                } else {
-                    startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
-                }
+        makeTeamsButton.setOnClickListener(v -> {
+            fab.collapse();
+            ArrayList<Player> comingPlayers = DbHelper.getComingPlayers(MainActivity.this, 0);
+            if (comingPlayers.size() == 0) {
+                Toast.makeText(MainActivity.this, "Why you wanna play alone?!?", Toast.LENGTH_LONG).show();
+            } else {
+                startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
             }
         });
 
         FloatingActionButton addPlayerButton = new FloatingActionButton(this);
         addPlayerButton.setTitle("New Player");
-        addPlayerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fab.collapse();
-                startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), ACTIVITY_RESULT_PLAYER);
-            }
+        addPlayerButton.setOnClickListener(v -> {
+            fab.collapse();
+            startActivityForResult(new Intent(MainActivity.this, NewPlayerActivity.class), ACTIVITY_RESULT_PLAYER);
         });
 
         fab.addButton(enterResultsButton);
@@ -173,20 +139,13 @@ public class MainActivity extends AppCompatActivity
         sorting.setHeadlineSorting(this, R.id.player_coming, null, sortType.coming);
 
         ((CheckBox) findViewById(R.id.player_coming)).setTextColor(Color.BLACK);
-        /*findViewById(R.id.player_coming).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ((CheckBox) view).setChecked(true);
-            }
-        })*/;
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Log.d("onActivityResult", "Result " + resultCode);
-
+        // Import data result
         if (requestCode == ACTIVITY_RESULT_IMPORT_FILE_SELECTED && resultCode == RESULT_OK &&
                 data != null && data.getData() != null) {
 
@@ -203,10 +162,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) { // close drawer
             drawer.closeDrawer(GravityCompat.START);
-        } else if (showArchivedPlayers) {
+        } else if (showArchivedPlayers) { // return from archived players
             showArchivedPlayers = false;
             refreshPlayers();
         } else {
@@ -214,9 +173,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    //region Toolbar and Navigation
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -256,6 +215,20 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    private void setNavigationDrawer(Toolbar toolbar) {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        navigationView.setItemIconTintList(ColorStateList.valueOf(Color.BLUE));
+        navigationView.setItemTextColor(null);
+    }
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -274,10 +247,13 @@ public class MainActivity extends AppCompatActivity
             showTutorialDialog();
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        item.setChecked(false);
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    //endregion
 
     public void refreshPlayers() {
         ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT, showArchivedPlayers);
@@ -296,6 +272,14 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    public void setActivityTitle() {
+        if (showArchivedPlayers) {
+            setTitle("Archived players");
+        } else {
+            setTitle(getString(R.string.main_title, DbHelper.getComingPlayersCount(this)));
+        }
+    }
+
     //region player archive & deletion
     private void checkPlayerDeletion(final Player player) {
 
@@ -306,20 +290,18 @@ public class MainActivity extends AppCompatActivity
                     .setCancelable(true)
                     .setItems(new CharSequence[]
                                     {"Unarchive", "Remove", "Cancel"},
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    switch (which) {
-                                        case 0:
-                                            DbHelper.archivePlayer(MainActivity.this, player.mName, false);
-                                            refreshPlayers();
-                                            break;
-                                        case 1:
-                                            DbHelper.deletePlayer(MainActivity.this, player.mName);
-                                            refreshPlayers();
-                                            break;
-                                        case 2:
-                                            break;
-                                    }
+                            (dialog, which) -> {
+                                switch (which) {
+                                    case 0: // Unarchive
+                                        DbHelper.archivePlayer(MainActivity.this, player.mName, false);
+                                        refreshPlayers();
+                                        break;
+                                    case 1: // Remove
+                                        DbHelper.deletePlayer(MainActivity.this, player.mName);
+                                        refreshPlayers();
+                                        break;
+                                    case 2: // Cancel
+                                        break;
                                 }
                             });
         } else {
@@ -327,16 +309,14 @@ public class MainActivity extends AppCompatActivity
                     .setCancelable(true)
                     .setItems(new CharSequence[]
                                     {"Archive", "Cancel"},
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    switch (which) {
-                                        case 0:
-                                            DbHelper.archivePlayer(MainActivity.this, player.mName, true);
-                                            refreshPlayers();
-                                            break;
-                                        case 2:
-                                            break;
-                                    }
+                            (dialog, which) -> {
+                                switch (which) {
+                                    case 0: // Archive
+                                        DbHelper.archivePlayer(MainActivity.this, player.mName, true);
+                                        refreshPlayers();
+                                        break;
+                                    case 2: // Cancel
+                                        break;
                                 }
                             });
         }
@@ -362,24 +342,14 @@ public class MainActivity extends AppCompatActivity
                         "\n" +
                         "And don't forget to be awesome :)")
                 .setCancelable(true)
-                .setPositiveButton("Got it", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        fab.expand();
-                        dialog.dismiss();
-                    }
+                .setPositiveButton("Got it", (dialog, id) -> {
+                    fab.expand();
+                    dialog.dismiss();
                 });
 
         alertDialogBuilder.create().show();
     }
     //endregion
-
-    public void setActivityTitle() {
-        if (showArchivedPlayers) {
-            setTitle("Archived players");
-        } else {
-            setTitle(String.format("PeamTicker (%d)", DbHelper.getComingPlayersCount(this)));
-        }
-    }
 
     //region snapshot
     private DBSnapshotUtils.ImportListener getImportListener() {
@@ -450,13 +420,11 @@ public class MainActivity extends AppCompatActivity
         alertDialogBuilder
                 .setMessage("Delete local data and import selected file?")
                 .setCancelable(true)
-                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
+                .setPositiveButton(R.string.yes, (dialog, id) -> {
 
-                        DBSnapshotUtils.importDBSnapshotSelected(MainActivity.this, importPath, handler);
+                    DBSnapshotUtils.importDBSnapshotSelected(MainActivity.this, importPath, handler);
 
-                        dialog.dismiss();
-                    }
+                    dialog.dismiss();
                 });
 
         alertDialogBuilder.create().show();

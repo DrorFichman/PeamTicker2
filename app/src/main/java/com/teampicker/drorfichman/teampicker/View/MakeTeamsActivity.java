@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
@@ -63,7 +62,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     protected View buttonsLayout;
 
     private View sendView;
-    private ToggleButton moveView;
+    private View moveView;
     private View shuffleView;
     private ImageView analysisView;
 
@@ -77,60 +76,38 @@ public class MakeTeamsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_make_teams_activity);
-        Log.d("teams", "onCreate");
 
         teamStatsLayout = findViewById(R.id.total_scores);
         teamData1 = findViewById(R.id.total_list1);
         teamData2 = findViewById(R.id.total_list2);
+        team1Score = findViewById(R.id.team_1_score);
+        team2Score = findViewById(R.id.team_2_score);
+        teamsScreenArea = findViewById(R.id.teams_list_area);
+        buttonsLayout = findViewById(R.id.buttons_layout);
+        progressBarTeamDivision = findViewById(R.id.calculating_teams_progress);
 
         list1 = findViewById(R.id.team_1);
         list2 = findViewById(R.id.team_2);
-
-        moveView = findViewById(R.id.move);
-        moveView.setOnClickListener(view -> {
-            if (isMoveMode()) {
-                // TODO remove? Snackbar.make(view, R.string.operation_move, Snackbar.LENGTH_LONG).show();
-            } else {
-                movedPlayers.clear();
-                refreshPlayers();
-            }
-        });
-        moveView.setOnLongClickListener(explainOperation);
-
         list1.setOnItemClickListener(playerClicked);
         list2.setOnItemClickListener(playerClicked);
+
+        moveView = findViewById(R.id.move);
+        moveView.setOnClickListener(onMoveClicked);
+        moveView.setOnLongClickListener(explainOperation);
 
         saveView = findViewById(R.id.save);
         saveView.setOnClickListener(view -> saveResults());
 
-        teamsScreenArea = findViewById(R.id.teams_list_area);
-
         sendView = findViewById(R.id.send);
-        sendView.setOnClickListener(view -> {
-
-            Log.d("teams", "Enter send mode");
-            DbHelper.saveTeams(MakeTeamsActivity.this, players1, players2);
-            enterSendMode();
-
-            final Runnable r = () -> {
-                ScreenshotHelper.takeScreenshot(MakeTeamsActivity.this, teamsScreenArea);
-                Log.d("teams", "Exit send mode - Shot taken");
-                exitSendMode();
-            };
-
-            new Handler().postDelayed(r, 200);
-        });
+        sendView.setOnClickListener(onSendClicked);
         sendView.setOnLongClickListener(explainOperation);
 
         shuffleView = findViewById(R.id.shuffle);
         shuffleView.setOnClickListener(v -> divideComingPlayers(selectedDivision));
         shuffleView.setOnLongClickListener(v -> showMakeTeamOptionsDialog());
 
-        team1Score = findViewById(R.id.team_1_score);
-        team2Score = findViewById(R.id.team_2_score);
-
         analysisView = findViewById(R.id.game_prediction_button);
-        analysisView.setOnClickListener(this::showAnalysis);
+        analysisView.setOnClickListener(v -> showAnalysis());
         analysisView.setOnLongClickListener(explainOperation);
 
         if (getIntent().getBooleanExtra(INTENT_SET_RESULT, false)) {
@@ -142,29 +119,22 @@ public class MakeTeamsActivity extends AppCompatActivity {
             }
         }
 
-        progressBarTeamDivision = findViewById(R.id.calculating_teams_progress);
-
-        buttonsLayout = findViewById(R.id.buttons_layout);
-
-        initialData(TeamDivision.DivisionStrategy.Grade);
+        initialTeams();
     }
 
-    private void showAnalysis(View view) {
+    private void showAnalysis() {
 
         if (isAnalysisPlayerSelectedMode()) { // cancel player analysis selection
             analysisSelectedPlayer = null;
-            analysisView.setImageResource(R.drawable.analysis_selected);
+            analysisView.setAlpha(0.5F);
             refreshPlayers();
         } else if (isAnalysisMode()) { // cancel analysis
             analysisResult = null;
             analysisSelectedPlayer = null;
-            analysisView.setImageResource(R.drawable.analysis);
+            analysisView.setAlpha(1F);
             refreshPlayers();
         } else { // enter analysis mode
-            if (!isMoveMode())
-                // TODO remove? Snackbar.make(view, R.string.operation_analysis, Snackbar.LENGTH_LONG).show();
-            analysisView.setImageResource(R.drawable.analysis_selected);
-
+            analysisView.setAlpha(0.5F);
             AsyncTeamsAnalysis async = new AsyncTeamsAnalysis(this);
             async.execute();
         }
@@ -207,12 +177,11 @@ public class MakeTeamsActivity extends AppCompatActivity {
         return Integer.valueOf(b.getText().toString());
     }
 
-    private void initialData(TeamDivision.DivisionStrategy selectedDivision) {
+    private void initialTeams() {
 
         int currGame = DbHelper.getActiveGame(this);
         if (currGame < 0) {
             Toast.makeText(this, "Initial teams", Toast.LENGTH_SHORT).show();
-            Log.d("teams", "Initial shuffled teams");
             divideComingPlayers(selectedDivision);
         } else {
             Log.d("teams", "Initial data curr game > 0 - so getting from DB");
@@ -264,6 +233,21 @@ public class MakeTeamsActivity extends AppCompatActivity {
         }
         return isChanged;
     }
+
+    private View.OnClickListener onSendClicked = view -> {
+
+        Log.d("teams", "Enter send mode");
+        DbHelper.saveTeams(MakeTeamsActivity.this, players1, players2);
+        enterSendMode();
+
+        final Runnable r = () -> {
+            ScreenshotHelper.takeScreenshot(MakeTeamsActivity.this, teamsScreenArea);
+            Log.d("teams", "Exit send mode - Shot taken");
+            exitSendMode();
+        };
+
+        new Handler().postDelayed(r, 200);
+    };
 
     private void enterSendMode() {
 
@@ -334,7 +318,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void clearMovedPlayers() {
         movedPlayers.clear();
-        moveView.setChecked(false);
+        moveView.setAlpha(1F);
     }
 
     public void onRequestPermissionsResult(int requestCode,
@@ -433,8 +417,17 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private boolean isMoveMode() {
-        return moveView != null && moveView.isChecked();
+        return moveView != null && moveView.getAlpha() < 1F;
     }
+
+    private View.OnClickListener onMoveClicked = view -> {
+        if (isMoveMode()) { // exit move mode
+            clearMovedPlayers();
+            refreshPlayers();
+        } else { // enter move mode
+            moveView.setAlpha(0.5F);
+        }
+    };
 
     View.OnLongClickListener explainOperation = new View.OnLongClickListener() {
         @Override
