@@ -1,11 +1,11 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
-import com.teampicker.drorfichman.teampicker.Controller.Sorting;
+import com.teampicker.drorfichman.teampicker.Controller.Sortable;
 import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
 
 import java.io.Serializable;
 
-public class PlayerParticipation implements Serializable, Sorting.Sortable {
+public class PlayerParticipation extends Sortable implements Serializable {
 
     public String mName;
     public String mParticipatedWith;
@@ -47,46 +47,6 @@ public class PlayerParticipation implements Serializable, Sorting.Sortable {
     @Override
     public int winRateVs() {
         return statisticsVs.getWinRate();
-    }
-
-    @Override
-    public int grade() {
-        return 0;
-    }
-
-    @Override
-    public int suggestedGrade() {
-        return 0;
-    }
-
-    @Override
-    public int age() {
-        return 0;
-    }
-
-    @Override
-    public boolean attributes() {
-        return false;
-    }
-
-    @Override
-    public boolean coming() {
-        return false;
-    }
-
-    @Override
-    public int winRate() {
-        return 0; // TODO?
-    }
-
-    @Override
-    public int games() {
-        return 0; // TODO?
-    }
-
-    @Override
-    public int success() {
-        return 0; // TODO?
     }
     //endregion
 }

@@ -1,6 +1,6 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
-import com.teampicker.drorfichman.teampicker.Controller.Sorting;
+import com.teampicker.drorfichman.teampicker.Controller.Sortable;
 import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
 
 import java.io.Serializable;
@@ -12,7 +12,7 @@ import androidx.annotation.Nullable;
 /**
  * Created by drorfichman on 7/27/16.
  */
-public class Player implements Serializable, Comparable, Sorting.Sortable {
+public class Player extends Sortable implements Serializable, Comparable {
     public String mName;
     public int mGrade;
     public int mBirthYear;
@@ -193,36 +193,6 @@ public class Player implements Serializable, Comparable, Sorting.Sortable {
     @Override
     public String name() {
         return mName;
-    }
-
-    @Override
-    public int gamesWithCount() {
-        return 0;
-    }
-
-    @Override
-    public int successWith() {
-        return 0;
-    }
-
-    @Override
-    public int winRateWith() {
-        return 0;
-    }
-
-    @Override
-    public int successVs() {
-        return 0;
-    }
-
-    @Override
-    public int gamesVsCount() {
-        return 0;
-    }
-
-    @Override
-    public int winRateVs() {
-        return 0;
     }
 
     @Override
