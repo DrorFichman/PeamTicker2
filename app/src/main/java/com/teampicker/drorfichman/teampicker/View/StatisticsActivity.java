@@ -28,13 +28,12 @@ import java.util.Comparator;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class StatisticsActivity extends AppCompatActivity implements Sorting.sortingCallbacks {
-
-    private ListView playersList;
-    private PlayerStatisticsAdapter playersAdapter;
-
-    TextView gradeTitle;
     private int games = 50;
 
+    private ListView playersList;
+    TextView gradeTitle;
+
+    private PlayerStatisticsAdapter playersAdapter;
     Sorting sorting = new Sorting(this, sortType.success);
 
     private static final int ACTIVITY_RESULT_PLAYER = 1;
@@ -48,31 +47,23 @@ public class StatisticsActivity extends AppCompatActivity implements Sorting.sor
     }
 
     private void setPlayersList() {
-        setHeadlines();
-
-        playersList = (ListView) findViewById(R.id.players_statistics_list);
-        playersAdapter = new PlayerStatisticsAdapter(this, new ArrayList<Player>(), true);
+        playersList = findViewById(R.id.players_statistics_list);
+        playersAdapter = new PlayerStatisticsAdapter(this, new ArrayList<>(), true);
 
         refreshPlayers();
 
-        playersList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = EditPlayerActivity.getEditPlayerIntent(StatisticsActivity.this, (String) view.getTag(R.id.player_id));
-                startActivityForResult(intent, ACTIVITY_RESULT_PLAYER);
-            }
+        setHeadlines();
+
+        playersList.setOnItemClickListener((adapterView, view, i, l) -> {
+            Intent intent = EditPlayerActivity.getEditPlayerIntent(StatisticsActivity.this, (String) view.getTag(R.id.player_id));
+            startActivityForResult(intent, ACTIVITY_RESULT_PLAYER);
         });
 
-        playersList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                return false;
-            }
-        });
+        playersList.setOnItemLongClickListener((adapterView, view, i, l) -> false);
     }
 
     private void setHeadlines() {
-        gradeTitle = (TextView) findViewById(R.id.stat_player_grade);
+        gradeTitle = findViewById(R.id.stat_player_grade);
         sorting.setHeadlineSorting(this, R.id.stat_player_grade, "Grade", sortType.grade);
         sorting.setHeadlineSorting(this, R.id.player_name, "Name", sortType.name);
         sorting.setHeadlineSorting(this, R.id.stat_success, "Success", sortType.success);
@@ -93,13 +84,10 @@ public class StatisticsActivity extends AppCompatActivity implements Sorting.sor
 
                 enterSendMode();
 
-                final Runnable r = new Runnable() {
-                    public void run() {
-                        ScreenshotHelper.takeListScreenshot(StatisticsActivity.this,
-                                playersList, findViewById(R.id.titles), playersAdapter);
-                        Log.d("teams", "Exit send mode - Shot taken");
-                        exitSendMode();
-                    }
+                final Runnable r = () -> {
+                    ScreenshotHelper.takeListScreenshot(StatisticsActivity.this,
+                            playersList, findViewById(R.id.titles), playersAdapter);
+                    exitSendMode();
                 };
 
                 new Handler().postDelayed(r, 400);
