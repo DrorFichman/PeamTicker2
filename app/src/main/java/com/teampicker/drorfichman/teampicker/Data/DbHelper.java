@@ -67,7 +67,6 @@ public class DbHelper extends SQLiteOpenHelper {
         addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.ARCHIVED, "INTEGER", "0");
         addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.ATTRIBUTES, "TEXT", "''");
         addColumn(db, PlayerContract.PlayerGameEntry.TABLE_NAME, PlayerContract.PlayerGameEntry.ATTRIBUTES, "TEXT", "''");
-        // TODO add game index
     }
 
     private void addColumn(SQLiteDatabase db, String table, String column, String type, String def) {

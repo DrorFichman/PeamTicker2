@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity
         ListView playersList = findViewById(R.id.players_list);
 
         ArrayList<Player> players = DbHelper.getPlayers(getApplicationContext(), RECENT_GAMES_COUNT, showArchivedPlayers);
-        playersAdapter = new PlayerAdapter(this, players);
+        playersAdapter = new PlayerAdapter(this, players, this::setActivityTitle);
 
         playersList.setOnItemClickListener((adapterView, view, i, l) -> {
             Player p = (Player) view.getTag();

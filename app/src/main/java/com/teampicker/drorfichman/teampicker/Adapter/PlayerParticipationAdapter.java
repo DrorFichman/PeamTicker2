@@ -38,13 +38,13 @@ public class PlayerParticipationAdapter extends ArrayAdapter<PlayerParticipation
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = LayoutInflater.from(context).inflate(R.layout.player_participation_item, parent, false);
 
-        TextView name = (TextView) view.findViewById(R.id.player_name);
+        TextView name = view.findViewById(R.id.player_name);
 
-        TextView countWith = (TextView) view.findViewById(R.id.part_games_count_with);
-        TextView winRateWith = (TextView) view.findViewById(R.id.part_wins_percentage_with);
+        TextView countWith = view.findViewById(R.id.part_games_count_with);
+        TextView winRateWith = view.findViewById(R.id.part_wins_percentage_with);
 
-        TextView countVs = (TextView) view.findViewById(R.id.part_games_count_against);
-        TextView winRateVs = (TextView) view.findViewById(R.id.part_wins_percentage_against);
+        TextView countVs = view.findViewById(R.id.part_games_count_against);
+        TextView winRateVs = view.findViewById(R.id.part_wins_percentage_against);
 
         PlayerParticipation p = mPlayers.get(position);
 

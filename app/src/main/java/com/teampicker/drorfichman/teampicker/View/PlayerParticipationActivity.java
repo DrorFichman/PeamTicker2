@@ -76,7 +76,7 @@ public class PlayerParticipationActivity extends AppCompatActivity implements So
             teamIcon.setVisibility(View.INVISIBLE);
         }
 
-        playersList = (ListView) findViewById(R.id.players_participation_list);
+        playersList = findViewById(R.id.players_participation_list);
 
         refreshPlayers();
 
@@ -97,12 +97,8 @@ public class PlayerParticipationActivity extends AppCompatActivity implements So
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_send_statistics:
-                final Runnable r = new Runnable() {
-                    public void run() {
-                        ScreenshotHelper.takeListScreenshot(PlayerParticipationActivity.this,
-                                playersList, findViewById(R.id.titles), playersAdapter);
-                    }
-                };
+                final Runnable r = () -> ScreenshotHelper.takeListScreenshot(PlayerParticipationActivity.this,
+                        playersList, findViewById(R.id.titles), playersAdapter);
                 new Handler().postDelayed(r, 200);
                 break;
             case R.id.action_last_10_games:

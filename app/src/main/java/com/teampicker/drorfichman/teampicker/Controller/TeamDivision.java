@@ -42,8 +42,6 @@ public class TeamDivision {
         ArrayList<Player> players = cloneList(comingPlayers);
         Collections.sort(players);
 
-        // TODO unify the random split and loop, keep the comparing logic to divider
-
         strategy.divider.divide(ctx, players, resultPlayers1, resultPlayers2);
     }
 

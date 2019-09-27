@@ -20,7 +20,7 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
     private final Context context;
     private final List<Player> mPlayers;
 
-    boolean isGradeVisible = true;
+    boolean isGradeVisible;
 
     public PlayerStatisticsAdapter(Context ctx, List<Player> players, boolean showGrades) {
         super(ctx, -1, players);
@@ -33,11 +33,11 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = LayoutInflater.from(context).inflate(R.layout.player_statistics_item, parent, false);
 
-        TextView name = (TextView) view.findViewById(R.id.player_name);
-        TextView grade = (TextView) view.findViewById(R.id.stat_player_grade);
-        TextView count = (TextView) view.findViewById(R.id.stat_games_count);
-        TextView success = (TextView) view.findViewById(R.id.stat_success);
-        TextView winRate = (TextView) view.findViewById(R.id.stat_wins_percentage);
+        TextView name = view.findViewById(R.id.player_name);
+        TextView grade = view.findViewById(R.id.stat_player_grade);
+        TextView count = view.findViewById(R.id.stat_games_count);
+        TextView success = view.findViewById(R.id.stat_success);
+        TextView winRate = view.findViewById(R.id.stat_wins_percentage);
 
         Player p = mPlayers.get(position);
 

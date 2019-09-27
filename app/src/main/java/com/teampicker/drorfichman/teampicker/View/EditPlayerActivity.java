@@ -33,8 +33,6 @@ public class EditPlayerActivity extends AppCompatActivity {
     private EditText vName;
     private EditText vGrade;
     private Button vBirth;
-    private TextView vResults;
-    private TextView vResultsSummary;
     private CheckBox isGK;
     private CheckBox isDefender;
     private CheckBox isPlaymaker;
@@ -57,17 +55,17 @@ public class EditPlayerActivity extends AppCompatActivity {
             pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(PLAYER));
         }
 
-        vName = (EditText) findViewById(R.id.edit_player_name);
-        vGrade = (EditText) findViewById(R.id.edit_player_grade);
+        vName = findViewById(R.id.edit_player_name);
+        vGrade = findViewById(R.id.edit_player_grade);
 
-        vBirth = (Button) findViewById(R.id.edit_player_birthday);
+        vBirth = findViewById(R.id.edit_player_birthday);
 
-        vResults = (TextView) findViewById(R.id.player_results);
-        vResultsSummary = (TextView) findViewById(R.id.player_results_summary);
-        isGK = (CheckBox) findViewById(R.id.player_is_gk);
-        isDefender = (CheckBox) findViewById(R.id.player_is_defender);
-        isPlaymaker = (CheckBox) findViewById(R.id.player_is_playmaker);
-        isUnbreakable = (CheckBox) findViewById(R.id.player_is_unbreaking);
+        TextView vResults = findViewById(R.id.player_results);
+        TextView vResultsSummary = findViewById(R.id.player_results_summary);
+        isGK = findViewById(R.id.player_is_gk);
+        isDefender = findViewById(R.id.player_is_defender);
+        isPlaymaker = findViewById(R.id.player_is_playmaker);
+        isUnbreakable = findViewById(R.id.player_is_unbreaking);
 
         // TODO change to stars
         // TODO plus/minus ratio
@@ -90,80 +88,69 @@ public class EditPlayerActivity extends AppCompatActivity {
 
         initPlayerAttributes();
 
-        findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setResult(1);
-                boolean playerUpdated = false;
+        findViewById(R.id.save).setOnClickListener(view -> {
+            setResult(1);
+            boolean playerUpdated = false;
 
-                String newGradeNumber = vGrade.getText().toString();
-                String newName = vName.getText().toString();
+            String newGradeNumber = vGrade.getText().toString();
+            String newName = vName.getText().toString();
 
-                if (!TextUtils.isEmpty(newGradeNumber)) { // update grade
-                    Integer newGradeString = Integer.valueOf(newGradeNumber);
+            if (!TextUtils.isEmpty(newGradeNumber)) { // update grade
+                int newGradeString = Integer.parseInt(newGradeNumber);
 
-                    if (newGradeString > 99 || newGradeString < 0) {
-                        Toast.makeText(getApplicationContext(), "Score must be between 0-99", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                    DbHelper.updatePlayerGrade(getApplicationContext(), pPlayer.mName, newGradeString);
+                if (newGradeString > 99 || newGradeString < 0) {
+                    Toast.makeText(getApplicationContext(), "Score must be between 0-99", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                DbHelper.updatePlayerGrade(getApplicationContext(), pPlayer.mName, newGradeString);
+                playerUpdated = true;
+            }
+
+            if (!TextUtils.isEmpty(newName) && !pPlayer.mName.equals(newName)) { // update name
+                boolean updated = DbHelper.updatePlayerName(getApplicationContext(), pPlayer, newName);
+                if (updated) {
                     playerUpdated = true;
+                } else {
+                    Toast.makeText(getApplicationContext(), "Player name is already taken", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+
+            if (vBirth.getTag() != null) { // update birth
+                String date = (String) vBirth.getTag();
+                int newYear = Integer.parseInt(date.split("/")[1]);
+                int newMonth = Integer.parseInt(date.split("/")[0]);
+
+                if (newYear < 1900 || newYear > Calendar.getInstance().get(Calendar.YEAR)) {
+                    Toast.makeText(getApplicationContext(), "Year must be between 1900-now", Toast.LENGTH_LONG).show();
+                    return;
                 }
 
-                if (!TextUtils.isEmpty(newName) && !pPlayer.mName.equals(newName)) { // update name
-                    boolean updated = DbHelper.updatePlayerName(getApplicationContext(), pPlayer, newName);
-                    if (updated) {
-                        playerUpdated = true;
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Player name is already taken", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-                }
-
-                if (vBirth.getTag() != null) { // update birth
-                    String date = (String) vBirth.getTag();
-                    Integer newYear = Integer.valueOf(date.split("/")[1]);
-                    Integer newMonth = Integer.valueOf(date.split("/")[0]);
-
-                    if (newYear < 1900 || newYear > Calendar.getInstance().get(Calendar.YEAR)) {
-                        Toast.makeText(getApplicationContext(), "Year must be between 1900-now", Toast.LENGTH_LONG).show();
-                        return;
-                    }
-
-                    Log.i("AGE", "Year " + newYear + " month " + newMonth);
-                    DbHelper.updatePlayerBirth(getApplicationContext(), pPlayer.mName, newYear, newMonth);
-                    playerUpdated = true;
-                }
-
-                // update attributes
-                setAttributes(pPlayer);
-
-                if (playerUpdated)
-                    Toast.makeText(getApplicationContext(), "Player updated", Toast.LENGTH_LONG).show();
-
-                finishNow(1);
+                Log.i("AGE", "Year " + newYear + " month " + newMonth);
+                DbHelper.updatePlayerBirth(getApplicationContext(), pPlayer.mName, newYear, newMonth);
+                playerUpdated = true;
             }
+
+            // update attributes
+            setAttributes(pPlayer);
+
+            if (playerUpdated)
+                Toast.makeText(getApplicationContext(), "Player updated", Toast.LENGTH_LONG).show();
+
+            finishNow(1);
         });
 
-        findViewById(R.id.player_participation_btn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hideKeyboard();
+        findViewById(R.id.player_participation_btn).setOnClickListener(view -> {
+            hideKeyboard();
 
-                Intent intent = PlayerParticipationActivity.getPlayerParticipationActivity(EditPlayerActivity.this, pPlayer.mName, null, null);
-                startActivity(intent);
-            }
+            Intent intent1 = PlayerParticipationActivity.getPlayerParticipationActivity(
+                    EditPlayerActivity.this, pPlayer.mName, null, null);
+            startActivity(intent1);
         });
 
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+        showKeyboard();
 
-        findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finishNow(0);
-            }
-        });
+        findViewById(R.id.back).setOnClickListener(view -> finishNow(0));
     }
 
     private View.OnClickListener resultsClicked = new View.OnClickListener() {
@@ -174,9 +161,14 @@ public class EditPlayerActivity extends AppCompatActivity {
         }
     };
 
+    private void showKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        if (imm != null) imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+    }
+
     private void hideKeyboard() {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(vGrade.getWindowToken(), 0);
+        if (imm != null) imm.hideSoftInputFromWindow(vGrade.getWindowToken(), 0);
     }
 
     private void initPlayerAttributes() {
@@ -211,7 +203,6 @@ public class EditPlayerActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
@@ -219,19 +210,15 @@ public class EditPlayerActivity extends AppCompatActivity {
     public void showDatePicker(View view) {
         int year = pPlayer.mBirthYear > 0 ? pPlayer.mBirthYear : 2000;
         int month = pPlayer.mBirthMonth > 0 ? pPlayer.mBirthMonth - 1 : 0;
-        DatePickerDialog d = new DatePickerDialog(this, 0, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year, int month, int i2) {
-                month++; // starts at 0...
-                Log.i("AGE", "set year " + year + " month " + month);
-                setBirthday(year, month);
-            }
-        }, year , month, 1);
+        DatePickerDialog d = new DatePickerDialog(this, 0, (datePicker, year1, month1, i2) -> {
+            month1++; // starts at 0...
+            setBirthday(year1, month1);
+        }, year, month, 1);
         d.show();
     }
 
     private void setBirthday(int year, int month) {
-        vBirth.setText("Age : "  + pPlayer.getAge());
+        vBirth.setText("Age : " + pPlayer.getAge());
         vBirth.setTag(month + "/" + year);
     }
 }
