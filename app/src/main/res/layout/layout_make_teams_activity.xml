@@ -38,6 +38,7 @@
                 android:id="@+id/team1_public_stats"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:background="@android:color/darker_gray" />
 
         </LinearLayout>
@@ -70,6 +71,7 @@
                 android:id="@+id/team2_public_stats"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:background="@android:color/darker_gray" />
 
         </LinearLayout>
@@ -88,20 +90,30 @@
     <LinearLayout
         android:id="@+id/total_scores"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
 
         <TextView
             android:id="@+id/total_list1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="2"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/total_headlines"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center" />
 
         <TextView
             android:id="@+id/total_list2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="right" />
+            android:layout_weight="2"
+            android:gravity="center" />
     </LinearLayout>
 
     <LinearLayout

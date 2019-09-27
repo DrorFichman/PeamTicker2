@@ -55,6 +55,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private ListView list1;
     private TextView teamData2;
     private TextView teamData1;
+    private TextView headlines;
 
     private View teamsScreenArea;
     View progressBarTeamDivision;
@@ -80,6 +81,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
         teamStatsLayout = findViewById(R.id.total_scores);
         teamData1 = findViewById(R.id.total_list1);
         teamData2 = findViewById(R.id.total_list2);
+        headlines = findViewById(R.id.total_headlines);
+
         team1Score = findViewById(R.id.team_1_score);
         team2Score = findViewById(R.id.team_2_score);
         teamsScreenArea = findViewById(R.id.teams_list_area);
@@ -363,6 +366,11 @@ public class MakeTeamsActivity extends AppCompatActivity {
             }
         }
 
+        if (isAnalysisMode())
+            headlines.setText(R.string.team_data_headline_forecast);
+        else
+            headlines.setText(R.string.team_data_headline);
+
         updateTeamData(teamData1, findViewById(R.id.team1_public_stats), team1Data);
         updateTeamData(teamData2, findViewById(R.id.team2_public_stats), team2Data);
     }
@@ -492,7 +500,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
             } else {
 
-                Intent intent = PlayerParticipationActivity.getPlayerParticipationActivity(MakeTeamsActivity.this, player.mName, players2, players1);
+                Intent intent = PlayerParticipationActivity.getPlayerParticipationActivity(
+                        MakeTeamsActivity.this, player.mName, players2, players1);
                 startActivity(intent);
             }
         }
