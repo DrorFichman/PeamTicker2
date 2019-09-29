@@ -4,16 +4,22 @@ import android.os.AsyncTask;
 import android.view.View;
 
 import com.teampicker.drorfichman.teampicker.Controller.CollaborationHelper;
-import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 
 import java.lang.ref.WeakReference;
 
 class AsyncTeamsAnalysis extends AsyncTask<Void, Void, String> {
 
+    private final onTaskComplete doneHandler;
+
+    public interface onTaskComplete {
+        void execute();
+    }
+
     private WeakReference<MakeTeamsActivity> ref;
 
-    AsyncTeamsAnalysis(MakeTeamsActivity activity) {
+    AsyncTeamsAnalysis(MakeTeamsActivity activity, onTaskComplete done) {
         ref = new WeakReference<>(activity);
+        doneHandler = done;
     }
 
     @Override
@@ -40,7 +46,7 @@ class AsyncTeamsAnalysis extends AsyncTask<Void, Void, String> {
         MakeTeamsActivity activity = ref.get();
         if (activity == null || activity.isFinishing()) return;
 
-        activity.refreshPlayers();
+        doneHandler.execute();
 
         activity.teamStatsLayout.setVisibility(View.VISIBLE);
     }

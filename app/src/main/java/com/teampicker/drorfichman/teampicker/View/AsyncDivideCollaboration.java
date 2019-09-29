@@ -9,10 +9,17 @@ import java.lang.ref.WeakReference;
 
 class AsyncDivideCollaboration extends AsyncTask<Void, Void, String> {
 
+    private final onTaskComplete doneHandler;
+
+    public interface onTaskComplete {
+        void execute();
+    }
+
     private WeakReference<MakeTeamsActivity> ref;
 
-    AsyncDivideCollaboration(MakeTeamsActivity activity) {
+    AsyncDivideCollaboration(MakeTeamsActivity activity, onTaskComplete done) {
         ref = new WeakReference<>(activity);
+        doneHandler = done;
     }
 
     @Override
@@ -41,8 +48,10 @@ class AsyncDivideCollaboration extends AsyncTask<Void, Void, String> {
         MakeTeamsActivity activity = ref.get();
         if (activity == null || activity.isFinishing()) return;
 
-        activity.postDividePlayers();
+        doneHandler.execute();
+
         activity.progressBarTeamDivision.setVisibility(View.GONE);
+        activity.progressBarTeamDivisionStatus.setText("");
         activity.teamStatsLayout.setVisibility(View.VISIBLE);
         activity.buttonsLayout.setVisibility(View.VISIBLE);
     }

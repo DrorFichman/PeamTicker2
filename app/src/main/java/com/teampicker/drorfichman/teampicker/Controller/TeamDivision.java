@@ -19,6 +19,10 @@ import androidx.annotation.NonNull;
  */
 public class TeamDivision {
 
+    public interface onTaskInProgress {
+        void update(int remaining, String score);
+    }
+
     public enum DivisionStrategy {
         Grade(new DivideByGrade()),
         Age(new DivideByAge()),
@@ -34,7 +38,8 @@ public class TeamDivision {
     public static void dividePlayers(Context ctx, @NonNull List<Player> comingPlayers,
                                      @NonNull List<Player> resultPlayers1,
                                      @NonNull List<Player> resultPlayers2,
-                                     DivisionStrategy strategy) {
+                                     DivisionStrategy strategy,
+                                     onTaskInProgress update) {
 
         resultPlayers1.clear();
         resultPlayers2.clear();
@@ -42,7 +47,7 @@ public class TeamDivision {
         ArrayList<Player> players = cloneList(comingPlayers);
         Collections.sort(players);
 
-        strategy.divider.divide(ctx, players, resultPlayers1, resultPlayers2);
+        strategy.divider.divide(ctx, players, resultPlayers1, resultPlayers2, update);
     }
 
     public static ArrayList<Player> cloneList(List<Player> players) {

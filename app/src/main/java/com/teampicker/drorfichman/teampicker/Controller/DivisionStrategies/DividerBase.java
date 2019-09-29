@@ -3,6 +3,7 @@ package com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies;
 import android.content.Context;
 
 import com.teampicker.drorfichman.teampicker.Controller.OptionalDivision;
+import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public abstract class DividerBase implements IDivider {
     @Override
     public void divide(Context ctx, @NonNull ArrayList<Player> comingPlayers,
                        @NonNull List<Player> players1,
-                       @NonNull List<Player> players2) {
+                       @NonNull List<Player> players2, TeamDivision.onTaskInProgress update) {
 
         OptionalDivision selected = divideRandomly(cloneList(comingPlayers));
         int selectedGrade = gradeOption(ctx, selected);
@@ -30,11 +31,16 @@ public abstract class DividerBase implements IDivider {
                 selected = other;
                 selectedGrade = otherGrade;
             }
+            if (update != null) update.update(optionsCount() - option, String.valueOf(selectedGrade));
         }
 
         players1.addAll(selected.players1.players);
         players2.addAll(selected.players2.players);
     }
+
+//    String getScoreText(int value) {
+//        if (value < )
+//    }
 
     abstract int gradeOption(Context ctx, OptionalDivision option);
 

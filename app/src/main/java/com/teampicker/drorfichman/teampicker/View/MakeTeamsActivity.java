@@ -59,6 +59,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private View teamsScreenArea;
     View progressBarTeamDivision;
+    TextView progressBarTeamDivisionStatus;
     protected View teamStatsLayout;
     protected View buttonsLayout;
 
@@ -88,6 +89,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         teamsScreenArea = findViewById(R.id.teams_list_area);
         buttonsLayout = findViewById(R.id.buttons_layout);
         progressBarTeamDivision = findViewById(R.id.calculating_teams_progress);
+        progressBarTeamDivisionStatus = findViewById(R.id.calculating_teams_progress_status);
 
         list1 = findViewById(R.id.team_1);
         list2 = findViewById(R.id.team_2);
@@ -123,29 +125,6 @@ public class MakeTeamsActivity extends AppCompatActivity {
         }
 
         initialTeams();
-    }
-
-    private void showAnalysis() {
-
-        if (isAnalysisPlayerSelectedMode()) { // cancel player analysis selection
-            analysisSelectedPlayer = null;
-            analysisView.setAlpha(0.5F);
-            refreshPlayers();
-        } else if (isAnalysisMode()) { // cancel analysis
-            analysisResult = null;
-            analysisSelectedPlayer = null;
-            analysisView.setAlpha(1F);
-            refreshPlayers();
-        } else { // enter analysis mode
-            analysisView.setAlpha(0.5F);
-            AsyncTeamsAnalysis async = new AsyncTeamsAnalysis(this);
-            async.execute();
-        }
-    }
-
-    private void initCollaboration() {
-        analysisResult = CollaborationHelper.getCollaborationData(MakeTeamsActivity.this, players1, players2);
-        refreshPlayers();
     }
 
     private void saveResults() {
@@ -294,7 +273,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
             Toast.makeText(this, "Why you wanna play alone?!?", Toast.LENGTH_LONG).show();
         }
 
-        TeamDivision.dividePlayers(this, comingPlayers, players1, players2, selectedDivision);
+        TeamDivision.dividePlayers(this, comingPlayers, players1, players2, selectedDivision,
+                this::updateAnalysisProgress);
 
         scramble();
 
@@ -303,7 +283,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         }
     }
 
-    protected void postDividePlayers() {
+    void postDividePlayers() {
         if (isAnalysisMode()) {
             analysisSelectedPlayer = null;
             initCollaboration();
@@ -345,7 +325,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         updateStats();
     }
 
-    public void refreshPlayers() {
+    private void refreshPlayers() {
         refreshPlayers(true);
     }
 
@@ -526,6 +506,30 @@ public class MakeTeamsActivity extends AppCompatActivity {
         refreshPlayers();
     }
 
+    //region Analysis
+    private void showAnalysis() {
+
+        if (isAnalysisPlayerSelectedMode()) { // cancel player analysis selection
+            analysisSelectedPlayer = null;
+            analysisView.setAlpha(0.5F);
+            refreshPlayers();
+        } else if (isAnalysisMode()) { // cancel analysis
+            analysisResult = null;
+            analysisSelectedPlayer = null;
+            analysisView.setAlpha(1F);
+            refreshPlayers();
+        } else { // enter analysis mode
+            analysisView.setAlpha(0.5F);
+            AsyncTeamsAnalysis async = new AsyncTeamsAnalysis(this, this::refreshPlayers);
+            async.execute();
+        }
+    }
+
+    private void initCollaboration() {
+        analysisResult = CollaborationHelper.getCollaborationData(MakeTeamsActivity.this, players1, players2);
+        refreshPlayers();
+    }
+
     private boolean showMakeTeamOptionsDialog() {
 
         if (makeTeamsDialog != null && makeTeamsDialog.isShowing()) {
@@ -561,7 +565,13 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private void dividePlayersAsync() {
-        AsyncDivideCollaboration divide = new AsyncDivideCollaboration(this);
+        AsyncDivideCollaboration divide = new AsyncDivideCollaboration(this, this::postDividePlayers);
         divide.execute();
     }
+
+    private void updateAnalysisProgress(int attemptsRemaining, String score) {
+        runOnUiThread(() -> progressBarTeamDivisionStatus.setText(
+                getString(R.string.analysis_progress_update, attemptsRemaining, score)));
+    }
+    //endregion
 }

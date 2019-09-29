@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Controller.OptionalDivision;
 import com.teampicker.drorfichman.teampicker.Controller.TeamData;
+import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerAttribute;
 
@@ -19,7 +20,7 @@ public class DivideByGrade implements IDivider {
 
     public void divide(Context ctx, @NonNull ArrayList<Player> comingPlayers,
                        @NonNull List<Player> players1,
-                       @NonNull List<Player> players2) {
+                       @NonNull List<Player> players2, TeamDivision.onTaskInProgress update) {
 
         int OPTIONS = 20;
 
