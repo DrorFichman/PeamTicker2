@@ -30,67 +30,63 @@ public class Sorting {
 
     public void sort(ArrayList<? extends Sortable> players) {
 
-        Comparator<Sortable> comparator = Comparator.comparing(Sortable::name);
+        Comparator<Sortable> comparator = getSortableComparator();
+
+        if (comparator != null) { // last order is always by name
+            comparator = comparator.thenComparing((p1, p2) -> p2.name().compareTo(p1.name()));
+        }
+
+        // Original order = from high to low -> reversed compare
+        if (originalOrder) comparator = comparator.reversed();
+        players.sort(comparator);
+    }
+
+    private Comparator<Sortable> getSortableComparator() {
 
         switch (sort) {
 
             // Main
             case name:
-                comparator = Comparator.comparing(Sortable::name);
-                break;
+                return (p1, p2) -> p2.name().compareTo(p1.name());
             case grade:
-                comparator = Comparator.comparing(Sortable::grade);
-                break;
+                return Comparator.comparing(Sortable::grade);
             case suggestedGrade:
-                comparator = Comparator.comparing(Sortable::suggestedGrade).
+                return Comparator.comparing(Sortable::suggestedGrade).
                         thenComparing(Sortable::grade);
-                break;
             case age:
-                comparator = Comparator.comparing(Sortable::age);
-                break;
+                return Comparator.comparing(Sortable::age);
             case attributes:
-                comparator = Comparator.comparing(Sortable::attributes);
-                break;
+                return Comparator.comparing(Sortable::attributes);
+            case coming:
+                return Comparator.comparing(Sortable::coming);
 
-            // Statistics
+                // Statistics
             case success:
-                comparator = Comparator.comparing(Sortable::success).
+                return Comparator.comparing(Sortable::success).
                         thenComparing(Sortable::winRate);
-                break;
             case winPercentage:
-                comparator = Comparator.comparing(Sortable::winRate);
-                break;
+                return Comparator.comparing(Sortable::winRate);
             case games:
-                comparator = Comparator.comparing(Sortable::games);
-                break;
+                return Comparator.comparing(Sortable::games);
 
             // Participation
             case gamesWith:
-                comparator = Comparator.comparing(Sortable::gamesWithCount).
+                return Comparator.comparing(Sortable::gamesWithCount).
                         thenComparing(Sortable::successWith).
                         thenComparing(Sortable::winRateWith);
-                break;
             case successWith:
-                comparator = Comparator.comparing(Sortable::successWith).
+                return Comparator.comparing(Sortable::successWith).
                         thenComparing(Sortable::winRateWith);
-                break;
             case gamesVs:
-                comparator = Comparator.comparing(Sortable::gamesVsCount).
+                return Comparator.comparing(Sortable::gamesVsCount).
                         thenComparing(Sortable::successVs).
                         thenComparing(Sortable::winRateVs);
-                break;
             case successVs:
-                comparator = Comparator.comparing(Sortable::successVs).
+                return Comparator.comparing(Sortable::successVs).
                         thenComparing(Sortable::winRateVs);
-                break;
             default:
+                return null;
         }
-
-        comparator = comparator.thenComparing(Sortable::name);
-
-        // Original order = from high to low -> reversed compare
-        if (originalOrder) comparator = comparator.reversed();
-        players.sort(comparator);
     }
 
     public void setHeadlineSorting(Activity ctx, int textField, String headline, final sortType sorting) {
