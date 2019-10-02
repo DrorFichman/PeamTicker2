@@ -1,12 +1,16 @@
 package com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.Controller.OptionalDivision;
+import com.teampicker.drorfichman.teampicker.Controller.TeamData;
 import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.PlayerAttribute;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -16,48 +20,159 @@ public abstract class DividerBase implements IDivider {
 
     abstract int optionsCount();
 
+    abstract int gradeOption(Context ctx, OptionalDivision option);
+
+    abstract boolean preferNewOption(int selected, int another);
+
     @Override
     public void divide(Context ctx, @NonNull ArrayList<Player> comingPlayers,
                        @NonNull List<Player> players1,
                        @NonNull List<Player> players2, TeamDivision.onTaskInProgress update) {
 
-        OptionalDivision selected = divideRandomly(cloneList(comingPlayers));
+
+        ArrayList<Player> GKs = new ArrayList<>();
+        ArrayList<Player> Defenders = new ArrayList<>();
+        ArrayList<Player> Divs = new ArrayList<>();
+        ArrayList<Player> Playmakers = new ArrayList<>();
+        ArrayList<Player> Others = new ArrayList<>();
+        extractSpecialPlayers(comingPlayers, GKs, Defenders, Divs, Playmakers, Others);
+
+        Player extraPlayer = null;
+        if (comingPlayers.size() % 2 == 1 && Others.size() > 0) {
+            extraPlayer = Others.get(Others.size() - 1);
+            Others.remove(extraPlayer);
+        }
+
+        if (update != null) update.update(1, "--");
+        OptionalDivision selected = getDivision(comingPlayers.size() / 2, Others, GKs, Defenders, Playmakers, Divs);
         int selectedGrade = gradeOption(ctx, selected);
 
         for (int option = 0; option < optionsCount(); ++option) {
-            OptionalDivision other = divideRandomly(cloneList(comingPlayers));
-            int otherGrade = gradeOption(ctx, other);
+            OptionalDivision another = getDivision(comingPlayers.size() / 2, Others, GKs, Defenders, Playmakers, Divs);
+            int otherGrade = gradeOption(ctx, another);
             if (preferNewOption(selectedGrade, otherGrade)) {
-                selected = other;
+                selected = another;
                 selectedGrade = otherGrade;
             }
-            if (update != null) update.update((option + 1) * 100 / optionsCount(), String.valueOf(selectedGrade));
+            if (update != null)
+                update.update(getProgress(option, optionsCount()), String.valueOf(selectedGrade));
         }
 
         players1.addAll(selected.players1.players);
         players2.addAll(selected.players2.players);
+
+        if (extraPlayer != null) {
+            Log.d("teams", "adding extra player " + extraPlayer.mName);
+            players1.add(extraPlayer);
+        }
     }
 
-    abstract int gradeOption(Context ctx, OptionalDivision option);
+    private int getProgress(int option, int total) {
+        return getSerieOf(option + 1) * 100 / getSerieOf(total);
+    }
 
-    abstract boolean preferNewOption(int selected, int another);
+    private int getSerieOf(int n) {
+        return n * (n + 1) / 2;
+    }
 
-    static OptionalDivision divideRandomly(ArrayList<Player> players) {
-        OptionalDivision option = new OptionalDivision();
-        Random r = new Random();
-        while (players.size() > 0) {
-            int a = getRandom(r, players.size());
-            if (option.players1.getCount() > option.players2.getCount()) // more players of this type
-                option.players2.players.add(players.get(a));
-            else
-                option.players1.players.add(players.get(a));
-            players.remove(a);
+    static ArrayList<PlayerAttribute> specials =
+            new ArrayList<PlayerAttribute>() {{
+                add(PlayerAttribute.isDefender);
+                add(PlayerAttribute.isGK);
+            }};
+
+    private static void extractSpecialPlayers(@NonNull ArrayList<Player> comingPlayers,
+                                              List<Player> GKs,
+                                              List<Player> defenders,
+                                              List<Player> divs,
+                                              List<Player> playmakers,
+                                              List<Player> others) {
+
+        for (int n = 0; n < comingPlayers.size(); ++n) {
+            Player currPlayer = comingPlayers.get(n);
+            if (currPlayer.isGK) {
+                GKs.add(currPlayer);
+            } else if (currPlayer.isDefender) {
+                defenders.add(currPlayer);
+            } else if (currPlayer.isUnbreakable) {
+                divs.add(currPlayer);
+            } else if (currPlayer.isPlaymaker) {
+                playmakers.add(currPlayer);
+            } else {
+                others.add(currPlayer);
+            }
         }
+
+        Collections.sort(GKs);
+        Collections.sort(defenders);
+        Collections.sort(divs);
+        Collections.sort(playmakers);
+        Collections.sort(others);
+    }
+
+    private static TeamData nextTeamToAdd(OptionalDivision option,
+                                          int teamMaxSize,
+                                          PlayerAttribute attribute) {
+
+        if (option.players1.getCount() == teamMaxSize) return option.players2;
+        if (option.players2.getCount() == teamMaxSize) return option.players1;
+
+        int team1Players = option.players1.getCount(attribute);
+        int team2Players = option.players2.getCount(attribute);
+        if (team1Players > team2Players) { // more players of this type
+            return option.players2;
+        } else if (team2Players > team1Players) {
+            return option.players1;
+        } else {
+            int team1Specials = option.players1.getCount(specials);
+            int team2Specials = option.players2.getCount(specials);
+            if (team1Specials > team2Specials) { // more special players
+                return option.players2;
+            } else if (team2Specials > team1Specials) {
+                return option.players1;
+            } else { // randomly add
+                if (getRandom(new Random(), 2) == 0) {
+                    return option.players2;
+                } else {
+                    return option.players1;
+                }
+            }
+        }
+    }
+
+    private static void addSpecialPlayers(OptionalDivision option,
+                                          int teamSize, ArrayList<Player> attributePlayers,
+                                          PlayerAttribute attribute) {
+        Random r = new Random();
+        while (attributePlayers.size() > 0) {
+            int a = getRandom(r, attributePlayers.size());
+            nextTeamToAdd(option, teamSize, attribute).players.add(attributePlayers.get(a));
+            attributePlayers.remove(a);
+        }
+    }
+
+    private static OptionalDivision getDivision(int teamSize, ArrayList<Player> iOthers,
+                                                ArrayList<Player> iGKs,
+                                                ArrayList<Player> iDefenders,
+                                                ArrayList<Player> iPlaymakers,
+                                                ArrayList<Player> iDivs) {
+        OptionalDivision option = new OptionalDivision();
+        ArrayList<Player> Others = cloneList(iOthers);
+        ArrayList<Player> Divs = cloneList(iDivs);
+        ArrayList<Player> GKs = cloneList(iGKs);
+        ArrayList<Player> Defenders = cloneList(iDefenders);
+        ArrayList<Player> Playmakers = cloneList(iPlaymakers);
+
+        addSpecialPlayers(option, teamSize, GKs, PlayerAttribute.isGK);
+        addSpecialPlayers(option, teamSize, Defenders, PlayerAttribute.isDefender);
+        addSpecialPlayers(option, teamSize, Playmakers, PlayerAttribute.isPlaymaker);
+        addSpecialPlayers(option, teamSize, Divs, PlayerAttribute.isUnbreakable);
+        addSpecialPlayers(option, teamSize, Others, null);
 
         return option;
     }
 
-    public static ArrayList<Player> cloneList(List<Player> players) {
+    static ArrayList<Player> cloneList(List<Player> players) {
         ArrayList<Player> clone = new ArrayList<>(players.size());
         clone.addAll(players);
         return clone;
