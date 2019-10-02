@@ -31,16 +31,12 @@ public abstract class DividerBase implements IDivider {
                 selected = other;
                 selectedGrade = otherGrade;
             }
-            if (update != null) update.update(optionsCount() - option, String.valueOf(selectedGrade));
+            if (update != null) update.update((option + 1) * 100 / optionsCount(), String.valueOf(selectedGrade));
         }
 
         players1.addAll(selected.players1.players);
         players2.addAll(selected.players2.players);
     }
-
-//    String getScoreText(int value) {
-//        if (value < )
-//    }
 
     abstract int gradeOption(Context ctx, OptionalDivision option);
 
