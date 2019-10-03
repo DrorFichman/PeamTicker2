@@ -35,6 +35,9 @@ public class CollaborationHelper {
             return players.get(name);
         }
 
+        /**
+         * Gets team's overall historical success when playing with each other
+         */
         public int getCollaborationWinRate(List<Player> players) {
             int winsAndLoses = 0;
             int wins = 0;

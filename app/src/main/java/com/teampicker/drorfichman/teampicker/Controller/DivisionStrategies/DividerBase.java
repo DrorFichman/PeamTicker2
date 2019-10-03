@@ -43,7 +43,7 @@ public abstract class DividerBase implements IDivider {
             Others.remove(extraPlayer);
         }
 
-        if (update != null) update.update(1, "--");
+        if (update != null) update.update(0, "--");
         OptionalDivision selected = getDivision(comingPlayers.size() / 2, Others, GKs, Defenders, Playmakers, Divs);
         int selectedGrade = gradeOption(ctx, selected);
 

@@ -381,8 +381,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
                 players.getAllCount(),
                 players.getAverage(),
                 players.getStdDev(),
-                players.getWinRate(),
                 players.getSuccess(),
+                players.getWinRate(),
                 teamStdDev,
                 collaborationWinRate));
 
@@ -569,9 +569,9 @@ public class MakeTeamsActivity extends AppCompatActivity {
         divide.execute();
     }
 
-    private void updateAnalysisProgress(int attemptsRemaining, String score) {
+    private void updateAnalysisProgress(int progress, String score) {
         runOnUiThread(() -> progressBarTeamDivisionStatus.setText(
-                getString(R.string.analysis_progress_update, attemptsRemaining, score)));
+                getString(R.string.analysis_progress_update, progress, score)));
     }
     //endregion
 }
