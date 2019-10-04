@@ -114,7 +114,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         shuffleView.setOnLongClickListener(v -> showMakeTeamOptionsDialog());
 
         analysisView = findViewById(R.id.game_prediction_button);
-        analysisView.setOnClickListener(v -> showAnalysis());
+        analysisView.setOnClickListener(v -> analysisClicked());
         analysisView.setOnLongClickListener(explainOperation);
 
         if (getIntent().getBooleanExtra(INTENT_SET_RESULT, false)) {
@@ -297,8 +297,13 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        DbHelper.saveTeams(this, players1, players2);
-        super.onBackPressed();
+        if (backFromMove()) { // exit move mode
+            return;
+        } else if (backFromAnalysis()) { // exit analysis modes
+            return;
+        } else {
+            super.onBackPressed();
+        }
     }
 
     private void clearMovedPlayers() {
@@ -411,13 +416,19 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private View.OnClickListener onMoveClicked = view -> {
-        if (isMoveMode()) { // exit move mode
-            clearMovedPlayers();
-            refreshPlayers();
-        } else { // enter move mode
+        if (!backFromMove()) { // enter move mode
             moveView.setAlpha(0.5F);
         }
     };
+
+    private boolean backFromMove() {
+        if (isMoveMode()) { // exit move mode
+            clearMovedPlayers();
+            refreshPlayers();
+            return true;
+        }
+        return false;
+    }
 
     View.OnLongClickListener explainOperation = new View.OnLongClickListener() {
         @Override
@@ -509,22 +520,30 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     //region Analysis
-    private void showAnalysis() {
+    private void analysisClicked() {
+
+        if (!backFromAnalysis()) { // enter analysis mode
+            analysisView.setAlpha(0.5F);
+            AsyncTeamsAnalysis async = new AsyncTeamsAnalysis(this, this::refreshPlayers);
+            async.execute();
+        }
+    }
+
+    private boolean backFromAnalysis() {
 
         if (isAnalysisPlayerSelectedMode()) { // cancel player analysis selection
             analysisSelectedPlayer = null;
             analysisView.setAlpha(0.5F);
             refreshPlayers();
+            return true;
         } else if (isAnalysisMode()) { // cancel analysis
             analysisResult = null;
             analysisSelectedPlayer = null;
             analysisView.setAlpha(1F);
             refreshPlayers();
-        } else { // enter analysis mode
-            analysisView.setAlpha(0.5F);
-            AsyncTeamsAnalysis async = new AsyncTeamsAnalysis(this, this::refreshPlayers);
-            async.execute();
+            return true;
         }
+        return false;
     }
 
     private void initCollaboration() {
