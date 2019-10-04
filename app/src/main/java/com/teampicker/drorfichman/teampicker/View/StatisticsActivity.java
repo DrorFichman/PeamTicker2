@@ -8,22 +8,19 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerStatisticsAdapter;
-import com.teampicker.drorfichman.teampicker.Controller.ScreenshotHelper;
-import com.teampicker.drorfichman.teampicker.Controller.Sorting;
-import com.teampicker.drorfichman.teampicker.Controller.sortType;
+import com.teampicker.drorfichman.teampicker.tools.ScreenshotHelper;
+import com.teampicker.drorfichman.teampicker.Controller.Sort.Sorting;
+import com.teampicker.drorfichman.teampicker.Controller.Sort.sortType;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 import androidx.appcompat.app.AppCompatActivity;
 

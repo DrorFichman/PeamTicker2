@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 

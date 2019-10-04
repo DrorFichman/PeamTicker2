@@ -1,11 +1,7 @@
-package com.teampicker.drorfichman.teampicker.Controller;
+package com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 
 import android.content.Context;
 
-import com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies.DivideByAge;
-import com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies.DivideByGrade;
-import com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies.DivideCollaboration;
-import com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies.IDivider;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 
 import java.util.ArrayList;

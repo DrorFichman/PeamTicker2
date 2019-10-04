@@ -1,8 +1,7 @@
-package com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies;
+package com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 
 import android.content.Context;
 
-import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 
 import java.util.ArrayList;

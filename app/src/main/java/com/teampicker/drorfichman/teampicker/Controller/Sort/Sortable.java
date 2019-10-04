@@ -1,4 +1,4 @@
-package com.teampicker.drorfichman.teampicker.Controller;
+package com.teampicker.drorfichman.teampicker.Controller.Sort;
 
 public class Sortable {
 

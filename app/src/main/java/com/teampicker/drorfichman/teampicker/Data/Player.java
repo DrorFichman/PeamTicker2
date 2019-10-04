@@ -1,7 +1,6 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
-import com.teampicker.drorfichman.teampicker.Controller.Sortable;
-import com.teampicker.drorfichman.teampicker.Controller.StatisticsData;
+import com.teampicker.drorfichman.teampicker.Controller.Sort.Sortable;
 
 import java.io.Serializable;
 import java.util.ArrayList;

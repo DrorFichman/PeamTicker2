@@ -1,4 +1,4 @@
-package com.teampicker.drorfichman.teampicker.Controller;
+package com.teampicker.drorfichman.teampicker.tools;
 
 import android.Manifest;
 import android.app.Activity;

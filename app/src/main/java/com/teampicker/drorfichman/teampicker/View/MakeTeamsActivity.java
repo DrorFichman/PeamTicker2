@@ -15,10 +15,12 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
-import com.teampicker.drorfichman.teampicker.Controller.CollaborationHelper;
-import com.teampicker.drorfichman.teampicker.Controller.ScreenshotHelper;
-import com.teampicker.drorfichman.teampicker.Controller.TeamData;
-import com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
+import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.Collaboration;
+import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.CollaborationHelper;
+import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.PlayerCollaboration;
+import com.teampicker.drorfichman.teampicker.tools.ScreenshotHelper;
+import com.teampicker.drorfichman.teampicker.Data.TeamData;
+import com.teampicker.drorfichman.teampicker.Controller.TeamDivision.TeamDivision;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
@@ -46,7 +48,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     ArrayList<Player> movedPlayers = new ArrayList<>();
     ArrayList<Player> missedPlayers = new ArrayList<>();
 
-    public CollaborationHelper.Collaboration analysisResult;
+    public Collaboration analysisResult;
     private String analysisSelectedPlayer;
     private boolean mSetResult;
     private TeamDivision.DivisionStrategy selectedDivision = TeamDivision.DivisionStrategy.Grade;
@@ -458,7 +460,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
             } else if (isAnalysisMode() && !player.mName.equals(analysisSelectedPlayer)) { // set analysis player selection
 
-                CollaborationHelper.PlayerCollaboration playerStats = analysisResult.getPlayer(player.mName);
+                PlayerCollaboration playerStats = analysisResult.getPlayer(player.mName);
                 if (playerStats != null) analysisSelectedPlayer = player.mName;
 
                 refreshPlayers();

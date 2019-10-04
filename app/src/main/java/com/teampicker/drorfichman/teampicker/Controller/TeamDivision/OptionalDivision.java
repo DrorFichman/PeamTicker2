@@ -1,7 +1,10 @@
-package com.teampicker.drorfichman.teampicker.Controller;
+package com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 
 import android.content.Context;
-import android.util.Log;
+
+import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.Collaboration;
+import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.CollaborationHelper;
+import com.teampicker.drorfichman.teampicker.Data.TeamData;
 
 /**
  * Created by drorfichman on 9/17/16.
@@ -20,7 +23,7 @@ public class OptionalDivision {
     /**
      * Get 2 team diff of total win rate
      */
-    private int getChemistryWinRateDiff(CollaborationHelper.Collaboration collaborationData) {
+    private int getChemistryWinRateDiff(Collaboration collaborationData) {
         int collaborationWinRate1 = collaborationData.getCollaborationWinRate(players1.players);
         int collaborationWinRate2 = collaborationData.getCollaborationWinRate(players2.players);
 
@@ -30,7 +33,7 @@ public class OptionalDivision {
     /**
      * Get 2 team sum of std dev from 50% win rate based on in-team collaboration
      */
-    private int getCollaborationWinRateStdDevFromOptimal(CollaborationHelper.Collaboration collaborationData) {
+    private int getCollaborationWinRateStdDevFromOptimal(Collaboration collaborationData) {
         int expectedStdDev1 = collaborationData.getExpectedWinRateStdDiv(players1.players);
         int expectedStdDev2 = collaborationData.getExpectedWinRateStdDiv(players2.players);
         if (expectedStdDev1 > 0 && expectedStdDev2 > 0)
@@ -40,7 +43,7 @@ public class OptionalDivision {
     }
 
     public int winRateStdDiv(Context ctx) {
-        CollaborationHelper.Collaboration collaborationData = CollaborationHelper.getCollaborationData(ctx, players1.players, players2.players);
+        Collaboration collaborationData = CollaborationHelper.getCollaborationData(ctx, players1.players, players2.players);
 
         // 40% team success (winRateDiff), 40% justice for edge players (collaborationStdDev), 20% personal abilities (gradeDiff)
         // Overall division grade calculated 0-25, the lower the better

@@ -1,4 +1,4 @@
-package com.teampicker.drorfichman.teampicker.Controller;
+package com.teampicker.drorfichman.teampicker.Controller.Sort;
 
 public enum sortType {
     // Main Activity

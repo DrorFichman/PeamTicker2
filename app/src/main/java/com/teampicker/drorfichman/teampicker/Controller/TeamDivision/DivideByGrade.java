@@ -1,8 +1,6 @@
-package com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies;
+package com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 
 import android.content.Context;
-
-import com.teampicker.drorfichman.teampicker.Controller.OptionalDivision;
 
 public class DivideByGrade extends DividerBase {
 

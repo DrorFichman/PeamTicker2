@@ -1,10 +1,8 @@
-package com.teampicker.drorfichman.teampicker.Controller;
+package com.teampicker.drorfichman.teampicker.Data;
 
-import android.content.Context;
-
+import com.teampicker.drorfichman.teampicker.Controller.TeamDivision.TeamDivision;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerAttribute;
-import com.teampicker.drorfichman.teampicker.Data.PlayerDbHelper;
 
 import java.math.BigDecimal;
 import java.math.MathContext;

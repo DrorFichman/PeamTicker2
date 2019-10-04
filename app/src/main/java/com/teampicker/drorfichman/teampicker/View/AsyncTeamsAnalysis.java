@@ -3,7 +3,7 @@ package com.teampicker.drorfichman.teampicker.View;
 import android.os.AsyncTask;
 import android.view.View;
 
-import com.teampicker.drorfichman.teampicker.Controller.CollaborationHelper;
+import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.CollaborationHelper;
 
 import java.lang.ref.WeakReference;
 

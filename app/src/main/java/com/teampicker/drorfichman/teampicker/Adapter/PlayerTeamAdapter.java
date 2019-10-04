@@ -9,7 +9,10 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.teampicker.drorfichman.teampicker.Controller.CollaborationHelper;
+import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.Collaboration;
+import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.CollaborationHelper;
+import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.PlayerCollaboration;
+import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.EffectMargin;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.R;
@@ -26,7 +29,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
     private List<Player> mMovedPlayers;
     private List<Player> mMarkedPlayers;
     private String mSelectedPlayer;
-    private CollaborationHelper.Collaboration mCollaboration;
+    private Collaboration mCollaboration;
 
     private boolean isAttributesVisible;
     private boolean isGameHistoryVisible;
@@ -34,7 +37,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
     public PlayerTeamAdapter(Context ctx, List<Player> players,
                              List<Player> coloredPlayers, List<Player> markedPlayers,
-                             CollaborationHelper.Collaboration collaboration, String selectedPlayer,
+                             Collaboration collaboration, String selectedPlayer,
                              boolean showInternalData) {
         super(ctx, -1, players);
         context = ctx;
@@ -100,7 +103,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
     private void setColoredPlayers(View rowView, ImageView suggestion, Player player) {
         suggestion.setVisibility(View.GONE);
         if (mSelectedPlayer == null && mCollaboration != null) {
-            CollaborationHelper.PlayerCollaboration playerData = mCollaboration.getPlayer(player.mName);
+            PlayerCollaboration playerData = mCollaboration.getPlayer(player.mName);
 
             int games = playerData.games;
             int expectedWinRateDiff = playerData.getExpectedWinRateDiff();
@@ -187,14 +190,14 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
         if (mSelectedPlayer != null && mCollaboration != null) { // selected player view
             String stats = "";
 
-            CollaborationHelper.PlayerCollaboration selectedPlayerData = mCollaboration.getPlayer(mSelectedPlayer);
+            PlayerCollaboration selectedPlayerData = mCollaboration.getPlayer(mSelectedPlayer);
             if (player.mName.equals(mSelectedPlayer)) { // selected player stats
                 stats = context.getString(R.string.player_analysis_selected,
                         selectedPlayerData.winRate,
                         selectedPlayerData.games,
                         selectedPlayerData.getExpectedWinRateString());
             } else { // collaborator of selected player stats
-                CollaborationHelper.EffectMargin collaboratorEffect = selectedPlayerData.getEffect(player.mName);
+                EffectMargin collaboratorEffect = selectedPlayerData.getEffect(player.mName);
                 if (collaboratorEffect != null) {
                     stats = context.getString(R.string.player_analysis_collaborator,
                             collaboratorEffect.winRateWith,
@@ -220,7 +223,7 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
             analysis.setVisibility(View.VISIBLE);
             analysis.setText(stats);
         } else if (mCollaboration != null) { // non-selected player view
-            CollaborationHelper.PlayerCollaboration data = mCollaboration.getPlayer(player.mName);
+            PlayerCollaboration data = mCollaboration.getPlayer(player.mName);
             String stats = context.getString(R.string.player_analysis,
                     data.winRate,
                     data.games,

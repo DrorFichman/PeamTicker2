@@ -1,17 +1,6 @@
-package com.teampicker.drorfichman.teampicker.Controller.DivisionStrategies;
+package com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 
 import android.content.Context;
-import android.util.Log;
-
-import com.teampicker.drorfichman.teampicker.Controller.CollaborationHelper;
-import com.teampicker.drorfichman.teampicker.Controller.OptionalDivision;
-import com.teampicker.drorfichman.teampicker.Data.Player;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import androidx.annotation.NonNull;
 
 public class DivideCollaboration extends DividerBase {
 
