@@ -44,6 +44,6 @@ public class PlayerTeamAdapterGameHistory extends ArrayAdapter<Player> {
 
     private void setName(Player player, TextView name) {
         name.setText(player.mName + (mMarkedPlayers.contains(player) ? " **" : ""));
-        name.setAlpha(mSelectedPlayer == null || player.mName.equals(mSelectedPlayer) ? 1F : 0.5F);
+        name.setAlpha(mSelectedPlayer == null || player.mName.equals(mSelectedPlayer) ? 1F : 0.4F);
     }
 }

@@ -2,6 +2,7 @@ package com.teampicker.drorfichman.teampicker.View;
 
 import android.app.AlertDialog;
 import android.app.DialogFragment;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -163,6 +164,7 @@ public class GameDetailsDialogFragment extends DialogFragment {
 
     private void refreshTeams() {
         score.setText(mCurrGame.getScore());
+        score.setTextColor(mCurrGame.playerResult != null ? mCurrGame.playerResult.color : Color.BLACK);
         date.setText(mCurrGame.date);
 
         mTeam1 = DbHelper.getCurrTeam(getActivity(), mCurrGame.gameId, TeamEnum.Team1, 0);

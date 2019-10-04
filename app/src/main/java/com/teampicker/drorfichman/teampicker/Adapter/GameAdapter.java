@@ -61,16 +61,7 @@ public class GameAdapter extends ArrayAdapter<Game> {
 
     private void setPlayerResult(ImageView starView, Game g) {
         if (g.playerResult != null) {
-            ResultEnum res = g.playerResult;
-            if (res == ResultEnum.Win) {
-                starView.setImageResource(R.drawable.circle_win);
-            } else if (res == ResultEnum.Lose) {
-                starView.setImageResource(R.drawable.circle_lose);
-            } else if (res == ResultEnum.Tie) {
-                starView.setImageResource(R.drawable.circle_draw);
-            } else if (res == ResultEnum.Missed) {
-                starView.setImageResource(R.drawable.circle_na);
-            }
+            starView.setImageResource(g.playerResult.drawble);
             starView.setVisibility(View.VISIBLE);
         } else {
             starView.setVisibility(View.GONE);

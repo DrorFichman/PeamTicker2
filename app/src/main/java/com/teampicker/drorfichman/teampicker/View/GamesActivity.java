@@ -47,9 +47,9 @@ public class GamesActivity extends AppCompatActivity {
         gamesList = findViewById(R.id.games_list);
 
         gamesList.setOnItemClickListener((adapterView, view, i, l) -> {
-            Game details = (Game) view.getTag(R.id.game);
+            Game game = (Game) view.getTag(R.id.game);
             int gameIndexId = (int) view.getTag(R.id.game_index_id);
-            showTeamsDialog(games, gameIndexId, details, pPlayer);
+            showTeamsDialog(games, gameIndexId, game, pPlayer);
         });
 
         gamesList.setOnItemLongClickListener((adapterView, view, i, l) -> {
@@ -61,20 +61,15 @@ public class GamesActivity extends AppCompatActivity {
     }
 
     private void refreshGames() {
-        games = getGames();
+
+        if (pPlayer != null) {
+            games = DbHelper.getGames(this, pPlayer.mName);
+        } else {
+            games = DbHelper.getGames(this);
+        }
 
         // Attach cursor adapter to the ListView
         gamesList.setAdapter(new GameAdapter(this, games));
-    }
-
-    @NonNull
-    private ArrayList<Game> getGames() {
-
-        if (pPlayer != null) {
-            return DbHelper.getGames(this, pPlayer.mName);
-        } else {
-            return DbHelper.getGames(this);
-        }
     }
 
     private void showTeamsDialog(ArrayList<Game> games, int gameIndexId, Game game, Player player) {

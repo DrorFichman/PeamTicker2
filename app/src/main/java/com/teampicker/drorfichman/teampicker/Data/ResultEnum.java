@@ -1,24 +1,30 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
-import android.app.Application;
+import android.graphics.Color;
+
+import com.teampicker.drorfichman.teampicker.R;
 
 /**
  * Created by drorfichman on 10/3/16.
  */
 public enum ResultEnum {
-    Win("W", PlayerGamesDbHelper.WIN),
-    Lose("L", PlayerGamesDbHelper.LOSE),
-    Tie("T", PlayerGamesDbHelper.TIE),
-    NA("?", PlayerGamesDbHelper.EMPTY_RESULT),
-    Missed("M", PlayerGamesDbHelper.MISSED_GAME);
+    Win("W", PlayerGamesDbHelper.WIN, Color.GREEN, R.drawable.circle_win),
+    Lose("L", PlayerGamesDbHelper.LOSE, Color.RED, R.drawable.circle_lose),
+    Tie("T", PlayerGamesDbHelper.TIE, Color.BLACK, R.drawable.circle_draw),
+    NA("?", PlayerGamesDbHelper.EMPTY_RESULT, Color.BLACK, R.drawable.circle_na),
+    Missed("M", PlayerGamesDbHelper.MISSED_GAME, Color.GRAY, R.drawable.circle_na);
 
-    ResultEnum(String s, int v) {
+    ResultEnum(String s, int v, int c, int d) {
         sign = s;
         value = v;
+        color = c;
+        drawble = d;
     }
 
     private final int value;
     private final String sign;
+    public final int color;
+    public final int drawble;
 
     public String getChar() {
         return sign;
