@@ -306,6 +306,12 @@ public class MakeTeamsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onPause() {
+        DbHelper.saveTeams(this, players1, players2); // save teams when leaving activity
+        super.onPause();
+    }
+
     private void clearMovedPlayers() {
         movedPlayers.clear();
         moveView.setAlpha(1F);
