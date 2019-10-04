@@ -38,22 +38,14 @@ public class GameAdapter extends ArrayAdapter<Game> {
 
         Game g = mGames.get(position);
 
-        String date = g.date;
-        int gameId = g.gameId;
-        String team1 = String.valueOf(g.team1Score);
-        String team2 = String.valueOf(g.team2Score);
-
-        dateView.setText(date);
-
-        String details = team1 + " - " + team2;
-        resultSet.setText(details);
+        dateView.setText(g.date);
+        resultSet.setText(g.getScore());
 
         setPlayerResult(res, g);
         setPlayerGrade(playerGrade, g);
 
-
-        view.setTag(R.id.game_id, gameId);
-        view.setTag(R.id.game_details, details);
+        view.setTag(R.id.game, g);
+        view.setTag(R.id.game_index_id, position);
 
         return view;
     }

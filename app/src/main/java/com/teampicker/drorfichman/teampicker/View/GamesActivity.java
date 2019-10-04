@@ -25,6 +25,7 @@ public class GamesActivity extends AppCompatActivity {
 
     private ListView gamesList;
     private Player pPlayer;
+    private ArrayList<Game> games;
 
     @NonNull
     public static Intent getGameActivityIntent(Context context, String playerName) {
@@ -46,13 +47,13 @@ public class GamesActivity extends AppCompatActivity {
         gamesList = findViewById(R.id.games_list);
 
         gamesList.setOnItemClickListener((adapterView, view, i, l) -> {
-            String details = (String) view.getTag(R.id.game_details);
-            int gameId = (int) view.getTag(R.id.game_id);
-            showTeamsDialog(gameId, details);
+            Game details = (Game) view.getTag(R.id.game);
+            int gameIndexId = (int) view.getTag(R.id.game_index_id);
+            showTeamsDialog(games, gameIndexId, details);
         });
 
         gamesList.setOnItemLongClickListener((adapterView, view, i, l) -> {
-            checkGameDeletion((Integer) view.getTag(R.id.game_id));
+            checkGameDeletion(((Game) view.getTag(R.id.game)).gameId);
             return true;
         });
 
@@ -60,7 +61,7 @@ public class GamesActivity extends AppCompatActivity {
     }
 
     private void refreshGames() {
-        ArrayList<Game> games = getGames();
+        games = getGames();
 
         // Attach cursor adapter to the ListView
         gamesList.setAdapter(new GameAdapter(this, games));
@@ -76,11 +77,11 @@ public class GamesActivity extends AppCompatActivity {
         }
     }
 
-    private void showTeamsDialog(int gameId, String details) {
+    private void showTeamsDialog(ArrayList<Game> games, int gameIndexId, Game game) {
 
         // Create and show the dialog.
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        DialogFragment newFragment = GameDetailsDialogFragment.newInstance(gameId, details);
+        DialogFragment newFragment = GameDetailsDialogFragment.newInstance(games, gameIndexId, game);
         newFragment.show(ft, "game_dialog");
     }
 

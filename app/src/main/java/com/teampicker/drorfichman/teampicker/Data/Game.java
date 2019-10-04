@@ -20,4 +20,8 @@ public class Game implements Serializable {
         this.gameId = gameId;
         this.date = date;
     }
+
+    public String getScore() {
+        return team1Score + " - " + team2Score;
+    }
 }

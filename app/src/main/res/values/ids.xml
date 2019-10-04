@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="game_id" type="id"></item>
-    <item name="game_details" type="id"></item>
+    <item name="game_index_id" type="id"></item>
+    <item name="game" type="id"></item>
     <item name="player_id" type="id"></item>
 </resources>

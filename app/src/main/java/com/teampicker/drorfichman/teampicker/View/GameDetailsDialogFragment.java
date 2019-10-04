@@ -13,12 +13,14 @@ import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapterGameHistory;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
+import com.teampicker.drorfichman.teampicker.Data.Game;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import androidx.annotation.NonNull;
 
@@ -27,27 +29,33 @@ import androidx.annotation.NonNull;
  */
 public class GameDetailsDialogFragment extends DialogFragment {
 
+    public static final String PARAM_GAMES_LIST = "games_list";
+    public static final String PARAM_GAME_INDEX = "list_index";
+    private static final String PARAM_GAME = "game";
+
     private ArrayList<Player> mTeam1;
     private ArrayList<Player> mTeam2;
-    private String mDetails;
-    private int mGameId;
 
-    private static final String PARAM_DETAILS = "details";
-    private static final String PARAM_GAME_ID = "game_id";
+    private Game mCurrGame;
+    private int mCurrGameIndex;
+    private ArrayList<Game> mGames;
 
     private PlayerTeamAdapterGameHistory adapter1;
     private PlayerTeamAdapterGameHistory adapter2;
+
     private ListView team1List;
     private ListView team2List;
-    private View copyGame;
+    private TextView score;
+    private TextView date;
 
-    static GameDetailsDialogFragment newInstance(int gameId, String details) {
+    static GameDetailsDialogFragment newInstance(ArrayList<Game> games, int gameIndexId, Game game) {
 
         GameDetailsDialogFragment f = new GameDetailsDialogFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable(PARAM_DETAILS, details);
-        args.putInt(PARAM_GAME_ID, gameId);
+        args.putSerializable(PARAM_GAME, game);
+        args.putInt(PARAM_GAME_INDEX, gameIndexId);
+        args.putSerializable(PARAM_GAMES_LIST, games);
         f.setArguments(args);
 
         return f;
@@ -57,8 +65,9 @@ public class GameDetailsDialogFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDetails = getArguments().getString(PARAM_DETAILS);
-        mGameId = getArguments().getInt(PARAM_GAME_ID);
+        mCurrGame = (Game) getArguments().getSerializable(PARAM_GAME);
+        mGames = (ArrayList<Game>) getArguments().getSerializable(PARAM_GAMES_LIST);
+        mCurrGameIndex = getArguments().getInt(PARAM_GAME_INDEX);
     }
 
     @Override
@@ -66,9 +75,11 @@ public class GameDetailsDialogFragment extends DialogFragment {
 
         View view = inflater.inflate(R.layout.layout_game_details_dialog, container, false);
 
-        ((TextView) view.findViewById(R.id.game_details_title)).setText(mDetails);
         team1List = view.findViewById(R.id.game_details_team1);
         team2List = view.findViewById(R.id.game_details_team2);
+
+        score = view.findViewById(R.id.game_details_title);
+        date = view.findViewById(R.id.game_details_date);
 
         AdapterView.OnItemLongClickListener onPlayerClick = (adapterView, view1, i, l) -> {
             Player player = (Player) adapterView.getItemAtPosition(i);
@@ -78,7 +89,7 @@ public class GameDetailsDialogFragment extends DialogFragment {
         team1List.setOnItemLongClickListener(onPlayerClick);
         team2List.setOnItemLongClickListener(onPlayerClick);
 
-        copyGame = view.findViewById(R.id.copy_game);
+        View copyGame = view.findViewById(R.id.copy_game);
         copyGame.setOnClickListener(view12 -> {
             DbHelper.clearComingPlayers(getActivity());
             DbHelper.setPlayerComing(getActivity(), mTeam1);
@@ -88,6 +99,23 @@ public class GameDetailsDialogFragment extends DialogFragment {
             dismiss();
         });
         copyGame.setOnLongClickListener(operationExplanation);
+
+
+        view.findViewById(R.id.next_game).setOnClickListener(v -> {
+            if (mCurrGameIndex > 0) {
+                mCurrGameIndex--;
+                mCurrGame = mGames.get(mCurrGameIndex);
+                refreshTeams();
+            }
+        });
+
+        view.findViewById(R.id.previous_game).setOnClickListener(v -> {
+            if (mCurrGameIndex < mGames.size() - 1) {
+                mCurrGameIndex++;
+                mCurrGame = mGames.get(mCurrGameIndex);
+                refreshTeams();
+            }
+        });
 
         view.findViewById(R.id.game_details_ok).setOnClickListener(v -> dismiss());
 
@@ -125,15 +153,21 @@ public class GameDetailsDialogFragment extends DialogFragment {
 
     private void movePlayer(Player player) {
 
-        DbHelper.modifyPlayerResult(getActivity(), mGameId, player.mName);
+        DbHelper.modifyPlayerResult(getActivity(), mCurrGame.gameId, player.mName);
 
         refreshTeams();
     }
 
     private void refreshTeams() {
-        mTeam1 = DbHelper.getCurrTeam(getActivity(), mGameId, TeamEnum.Team1, 0);
-        mTeam2 = DbHelper.getCurrTeam(getActivity(), mGameId, TeamEnum.Team2, 0);
+        score.setText(mCurrGame.getScore());
+        date.setText(mCurrGame.date);
+
+        mTeam1 = DbHelper.getCurrTeam(getActivity(), mCurrGame.gameId, TeamEnum.Team1, 0);
+        mTeam2 = DbHelper.getCurrTeam(getActivity(), mCurrGame.gameId, TeamEnum.Team2, 0);
         ArrayList missedPlayers = findMissedPlayers();
+
+        mTeam1.sort(Comparator.comparing(Player::name));
+        mTeam2.sort(Comparator.comparing(Player::name));
 
         adapter1 = new PlayerTeamAdapterGameHistory(getActivity(), mTeam1, missedPlayers);
         adapter2 = new PlayerTeamAdapterGameHistory(getActivity(), mTeam2, missedPlayers);
