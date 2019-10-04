@@ -20,12 +20,14 @@ public class PlayerTeamAdapterGameHistory extends ArrayAdapter<Player> {
     private Context context;
     private List<Player> mPlayers;
     private List<Player> mMarkedPlayers;
+    private String mSelectedPlayer;
 
-    public PlayerTeamAdapterGameHistory(Context ctx, List<Player> players, List<Player> markedPlayers) {
+    public PlayerTeamAdapterGameHistory(Context ctx, List<Player> players, List<Player> markedPlayers, String selectedPlayer) {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
         mMarkedPlayers = markedPlayers != null ? markedPlayers : new ArrayList<>();
+        mSelectedPlayer = selectedPlayer;
     }
 
     @Override
@@ -42,5 +44,6 @@ public class PlayerTeamAdapterGameHistory extends ArrayAdapter<Player> {
 
     private void setName(Player player, TextView name) {
         name.setText(player.mName + (mMarkedPlayers.contains(player) ? " **" : ""));
+        name.setAlpha(mSelectedPlayer == null || player.mName.equals(mSelectedPlayer) ? 1F : 0.5F);
     }
 }

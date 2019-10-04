@@ -32,6 +32,7 @@ public class GameDetailsDialogFragment extends DialogFragment {
     public static final String PARAM_GAMES_LIST = "games_list";
     public static final String PARAM_GAME_INDEX = "list_index";
     private static final String PARAM_GAME = "game";
+    private static final String PARAM_SELECTED_PLAYER = "selected_player";
 
     private ArrayList<Player> mTeam1;
     private ArrayList<Player> mTeam2;
@@ -39,6 +40,7 @@ public class GameDetailsDialogFragment extends DialogFragment {
     private Game mCurrGame;
     private int mCurrGameIndex;
     private ArrayList<Game> mGames;
+    private String mSelectedPlayer;
 
     private PlayerTeamAdapterGameHistory adapter1;
     private PlayerTeamAdapterGameHistory adapter2;
@@ -48,7 +50,7 @@ public class GameDetailsDialogFragment extends DialogFragment {
     private TextView score;
     private TextView date;
 
-    static GameDetailsDialogFragment newInstance(ArrayList<Game> games, int gameIndexId, Game game) {
+    static GameDetailsDialogFragment newInstance(ArrayList<Game> games, int gameIndexId, Game game, Player player) {
 
         GameDetailsDialogFragment f = new GameDetailsDialogFragment();
 
@@ -56,6 +58,7 @@ public class GameDetailsDialogFragment extends DialogFragment {
         args.putSerializable(PARAM_GAME, game);
         args.putInt(PARAM_GAME_INDEX, gameIndexId);
         args.putSerializable(PARAM_GAMES_LIST, games);
+        args.putString(PARAM_SELECTED_PLAYER, player != null ? player.mName : null);
         f.setArguments(args);
 
         return f;
@@ -68,6 +71,7 @@ public class GameDetailsDialogFragment extends DialogFragment {
         mCurrGame = (Game) getArguments().getSerializable(PARAM_GAME);
         mGames = (ArrayList<Game>) getArguments().getSerializable(PARAM_GAMES_LIST);
         mCurrGameIndex = getArguments().getInt(PARAM_GAME_INDEX);
+        mSelectedPlayer = getArguments().getString(PARAM_SELECTED_PLAYER);
     }
 
     @Override
@@ -99,7 +103,6 @@ public class GameDetailsDialogFragment extends DialogFragment {
             dismiss();
         });
         copyGame.setOnLongClickListener(operationExplanation);
-
 
         view.findViewById(R.id.next_game).setOnClickListener(v -> {
             if (mCurrGameIndex > 0) {
@@ -169,8 +172,8 @@ public class GameDetailsDialogFragment extends DialogFragment {
         mTeam1.sort(Comparator.comparing(Player::name));
         mTeam2.sort(Comparator.comparing(Player::name));
 
-        adapter1 = new PlayerTeamAdapterGameHistory(getActivity(), mTeam1, missedPlayers);
-        adapter2 = new PlayerTeamAdapterGameHistory(getActivity(), mTeam2, missedPlayers);
+        adapter1 = new PlayerTeamAdapterGameHistory(getActivity(), mTeam1, missedPlayers, mSelectedPlayer);
+        adapter2 = new PlayerTeamAdapterGameHistory(getActivity(), mTeam2, missedPlayers, mSelectedPlayer);
 
         team1List.setAdapter(adapter1);
         team2List.setAdapter(adapter2);

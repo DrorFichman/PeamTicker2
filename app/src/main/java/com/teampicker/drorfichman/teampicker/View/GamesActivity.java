@@ -49,7 +49,7 @@ public class GamesActivity extends AppCompatActivity {
         gamesList.setOnItemClickListener((adapterView, view, i, l) -> {
             Game details = (Game) view.getTag(R.id.game);
             int gameIndexId = (int) view.getTag(R.id.game_index_id);
-            showTeamsDialog(games, gameIndexId, details);
+            showTeamsDialog(games, gameIndexId, details, pPlayer);
         });
 
         gamesList.setOnItemLongClickListener((adapterView, view, i, l) -> {
@@ -77,11 +77,11 @@ public class GamesActivity extends AppCompatActivity {
         }
     }
 
-    private void showTeamsDialog(ArrayList<Game> games, int gameIndexId, Game game) {
+    private void showTeamsDialog(ArrayList<Game> games, int gameIndexId, Game game, Player player) {
 
         // Create and show the dialog.
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        DialogFragment newFragment = GameDetailsDialogFragment.newInstance(games, gameIndexId, game);
+        DialogFragment newFragment = GameDetailsDialogFragment.newInstance(games, gameIndexId, game, player);
         newFragment.show(ft, "game_dialog");
     }
 
