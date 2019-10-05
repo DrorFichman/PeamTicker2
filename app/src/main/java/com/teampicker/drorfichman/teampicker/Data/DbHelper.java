@@ -10,6 +10,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
@@ -211,7 +212,9 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static ArrayList<Game> getGames(Context context, String name) {
-        return GameDbHelper.getGames(getSqLiteDatabase(context), name);
+        ArrayList<Game> games = GameDbHelper.getGames(getSqLiteDatabase(context), name);
+        games.sort(Comparator.comparing(Game::getDate).reversed());
+        return games;
     }
 
     public static void insertGame(Context context, int gameId, int score1, int score2) {

@@ -38,7 +38,7 @@ public class GameAdapter extends ArrayAdapter<Game> {
 
         Game g = mGames.get(position);
 
-        dateView.setText(g.date);
+        dateView.setText(g.dateString);
         resultSet.setText(g.getScore());
 
         setPlayerResult(res, g);

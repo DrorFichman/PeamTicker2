@@ -165,7 +165,7 @@ public class GameDetailsDialogFragment extends DialogFragment {
     private void refreshTeams() {
         score.setText(mCurrGame.getScore());
         score.setTextColor(mCurrGame.playerResult != null ? mCurrGame.playerResult.color : Color.BLACK);
-        date.setText(mCurrGame.date);
+        date.setText(mCurrGame.dateString);
 
         mTeam1 = DbHelper.getCurrTeam(getActivity(), mCurrGame.gameId, TeamEnum.Team1, 0);
         mTeam2 = DbHelper.getCurrTeam(getActivity(), mCurrGame.gameId, TeamEnum.Team2, 0);
