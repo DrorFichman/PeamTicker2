@@ -15,9 +15,9 @@ import java.util.List;
 public class CollaborationHelper {
 
     private static final int RECENT_GAMES = 50;         // games back to look for
-    public static final int MIN_GAMES_ANALYSIS = 7;     //
-    public static final int MIN_GAMES_TOGETHER = 5;    // games played with another player to consider effect
-    public static final int WIN_RATE_MARGIN = 0;       // win rate exceeded by to count effect
+    public static final int MIN_GAMES_ANALYSIS = 7;     // games to consider chemistry effect on player
+    public static final int MIN_GAMES_TOGETHER = 5;     // games played with another player to consider chemistry
+    public static final int WIN_RATE_MARGIN = 0;        // win rate exceeded by to count effect
 
     public static Collaboration getCollaborationData(Context context, List<Player> team1, List<Player> team2) {
         Collaboration result = new Collaboration();

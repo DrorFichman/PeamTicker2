@@ -43,9 +43,6 @@ public class GameDetailsDialogFragment extends DialogFragment {
     private ArrayList<Game> mGames;
     private String mSelectedPlayer;
 
-    private PlayerTeamAdapterGameHistory adapter1;
-    private PlayerTeamAdapterGameHistory adapter2;
-
     private ListView team1List;
     private ListView team2List;
     private TextView score;
@@ -169,21 +166,18 @@ public class GameDetailsDialogFragment extends DialogFragment {
 
         mTeam1 = DbHelper.getCurrTeam(getActivity(), mCurrGame.gameId, TeamEnum.Team1, 0);
         mTeam2 = DbHelper.getCurrTeam(getActivity(), mCurrGame.gameId, TeamEnum.Team2, 0);
-        ArrayList missedPlayers = findMissedPlayers();
+        ArrayList<Player> missedPlayers = findMissedPlayers();
 
         mTeam1.sort(Comparator.comparing(Player::name));
         mTeam2.sort(Comparator.comparing(Player::name));
 
-        adapter1 = new PlayerTeamAdapterGameHistory(getActivity(), mTeam1, missedPlayers, mSelectedPlayer);
-        adapter2 = new PlayerTeamAdapterGameHistory(getActivity(), mTeam2, missedPlayers, mSelectedPlayer);
-
-        team1List.setAdapter(adapter1);
-        team2List.setAdapter(adapter2);
+        team1List.setAdapter(new PlayerTeamAdapterGameHistory(getActivity(), mTeam1, missedPlayers, mSelectedPlayer));
+        team2List.setAdapter(new PlayerTeamAdapterGameHistory(getActivity(), mTeam2, missedPlayers, mSelectedPlayer));
     }
 
     @NonNull
-    private ArrayList findMissedPlayers() {
-        ArrayList missedPlayers = new ArrayList();
+    private ArrayList<Player> findMissedPlayers() {
+        ArrayList<Player> missedPlayers = new ArrayList<>();
         for (Player p : mTeam1) {
             if (ResultEnum.Missed.getValue() == p.gameResult) {
                 missedPlayers.add(p);

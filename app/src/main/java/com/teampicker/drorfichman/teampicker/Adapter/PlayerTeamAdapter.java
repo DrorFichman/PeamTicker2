@@ -24,6 +24,13 @@ import java.util.List;
  * Created by drorfichman on 7/30/16.
  */
 public class PlayerTeamAdapter extends ArrayAdapter<Player> {
+    public static final int HIGH_WIN_RATE = 60;
+    public static final int WIN_RATE_DELTA = 2;
+    public static final int ALMOST_HIGH_WIN_RATE = 55;
+    public static final int HIGH_WIN_RATE_DIFF = 10;
+    public static final int LOW_WIN_RATE_DIFF = 40;
+    public static final int ALMOST_LOW_WIN_RATE = 45;
+
     private Context context;
     private List<Player> mPlayers;
     private List<Player> mMovedPlayers;
@@ -111,27 +118,27 @@ public class PlayerTeamAdapter extends ArrayAdapter<Player> {
 
             if (games > CollaborationHelper.MIN_GAMES_ANALYSIS) {
                 if (expectedWinRateDiff > 0) {
-                    if (playerData.winRate > 60) {
+                    if (playerData.winRate > HIGH_WIN_RATE && expectedWinRateDiff > WIN_RATE_DELTA) {
                         // Show yellow high warning
                         rowView.setBackgroundColor(Color.GREEN);
-                    } else if (playerData.winRate > 55) {
+                    } else if (playerData.winRate > ALMOST_HIGH_WIN_RATE && expectedWinRateDiff > WIN_RATE_DELTA) {
                         // Show high warning
                         suggestion.setImageResource(R.drawable.increase_warn);
                         suggestion.setVisibility(View.VISIBLE);
-                    } else if (expectedWinRateDiff > 10) {
+                    } else if (expectedWinRateDiff > HIGH_WIN_RATE_DIFF) {
                         // Show high effect
                         suggestion.setImageResource(R.drawable.increase);
                         suggestion.setVisibility(View.VISIBLE);
                     }
                 } else if (expectedWinRateDiff < 0) {
-                    if (playerData.winRate < 40) {
+                    if (playerData.winRate < LOW_WIN_RATE_DIFF && expectedWinRateDiff < WIN_RATE_DELTA) {
                         // Show red high warning
                         rowView.setBackgroundColor(Color.RED);
-                    } else if (playerData.winRate < 45) {
+                    } else if (playerData.winRate < ALMOST_LOW_WIN_RATE && expectedWinRateDiff < -WIN_RATE_DELTA) {
                         // Show low warning
                         suggestion.setImageResource(R.drawable.decrease_warn);
                         suggestion.setVisibility(View.VISIBLE);
-                    } else if (expectedWinRateDiff < -10) {
+                    } else if (expectedWinRateDiff < -HIGH_WIN_RATE_DIFF) {
                         // Show high effect
                         suggestion.setImageResource(R.drawable.decrease);
                         suggestion.setVisibility(View.VISIBLE);
