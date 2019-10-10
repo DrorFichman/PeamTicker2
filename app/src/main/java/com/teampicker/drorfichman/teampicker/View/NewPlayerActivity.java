@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -36,65 +35,57 @@ public class NewPlayerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.new_player);
 
-        vName = (EditText) findViewById(R.id.edit_player_name);
-        vGrade = (EditText) findViewById(R.id.edit_player_grade);
-        vBirth = (Button) findViewById(R.id.edit_player_birthday);
-        isGK = (CheckBox) findViewById(R.id.player_is_gk);
-        isDefender = (CheckBox) findViewById(R.id.player_is_defender);
-        isPlaymaker = (CheckBox) findViewById(R.id.player_is_playmaker);
-        isUnbreakable = (CheckBox) findViewById(R.id.player_is_unbreaking);
+        vName = findViewById(R.id.edit_player_name);
+        vGrade = findViewById(R.id.edit_player_grade);
+        vBirth = findViewById(R.id.edit_player_birthday);
+        isGK = findViewById(R.id.player_is_gk);
+        isDefender = findViewById(R.id.player_is_defender);
+        isPlaymaker = findViewById(R.id.player_is_playmaker);
+        isUnbreakable = findViewById(R.id.player_is_unbreaking);
 
         findViewById(R.id.player_participation_btn).setVisibility(View.INVISIBLE);
 
-        findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setResult(1);
+        findViewById(R.id.save).setOnClickListener(view -> {
+            setResult(1);
 
-                String stringGrade = vGrade.getText().toString();
-                if (TextUtils.isEmpty(stringGrade)) {
-                    Toast.makeText(getApplicationContext(), "Fill player's grade", Toast.LENGTH_LONG).show();
-                    return;
-                }
+            String stringGrade = vGrade.getText().toString();
+            if (TextUtils.isEmpty(stringGrade)) {
+                Toast.makeText(getApplicationContext(), "Fill player's grade", Toast.LENGTH_LONG).show();
+                return;
+            }
 
-                Integer newGrade = Integer.valueOf(stringGrade);
+            int newGrade = Integer.parseInt(stringGrade);
 
-                if (newGrade > 99 || newGrade < 0) {
-                    Toast.makeText(getApplicationContext(), "Grade must be between 0-99", Toast.LENGTH_LONG).show();
-                    return;
-                }
+            if (newGrade > 99 || newGrade < 0) {
+                Toast.makeText(getApplicationContext(), "Grade must be between 0-99", Toast.LENGTH_LONG).show();
+                return;
+            }
 
-                String newName = vName.getText().toString().trim();
-                if (TextUtils.isEmpty(newName)) {
-                    Toast.makeText(getApplicationContext(), "Fill player's name", Toast.LENGTH_LONG).show();
-                    return;
-                }
+            String newName = vName.getText().toString().trim();
+            if (TextUtils.isEmpty(newName)) {
+                Toast.makeText(getApplicationContext(), "Fill player's name", Toast.LENGTH_LONG).show();
+                return;
+            }
 
-                Player p = new Player(newName, newGrade);
-                boolean isCreated = createNewPlayer(p);
+            Player p = new Player(newName, newGrade);
+            boolean isCreated = createNewPlayer(p);
 
-                if (isCreated) {
-                    setPlayerBirthday(p);
-                    setAttributes(p);
+            if (isCreated) {
+                setPlayerBirthday(p);
+                setAttributes(p);
 
-                    Toast.makeText(getApplicationContext(), "Player added", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Player added", Toast.LENGTH_LONG).show();
 
-                    finishNow(1);
-                } else {
-                    Toast.makeText(getApplicationContext(), "Player name is already taken", Toast.LENGTH_LONG).show();
-                }
+                finishNow(1);
+            } else {
+                Toast.makeText(getApplicationContext(), "Player name is already taken", Toast.LENGTH_LONG).show();
             }
         });
 
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
-        findViewById(R.id.back).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finishNow(0);
-            }
-        });
+        findViewById(R.id.back).setOnClickListener(view -> finishNow(0));
     }
 
     private void setAttributes(Player p) {
@@ -108,8 +99,8 @@ public class NewPlayerActivity extends AppCompatActivity {
     private void setPlayerBirthday(Player p) {
         if (vBirth.getTag() != null) {
             Calendar date =  (Calendar) vBirth.getTag();
-            Integer newYear = date.get(Calendar.YEAR);
-            Integer newMonth = date.get(Calendar.MONTH);
+            int newYear = date.get(Calendar.YEAR);
+            int newMonth = date.get(Calendar.MONTH);
 
             if (newYear < 1900 || newYear > Calendar.getInstance().get(Calendar.YEAR)) {
                 Toast.makeText(getApplicationContext(), "Year must be between 1900-now", Toast.LENGTH_LONG).show();
@@ -148,12 +139,9 @@ public class NewPlayerActivity extends AppCompatActivity {
     }
 
     public void showDatePicker(View view) {
-        DatePickerDialog d = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-            @Override
-            public void onDateSet(DatePicker datePicker, int year, int month, int i2) {
-                month++;
-                setBirthday(year, month);
-            }
+        DatePickerDialog d = new DatePickerDialog(this, (datePicker, year, month, i2) -> {
+            month++;
+            setBirthday(year, month);
         }, 2005, 4, 25);
         d.show();
     }

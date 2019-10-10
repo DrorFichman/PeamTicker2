@@ -6,7 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.teampicker.drorfichman.teampicker.tools.DateHelper;
+
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 
 /**
@@ -46,7 +49,7 @@ public class PlayerGamesDbHelper {
 
         ContentValues values = new ContentValues();
         values.put(PlayerContract.PlayerGameEntry.GAME, currGame);
-        values.put(PlayerContract.PlayerGameEntry.DATE, DbHelper.getNow());
+        values.put(PlayerContract.PlayerGameEntry.DATE, DateHelper.getNow());
         values.put(PlayerContract.PlayerGameEntry.NAME, player.mName);
         values.put(PlayerContract.PlayerGameEntry.PLAYER_GRADE, player.mGrade);
         values.put(PlayerContract.PlayerGameEntry.TEAM, team.ordinal());
@@ -140,6 +143,7 @@ public class PlayerGamesDbHelper {
         String[] projection = {
                 PlayerContract.PlayerGameEntry.NAME,
                 PlayerContract.PlayerGameEntry.GAME,
+                PlayerContract.PlayerGameEntry.DATE,
                 PlayerContract.PlayerGameEntry.PLAYER_RESULT,
                 PlayerContract.PlayerGameEntry.PLAYER_GRADE
         };
@@ -167,7 +171,8 @@ public class PlayerGamesDbHelper {
                 do {
                     int res = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT));
                     int grade = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_GRADE));
-                    PlayerGameStat stat = new PlayerGameStat(ResultEnum.getResultFromOrdinal(res), grade);
+                    String date = c.getString(c.getColumnIndex(PlayerContract.PlayerGameEntry.DATE));
+                    PlayerGameStat stat = new PlayerGameStat(ResultEnum.getResultFromOrdinal(res), grade, date);
 
                     results.add(stat);
                     i++;
@@ -177,13 +182,14 @@ public class PlayerGamesDbHelper {
             c.close();
         }
 
+        results.sort(Comparator.comparing(PlayerGameStat::getDate).reversed());
         return results;
     }
 
-    public static void setPlayerGameResult(SQLiteDatabase db, int gameId, TeamEnum winningTeam) {
+    public static void setPlayerGameResult(SQLiteDatabase db, int gameId, String date, TeamEnum winningTeam) {
 
-        updateTeamGameResult(db, gameId, TeamEnum.Team1, TeamEnum.getTeam1Result(winningTeam));
-        updateTeamGameResult(db, gameId, TeamEnum.Team2, TeamEnum.getTeam2Result(winningTeam));
+        updateTeamGameResult(db, gameId, date, TeamEnum.Team1, TeamEnum.getTeam1Result(winningTeam));
+        updateTeamGameResult(db, gameId, date, TeamEnum.Team2, TeamEnum.getTeam2Result(winningTeam));
     }
 
     static class PlayerGame {
@@ -242,11 +248,12 @@ public class PlayerGamesDbHelper {
         DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerGameEntry.TABLE_NAME);
     }
 
-    private static void updateTeamGameResult(SQLiteDatabase db, int gameId, TeamEnum team, ResultEnum result) {
+    private static void updateTeamGameResult(SQLiteDatabase db, int gameId, String date, TeamEnum team, ResultEnum result) {
 
         ContentValues values = new ContentValues();
         values.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, result.getValue());
         values.put(PlayerContract.PlayerGameEntry.DID_WIN, result == ResultEnum.Win ? 1 : 0);
+        values.put(PlayerContract.PlayerGameEntry.DATE, date);
 
         String where = PlayerContract.PlayerGameEntry.GAME + " = ? AND " +
                 PlayerContract.PlayerGameEntry.TEAM + " = ? AND " +

@@ -208,7 +208,9 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static ArrayList<Game> getGames(Context context) {
-        return GameDbHelper.getGames(getSqLiteDatabase(context));
+        ArrayList<Game> games = GameDbHelper.getGames(getSqLiteDatabase(context));
+        games.sort(Comparator.comparing(Game::getDate).reversed());
+        return games;
     }
 
     public static ArrayList<Game> getGames(Context context, String name) {
@@ -217,9 +219,9 @@ public class DbHelper extends SQLiteOpenHelper {
         return games;
     }
 
-    public static void insertGame(Context context, int gameId, int score1, int score2) {
-        GameDbHelper.insertGameResults(getSqLiteDatabase(context), gameId, score1, score2);
-        PlayerGamesDbHelper.setPlayerGameResult(getSqLiteDatabase(context), gameId, TeamEnum.getResult(score1, score2));
+    public static void insertGame(Context context, int gameId, String gameDate, int score1, int score2) {
+        GameDbHelper.insertGameResults(getSqLiteDatabase(context), gameId, gameDate, score1, score2);
+        PlayerGamesDbHelper.setPlayerGameResult(getSqLiteDatabase(context), gameId, gameDate, TeamEnum.getResult(score1, score2));
     }
 
     public static void setPlayerResult(Context context, int gameId, String name, ResultEnum res) {
@@ -249,10 +251,6 @@ public class DbHelper extends SQLiteOpenHelper {
         }
 
         PlayerGamesDbHelper.updatePlayerResult(getSqLiteDatabase(context), gameId, name, newRes, newTeam);
-    }
-
-    public static String getNow() {
-        return DateFormat.format("dd-MM-yyyy", System.currentTimeMillis()).toString();
     }
 
     public static int updateRecord(SQLiteDatabase db, ContentValues values, String where, String[] whereArgs, String tableName) {

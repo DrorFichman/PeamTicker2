@@ -1,5 +1,6 @@
 package com.teampicker.drorfichman.teampicker.View;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -18,16 +19,18 @@ import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.Collaboration;
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.CollaborationHelper;
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.PlayerCollaboration;
-import com.teampicker.drorfichman.teampicker.tools.ScreenshotHelper;
-import com.teampicker.drorfichman.teampicker.Data.TeamData;
 import com.teampicker.drorfichman.teampicker.Controller.TeamDivision.TeamDivision;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
+import com.teampicker.drorfichman.teampicker.Data.TeamData;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.DateHelper;
+import com.teampicker.drorfichman.teampicker.tools.ScreenshotHelper;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -73,6 +76,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private Button team1Score;
     private Button team2Score;
     private View saveView;
+    private Button setGameDate;
 
     private AlertDialog makeTeamsDialog;
 
@@ -88,6 +92,9 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         team1Score = findViewById(R.id.team_1_score);
         team2Score = findViewById(R.id.team_2_score);
+        setGameDate = findViewById(R.id.set_game_date);
+        setGameDate(Calendar.getInstance());
+
         teamsScreenArea = findViewById(R.id.teams_list_area);
         buttonsLayout = findViewById(R.id.buttons_layout);
         progressBarTeamDivision = findViewById(R.id.calculating_teams_progress);
@@ -131,7 +138,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void saveResults() {
         int currGame = DbHelper.getActiveGame(this);
-        DbHelper.insertGame(this, currGame, getScoreValue(team1Score), getScoreValue(team2Score));
+        DbHelper.insertGame(this, currGame, getGameDateString(), getScoreValue(team1Score), getScoreValue(team2Score));
 
         Toast.makeText(this, "Results saved", Toast.LENGTH_LONG).show();
         finish();
@@ -152,10 +159,39 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         team1Score.setVisibility(View.VISIBLE);
         team2Score.setVisibility(View.VISIBLE);
+        setGameDate.setVisibility(View.VISIBLE);
 
         team1Score.setOnClickListener(view -> team1Score.setText(String.valueOf((getScoreValue(team1Score) + 1) % MAX_SCORE)));
         team2Score.setOnClickListener(view -> team2Score.setText(String.valueOf((getScoreValue(team2Score) + 1) % MAX_SCORE)));
     }
+
+    //region set date
+    public void showDatePicker(View view) {
+        Calendar calendar = setGameDate.getTag() != null ? (Calendar) setGameDate.getTag() : Calendar.getInstance();
+
+        DatePickerDialog d = new DatePickerDialog(this, (datePicker, year, month, day) -> {
+            Calendar selectedDate = new Calendar.Builder().setDate(year, month, day).build();
+            if (selectedDate.getTimeInMillis() > Calendar.getInstance().getTimeInMillis())
+                Toast.makeText(this, "Future date is not allowed", Toast.LENGTH_LONG).show();
+            else
+                setGameDate(selectedDate);
+        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
+        d.show();
+    }
+
+    private void setGameDate(Calendar cal) {
+        setGameDate.setTag(cal);
+        setGameDate.setText(getGameDateString());
+    }
+
+    private Calendar getGameDate() {
+        return (setGameDate.getTag() != null) ? (Calendar) setGameDate.getTag() : Calendar.getInstance();
+    }
+
+    private String getGameDateString() {
+        return DateHelper.getDate(getGameDate());
+    }
+    //endregion
 
     int getScoreValue(Button b) {
         return Integer.valueOf(b.getText().toString());

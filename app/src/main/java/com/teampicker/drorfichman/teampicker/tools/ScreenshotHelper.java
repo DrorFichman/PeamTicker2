@@ -72,7 +72,7 @@ public class ScreenshotHelper {
     }
 
     private static File getImageFromBitmap(Bitmap bitmap, int quality) throws IOException {
-        String name = DbHelper.getNow() + "-" + System.currentTimeMillis();
+        String name = DateHelper.getNow() + "-" + System.currentTimeMillis();
         if (quality < 0) quality = 50;
 
         File imagePath = new File(Environment.getExternalStorageDirectory().toString() + "/TeamPicker/");

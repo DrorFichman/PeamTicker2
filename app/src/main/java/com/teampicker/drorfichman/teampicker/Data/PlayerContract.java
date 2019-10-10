@@ -54,7 +54,7 @@ public final class PlayerContract {
         public static final String TABLE_NAME = "game";
         public static final String ID = "_id";
         public static final String GAME = "game_index";
-        public static final String DATE = "date"; // "dd/MM/YYYY"
+        public static final String DATE = "date"; // "dd-MM-YYYY"
         public static final String TEAM1_SCORE = "team_one_score";
         public static final String TEAM2_SCORE = "team_two_score";
         public static final String TEAM_RESULT = "result";

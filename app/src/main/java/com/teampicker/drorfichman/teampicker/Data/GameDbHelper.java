@@ -5,6 +5,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.teampicker.drorfichman.teampicker.tools.DateHelper;
+
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -31,13 +33,13 @@ public class GameDbHelper {
     }
 
     public static void insertGameResults(SQLiteDatabase db, int gameId,
-                                         int team1Score, int team2Score) {
+                                         String gameDate, int team1Score, int team2Score) {
 
         Log.d("TEAMS", "Saving result " + team1Score + " - " + team2Score);
 
         ContentValues values = new ContentValues();
         values.put(PlayerContract.GameEntry.GAME, gameId);
-        values.put(PlayerContract.GameEntry.DATE, DbHelper.getNow());
+        values.put(PlayerContract.GameEntry.DATE, gameDate != null ? gameDate : DateHelper.getNow());
         values.put(PlayerContract.GameEntry.TEAM1_SCORE, team1Score);
         values.put(PlayerContract.GameEntry.TEAM2_SCORE, team2Score);
         values.put(PlayerContract.GameEntry.TEAM_RESULT, TeamEnum.getResult(team1Score, team2Score).ordinal());

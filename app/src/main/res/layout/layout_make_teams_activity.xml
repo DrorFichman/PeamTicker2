@@ -4,6 +4,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <Button
+        android:id="@+id/set_game_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"
+        android:visibility="gone"
+        android:onClick="showDatePicker" />
+
     <LinearLayout
         android:id="@+id/teams_list_area"
         android:layout_width="match_parent"
