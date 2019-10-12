@@ -11,7 +11,6 @@ import java.util.Locale;
 public class DateHelper {
 
     private static final String FORMAT = "dd-MM-yyyy";
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat(FORMAT, Locale.getDefault());;
 
     public static String getNow() {
         return DateFormat.format(FORMAT, System.currentTimeMillis()).toString();
@@ -23,7 +22,7 @@ public class DateHelper {
 
     public static Date getDate(String date) {
         try {
-            return DateHelper.dateFormat.parse(date);
+            return new SimpleDateFormat(FORMAT, Locale.getDefault()).parse(date);
         } catch (ParseException e) {
             return null;
         }

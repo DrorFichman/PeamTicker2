@@ -133,7 +133,6 @@ public class ScreenshotHelper {
             iHeight += bmp.getHeight();
 
             bmp.recycle();
-            bmp = null;
         }
 
         listview.setDrawingCacheEnabled(false);

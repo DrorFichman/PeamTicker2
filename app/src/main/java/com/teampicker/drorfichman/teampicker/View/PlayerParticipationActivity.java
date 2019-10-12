@@ -27,29 +27,28 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class PlayerParticipationActivity extends AppCompatActivity implements Sorting.sortingCallbacks {
+    private static final String EXTRA_PLAYER = "EXTRA_PLAYER";
+    private static final String EXTRA_BLUE = "EXTRA_BLUE";
+    private static final String EXTRA_ORANGE = "EXTRA_ORANGE";
 
-    private ListView playersList;
-    private PlayerParticipationAdapter playersAdapter;
     private ArrayList<PlayerParticipation> players = new ArrayList<>();
-
-    private static final String PLAYER = "PLAYER";
-    private static final String BLUE = "BLUE";
-    private static final String ORANGE = "ORANGE";
-    private int games = 50;
-
+    private PlayerParticipationAdapter playersAdapter;
     private Player pPlayer;
     private ArrayList<Player> blue;
     private ArrayList<Player> orange;
 
+    private int games = 50;
     Sorting sorting = new Sorting(this, sortType.gamesWith);
+
+    private ListView playersList;
 
     @NonNull
     public static Intent getPlayerParticipationActivity(Context context, String playerName,
                                                         ArrayList<Player> blue, ArrayList<Player> orange) {
         Intent intent = new Intent(context, PlayerParticipationActivity.class);
-        intent.putExtra(PlayerParticipationActivity.PLAYER, playerName);
-        intent.putExtra(PlayerParticipationActivity.BLUE, blue);
-        intent.putExtra(PlayerParticipationActivity.ORANGE, orange);
+        intent.putExtra(PlayerParticipationActivity.EXTRA_PLAYER, playerName);
+        intent.putExtra(PlayerParticipationActivity.EXTRA_BLUE, blue);
+        intent.putExtra(PlayerParticipationActivity.EXTRA_ORANGE, orange);
         return intent;
     }
 
@@ -59,10 +58,10 @@ public class PlayerParticipationActivity extends AppCompatActivity implements So
         setContentView(R.layout.layout_participation_activity);
 
         Intent intent = getIntent();
-        if (intent.hasExtra(PLAYER)) {
-            pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(PLAYER));
-            orange = (ArrayList<Player>) intent.getSerializableExtra(ORANGE);
-            blue = (ArrayList<Player>) intent.getSerializableExtra(BLUE);
+        if (intent.hasExtra(EXTRA_PLAYER)) {
+            pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(EXTRA_PLAYER));
+            orange = (ArrayList<Player>) intent.getSerializableExtra(EXTRA_ORANGE);
+            blue = (ArrayList<Player>) intent.getSerializableExtra(EXTRA_BLUE);
         }
 
         ImageView teamIcon = findViewById(R.id.team_icon);

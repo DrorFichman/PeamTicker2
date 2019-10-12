@@ -1,6 +1,7 @@
 package com.teampicker.drorfichman.teampicker.View;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -40,11 +41,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MakeTeamsActivity extends AppCompatActivity {
+    private static String EXTRA_SET_RESULT = "EXTRA_SET_RESULT";
 
     static final int RECENT_GAMES = 50;
     static final int MAX_SCORE = 15;
-
-    public static String INTENT_SET_RESULT = "INTENT_SET_RESULT";
 
     public ArrayList<Player> players1 = new ArrayList<>();
     public ArrayList<Player> players2 = new ArrayList<>();
@@ -79,6 +79,12 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private Button setGameDate;
 
     private AlertDialog makeTeamsDialog;
+
+    public static Intent getInstance(Context ctx, boolean setResult) {
+        Intent intent = new Intent(ctx, MakeTeamsActivity.class);
+        intent.putExtra(EXTRA_SET_RESULT, setResult);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -124,7 +130,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         analysisView.setOnClickListener(v -> analysisClicked());
         analysisView.setOnLongClickListener(explainOperation);
 
-        if (getIntent().getBooleanExtra(INTENT_SET_RESULT, false)) {
+        if (getIntent().getBooleanExtra(EXTRA_SET_RESULT, false)) {
             if (DbHelper.getActiveGame(this) > 0) {
                 InitSetResults();
             } else {

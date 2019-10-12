@@ -25,8 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class EditPlayerActivity extends AppCompatActivity {
-
-    public static final String PLAYER = "player";
+    private static final String EXTRA_PLAYER = "player";
 
     private Player pPlayer;
     private EditText vName;
@@ -40,7 +39,7 @@ public class EditPlayerActivity extends AppCompatActivity {
     @NonNull
     public static Intent getEditPlayerIntent(Context context, String playerName) {
         Intent intent = new Intent(context, EditPlayerActivity.class);
-        intent.putExtra(EditPlayerActivity.PLAYER, playerName);
+        intent.putExtra(EditPlayerActivity.EXTRA_PLAYER, playerName);
         return intent;
     }
 
@@ -50,8 +49,8 @@ public class EditPlayerActivity extends AppCompatActivity {
         setContentView(R.layout.new_player);
 
         Intent intent = getIntent();
-        if (intent.hasExtra(PLAYER)) {
-            pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(PLAYER));
+        if (intent.hasExtra(EXTRA_PLAYER)) {
+            pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(EXTRA_PLAYER));
         }
 
         vName = findViewById(R.id.edit_player_name);

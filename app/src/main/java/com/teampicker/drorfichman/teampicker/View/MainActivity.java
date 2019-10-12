@@ -185,7 +185,7 @@ public class MainActivity extends AppCompatActivity
 
         switch (item.getItemId()) {
             case R.id.make_teams:
-                startActivity(new Intent(MainActivity.this, MakeTeamsActivity.class));
+                startActivity(MakeTeamsActivity.getInstance(this, false));
                 break;
             case R.id.enter_results:
                 startEnterResultActivity();
@@ -267,9 +267,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startEnterResultActivity() {
-        Intent intent = new Intent(MainActivity.this, MakeTeamsActivity.class);
-        intent.putExtra(MakeTeamsActivity.INTENT_SET_RESULT, true);
-        startActivity(intent);
+        startActivity(MakeTeamsActivity.getInstance(this, true));
     }
 
     public void setActivityTitle() {

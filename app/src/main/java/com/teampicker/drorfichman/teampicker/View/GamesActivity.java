@@ -20,8 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class GamesActivity extends AppCompatActivity {
-
-    private static final String PLAYER = "PLAYER";
+    private static final String EXTRA_PLAYER = "EXTRA_PLAYER";
 
     private ListView gamesList;
     private Player pPlayer;
@@ -30,7 +29,7 @@ public class GamesActivity extends AppCompatActivity {
     @NonNull
     public static Intent getGameActivityIntent(Context context, String playerName) {
         Intent intent = new Intent(context, GamesActivity.class);
-        intent.putExtra(GamesActivity.PLAYER, playerName);
+        intent.putExtra(EXTRA_PLAYER, playerName);
         return intent;
     }
 
@@ -40,8 +39,8 @@ public class GamesActivity extends AppCompatActivity {
         setContentView(R.layout.layout_games_activity);
 
         Intent intent = getIntent();
-        if (intent.hasExtra(PLAYER) && intent.getStringExtra(PLAYER) != null) {
-            pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(PLAYER));
+        if (intent.hasExtra(EXTRA_PLAYER) && intent.getStringExtra(EXTRA_PLAYER) != null) {
+            pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(EXTRA_PLAYER));
         }
 
         gamesList = findViewById(R.id.games_list);
