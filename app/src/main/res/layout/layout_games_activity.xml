@@ -13,7 +13,7 @@
     <LinearLayout
         android:id="@+id/game_details_layout"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_marginEnd="5dp"
         android:layout_weight="1"
         android:orientation="vertical"
@@ -24,31 +24,31 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:background="@android:color/holo_orange_dark" />
+            android:background="@android:color/holo_orange_dark"
+            android:divider="@null" />
 
         <ListView
             android:id="@+id/game_details_team2"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="5dp"
             android:layout_marginTop="5dp"
             android:layout_weight="1"
-            android:background="@android:color/holo_blue_light" />
+            android:background="@android:color/holo_blue_light"
+            android:divider="@null" />
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
         android:layout_weight="1">
 
         <ListView
             android:id="@+id/games_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp" />
 
     </LinearLayout>
 

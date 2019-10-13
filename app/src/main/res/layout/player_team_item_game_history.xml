@@ -4,24 +4,17 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingBottom="5dp"
-    android:paddingLeft="3dp"
-    android:paddingRight="5dp"
-    android:paddingTop="5dp">
+    android:paddingBottom="3dp"
+    android:paddingEnd="6dp"
+    android:paddingStart="8dp"
+    android:paddingTop="3dp">
 
-    <RelativeLayout
-        android:layout_width="0dp"
+    <TextView
+        android:id="@+id/player_team_name"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="right">
-
-        <TextView
-            android:id="@+id/player_team_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingRight="3dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textSize="14sp" />
-    </RelativeLayout>
+        android:gravity="start"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="13sp" />
 
 </LinearLayout>
