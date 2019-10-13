@@ -247,8 +247,6 @@ public class MainActivity extends AppCompatActivity
             showTutorialDialog();
         }
 
-        item.setChecked(false);
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

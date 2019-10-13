@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="none">
         <group
             android:id="@+id/menu_top"
-            android:checkableBehavior="single">
+            android:checkableBehavior="none">
             <item
                 android:id="@+id/nav_players"
                 android:icon="@drawable/player"
@@ -20,7 +20,7 @@
         </group>
         <group
             android:id="@+id/menu_snapshot"
-            android:checkableBehavior="single">
+            android:checkableBehavior="none">
             <item
                 android:id="@+id/nav_save_snapshot"
                 android:icon="@android:drawable/ic_menu_save"
@@ -34,7 +34,7 @@
         </group>
         <group
             android:id="@+id/menu_help"
-            android:checkableBehavior="single">
+            android:checkableBehavior="none">
             <item
                 android:id="@+id/nav_getting_started"
                 android:icon="@drawable/help"
