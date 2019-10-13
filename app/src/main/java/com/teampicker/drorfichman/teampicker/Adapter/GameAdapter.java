@@ -1,6 +1,7 @@
 package com.teampicker.drorfichman.teampicker.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +22,17 @@ public class GameAdapter extends ArrayAdapter<Game> {
 
     private final Context context;
     private final List<Game> mGames;
+    private int mSelectedGame;
 
-    public GameAdapter(Context ctx, List<Game> games) {
+    public GameAdapter(Context ctx, List<Game> games, int selectedGameId) {
         super(ctx, -1, games);
         context = ctx;
         mGames = games;
+        mSelectedGame = selectedGameId;
+    }
+
+    public void setSelectedGameId(int selectedGameId) {
+        mSelectedGame = selectedGameId;
     }
 
     @Override
@@ -47,23 +54,28 @@ public class GameAdapter extends ArrayAdapter<Game> {
         view.setTag(R.id.game, g);
         view.setTag(R.id.game_index_id, position);
 
+        view.setBackgroundColor(mSelectedGame == g.gameId ? Color.GRAY : Color.TRANSPARENT);
+
         return view;
     }
 
     private void setPlayerGrade(TextView playerGrade, Game g) {
-        if (g.playerGrade > 0) { // player grade at the time of the game
+        if (g.playerGrade > 0) { // player's results - player grade at the time of the game
             playerGrade.setVisibility(View.VISIBLE);
             playerGrade.setText(context.getString(R.string.parentheses, g.playerGrade));
-        } else {
+        } else { // game history mode
             playerGrade.setVisibility(View.GONE);
         }
     }
 
     private void setPlayerResult(ImageView starView, Game g) {
-        if (g.playerResult != null) {
+        if (g.playerResult != null) { // player's results - green/red
             starView.setImageResource(g.playerResult.drawble);
             starView.setVisibility(View.VISIBLE);
-        } else {
+        } else if (g.winningTeam != null) { // winning team - orange/blue/tie
+            starView.setImageResource(g.winningTeam.drawable);
+            starView.setVisibility(View.VISIBLE);
+        } else { // unreachable
             starView.setVisibility(View.GONE);
         }
     }

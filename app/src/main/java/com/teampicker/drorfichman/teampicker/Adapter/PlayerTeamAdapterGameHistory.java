@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.R;
 
 import java.util.ArrayList;
@@ -19,14 +20,12 @@ import java.util.List;
 public class PlayerTeamAdapterGameHistory extends ArrayAdapter<Player> {
     private Context context;
     private List<Player> mPlayers;
-    private List<Player> mMarkedPlayers;
     private String mSelectedPlayer;
 
-    public PlayerTeamAdapterGameHistory(Context ctx, List<Player> players, List<Player> markedPlayers, String selectedPlayer) {
+    public PlayerTeamAdapterGameHistory(Context ctx, List<Player> players, String selectedPlayer) {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
-        mMarkedPlayers = markedPlayers != null ? markedPlayers : new ArrayList<>();
         mSelectedPlayer = selectedPlayer;
     }
 
@@ -43,7 +42,7 @@ public class PlayerTeamAdapterGameHistory extends ArrayAdapter<Player> {
     }
 
     private void setName(Player player, TextView name) {
-        name.setText(player.mName + (mMarkedPlayers.contains(player) ? " **" : ""));
+        name.setText(player.mName + (ResultEnum.Missed.getValue() == player.gameResult ? " **" : ""));
         name.setAlpha(mSelectedPlayer == null || player.mName.equals(mSelectedPlayer) ? 1F : 0.4F);
     }
 }
