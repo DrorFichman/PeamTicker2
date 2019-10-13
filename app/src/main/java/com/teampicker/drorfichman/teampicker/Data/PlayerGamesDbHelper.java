@@ -11,6 +11,7 @@ import com.teampicker.drorfichman.teampicker.tools.DateHelper;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 /**
  * Created by drorfichman on 10/3/16.
@@ -266,12 +267,12 @@ public class PlayerGamesDbHelper {
         DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerGameEntry.TABLE_NAME);
     }
 
-    public static ArrayList<Player> getPlayersStatistics(Context context, SQLiteDatabase db, int gameCount) {
-        return getStatistics(context, db, gameCount, null);
+    public static ArrayList<Player> getPlayersStatistics(SQLiteDatabase db, int gameCount) {
+        return getStatistics(db, gameCount, null);
     }
 
-    public static StatisticsData getPlayerStatistics(Context context, SQLiteDatabase db, int gameCount, String name) {
-        ArrayList<Player> playersStatistics = getStatistics(context, db, gameCount, name);
+    public static StatisticsData getPlayerStatistics(SQLiteDatabase db, int gameCount, String name) {
+        ArrayList<Player> playersStatistics = getStatistics(db, gameCount, name);
         if (playersStatistics.size() > 0) {
             return playersStatistics.get(0).statistics;
         } else {
@@ -280,12 +281,17 @@ public class PlayerGamesDbHelper {
         }
     }
 
-    private static ArrayList<Player> getStatistics(Context context, SQLiteDatabase db, int gameCount, String name) {
+    private static ArrayList<Player> getStatistics(SQLiteDatabase db, int gameCount, String name) {
 
-        String limitGamesCount = "";
-        Log.d("teams", "Game count " + gameCount);
+        StringBuilder limitGamesCount = new StringBuilder();
+        Log.d("stats", "Game count " + gameCount);
         if (gameCount > 0) {
-            limitGamesCount = " AND game in (select game_index from game order by game_index DESC LIMIT " + gameCount + " ) ";
+
+            ArrayList<Game> gs = DbHelper.getGames(db);
+            String gameIds = gs.stream().limit(gameCount)
+                    .map(a -> String.valueOf(a.gameId))
+                    .collect(Collectors.joining(","));
+            limitGamesCount = new StringBuilder("AND game in (").append(gameIds).append(")");
         }
 
         String nameFilter = "";

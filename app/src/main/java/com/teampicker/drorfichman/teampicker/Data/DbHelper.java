@@ -149,7 +149,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static ArrayList<Player> getPlayersStatistics(Context context, int games) {
-        return PlayerGamesDbHelper.getPlayersStatistics(context, getSqLiteDatabase(context), games);
+        return PlayerGamesDbHelper.getPlayersStatistics(getSqLiteDatabase(context), games);
     }
 
     public static HashMap<String, PlayerParticipation> getPlayersParticipationsStatistics(Context context, int games, String name) {
@@ -202,13 +202,17 @@ public class DbHelper extends SQLiteOpenHelper {
         for (Player p : currTeam) {
             p.results = PlayerGamesDbHelper.getPlayerLastGames(getSqLiteDatabase(context), p, countLastGames);
             if (statistics) {
-                p.statistics = PlayerGamesDbHelper.getPlayerStatistics(context, getSqLiteDatabase(context), countLastGames, p.mName);
+                p.statistics = PlayerGamesDbHelper.getPlayerStatistics(getSqLiteDatabase(context), countLastGames, p.mName);
             }
         }
     }
 
     public static ArrayList<Game> getGames(Context context) {
-        ArrayList<Game> games = GameDbHelper.getGames(getSqLiteDatabase(context));
+        return getGames(getSqLiteDatabase(context));
+    }
+
+    public static ArrayList<Game> getGames(SQLiteDatabase db) {
+        ArrayList<Game> games = GameDbHelper.getGames(db);
         games.sort(Comparator.comparing(Game::getDate).reversed());
         return games;
     }
