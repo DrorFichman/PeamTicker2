@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.teampicker.drorfichman.teampicker.Data.Game;
 import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.DateHelper;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class GameAdapter extends ArrayAdapter<Game> {
 
         Game g = mGames.get(position);
 
-        dateView.setText(g.dateString);
+        dateView.setText(DateHelper.getDisplayDate(context, g.dateString));
         resultSet.setText(g.getScore());
 
         setPlayerResult(res, g);

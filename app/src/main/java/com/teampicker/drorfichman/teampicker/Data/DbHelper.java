@@ -5,12 +5,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.format.DateFormat;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
@@ -21,7 +19,7 @@ import androidx.annotation.NonNull;
 public class DbHelper extends SQLiteOpenHelper {
 
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 5;
     public static final String DATABASE_NAME = "Players.db";
 
     private static SQLiteDatabase writableDatabase;
@@ -61,6 +59,9 @@ public class DbHelper extends SQLiteOpenHelper {
         addColumns(db);
     }
 
+    /*
+    This content can be removed for official initial release - DDL done with the table
+     */
     private void addColumns(SQLiteDatabase db) {
         addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.BIRTH_YEAR, "INTEGER", null);
         addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.BIRTH_MONTH, "INTEGER", null);
@@ -68,6 +69,7 @@ public class DbHelper extends SQLiteOpenHelper {
         addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.ARCHIVED, "INTEGER", "0");
         addColumn(db, PlayerContract.PlayerEntry.TABLE_NAME, PlayerContract.PlayerEntry.ATTRIBUTES, "TEXT", "''");
         addColumn(db, PlayerContract.PlayerGameEntry.TABLE_NAME, PlayerContract.PlayerGameEntry.ATTRIBUTES, "TEXT", "''");
+        modifyGameDates(db);
     }
 
     private void addColumn(SQLiteDatabase db, String table, String column, String type, String def) {
@@ -75,7 +77,29 @@ public class DbHelper extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE " + table + " ADD COLUMN " + column + " " + type + " default " + def);
             Log.i("Upgrade", "Altering " + table + ": " + column);
         } catch (SQLiteException ex) {
-            Log.w("Upgrade", "Altering " + table + ": " + ex.getMessage());
+            Log.e("Upgrade", "Altering " + table + ": " + ex.getMessage(), ex);
+        }
+    }
+
+    /*
+    Migrate existing data from date format that can't be ordered using sqlite
+    This method can be removed for official initial release
+     */
+    private void modifyGameDates(SQLiteDatabase db) {
+        // From dd-MM-YYYY to yyyy-MM-dd
+        try {
+            db.execSQL("UPDATE " + PlayerContract.GameEntry.TABLE_NAME +
+                    " SET date = " +
+                    " (substr(date,7,4) || '-' || substr(date, 4,2) || '-' || substr(date,1,2)) " +
+                    " where substr(date,3,1) = '-' and substr(date,6,1) = '-' ");
+
+            db.execSQL("UPDATE " + PlayerContract.PlayerGameEntry.TABLE_NAME +
+                    " SET date = " +
+                    " (substr(date,7,4) || '-' || substr(date, 4,2) || '-' || substr(date,1,2)) " +
+                    " where substr(date,3,1) = '-' and substr(date,6,1) = '-' ");
+
+        } catch (Exception e) {
+            Log.e("modifyGameDates", e.getMessage(), e);
         }
     }
 
@@ -208,19 +232,11 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static ArrayList<Game> getGames(Context context) {
-        return getGames(getSqLiteDatabase(context));
-    }
-
-    public static ArrayList<Game> getGames(SQLiteDatabase db) {
-        ArrayList<Game> games = GameDbHelper.getGames(db);
-        games.sort(Comparator.comparing(Game::getDate).reversed());
-        return games;
+        return GameDbHelper.getGames(getSqLiteDatabase(context));
     }
 
     public static ArrayList<Game> getGames(Context context, String name) {
-        ArrayList<Game> games = GameDbHelper.getGames(getSqLiteDatabase(context), name);
-        games.sort(Comparator.comparing(Game::getDate).reversed());
-        return games;
+        return GameDbHelper.getGames(getSqLiteDatabase(context), name);
     }
 
     public static void insertGame(Context context, int gameId, String gameDate, int score1, int score2) {

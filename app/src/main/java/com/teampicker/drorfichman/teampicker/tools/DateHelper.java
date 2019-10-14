@@ -1,23 +1,23 @@
 package com.teampicker.drorfichman.teampicker.tools;
 
+import android.content.Context;
 import android.text.format.DateFormat;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 public class DateHelper {
 
-    private static final String FORMAT = "dd-MM-yyyy";
+    private static final String FORMAT = "yyyy-MM-dd";
 
     public static String getNow() {
-        return DateFormat.format(FORMAT, System.currentTimeMillis()).toString();
+        return getDate(System.currentTimeMillis());
     }
 
-    public static String getDate(Calendar cal) {
-        return DateFormat.format(FORMAT, cal.getTimeInMillis()).toString();
+    public static String getDate(long millis) {
+        return DateFormat.format(FORMAT, millis).toString();
     }
 
     public static Date getDate(String date) {
@@ -26,5 +26,9 @@ public class DateHelper {
         } catch (ParseException e) {
             return null;
         }
+    }
+
+    public static String getDisplayDate(Context ctx, String date) {
+        return DateFormat.getDateFormat(ctx).format(getDate(date));
     }
 }

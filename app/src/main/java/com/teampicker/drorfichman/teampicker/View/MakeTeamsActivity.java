@@ -187,7 +187,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void setGameDate(Calendar cal) {
         setGameDate.setTag(cal);
-        setGameDate.setText(getGameDateString());
+        setGameDate.setText(DateHelper.getDisplayDate(this, getGameDateString()));
     }
 
     private Calendar getGameDate() {
@@ -195,7 +195,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
     }
 
     private String getGameDateString() {
-        return DateHelper.getDate(getGameDate());
+        return DateHelper.getDate(getGameDate().getTimeInMillis());
     }
     //endregion
 

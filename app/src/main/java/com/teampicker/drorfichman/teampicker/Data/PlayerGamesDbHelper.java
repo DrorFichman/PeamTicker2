@@ -11,7 +11,6 @@ import com.teampicker.drorfichman.teampicker.tools.DateHelper;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.stream.Collectors;
 
 /**
  * Created by drorfichman on 10/3/16.
@@ -153,7 +152,7 @@ public class PlayerGamesDbHelper {
         };
 
         // How you want the results sorted in the resulting Cursor
-        String sortOrder = PlayerContract.PlayerGameEntry.ID + " DESC";
+        String sortOrder = "date(" + PlayerContract.PlayerGameEntry.DATE + ") DESC";
 
         String where = PlayerContract.PlayerGameEntry.NAME + " = ? AND "
                 + PlayerContract.PlayerGameEntry.PLAYER_RESULT + " > ? ";
@@ -286,15 +285,10 @@ public class PlayerGamesDbHelper {
 
     private static ArrayList<Player> getStatistics(SQLiteDatabase db, int gameCount, String name) {
 
-        StringBuilder limitGamesCount = new StringBuilder();
+        String limitGamesCount = "";
         Log.d("stats", "Game count " + gameCount);
         if (gameCount > 0) {
-
-            ArrayList<Game> gs = DbHelper.getGames(db);
-            String gameIds = gs.stream().limit(gameCount)
-                    .map(a -> String.valueOf(a.gameId))
-                    .collect(Collectors.joining(","));
-            limitGamesCount = new StringBuilder("AND game in (").append(gameIds).append(")");
+            limitGamesCount = " AND game in (select game_index from game order by date(date) DESC LIMIT " + gameCount + " ) ";
         }
 
         String nameFilter = "";
