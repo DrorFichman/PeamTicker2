@@ -37,7 +37,10 @@ public class PlayerGamesDbHelper {
                     PlayerContract.PlayerGameEntry.GOALS + " INTEGER, " +
                     PlayerContract.PlayerGameEntry.ASSISTS + " INTEGER, " +
                     PlayerContract.PlayerGameEntry.DID_WIN + " INTEGER, " +
-                    PlayerContract.PlayerGameEntry.PLAYER_RESULT + " INTEGER DEFAULT " + EMPTY_RESULT + ")";
+                    PlayerContract.PlayerGameEntry.PLAYER_RESULT + " INTEGER DEFAULT " + EMPTY_RESULT + ", " +
+                    PlayerContract.PlayerGameEntry.PLAYER_AGE + " INTEGER, " +
+                    PlayerContract.PlayerGameEntry.ATTRIBUTES + " TEXT DEFAULT '' " +
+                    ")";
 
     public static final String SQL_DROP_PLAYER_GAMES_TABLE =
             "DELETE FROM " + PlayerContract.PlayerGameEntry.TABLE_NAME;
