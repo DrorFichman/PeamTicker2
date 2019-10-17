@@ -30,25 +30,37 @@ public class CollaborationHelper {
     private static void processTeam(Context context, Collaboration result, List<Player> team, List<Player> other) {
 
         for (Player currPlayer : team) {
-            HashMap<String, PlayerParticipation> collaborationMap = DbHelper.getPlayersParticipationsStatistics(context, RECENT_GAMES, currPlayer.mName);
+
+            HashMap<String, PlayerParticipation> collaborationMap = DbHelper.getPlayersParticipationStatistics(context, RECENT_GAMES, currPlayer.mName);
+
             PlayerCollaboration playerCollaboration = new PlayerCollaboration(currPlayer);
             if (currPlayer.statistics != null) {
-                for (Player with : team) {
-                    PlayerParticipation collaborationWith = collaborationMap.get(with.mName);
-                    if (collaborationWith != null) {
-                        EffectMargin collaboratorEffect = new EffectMargin(currPlayer, collaborationWith);
-                        playerCollaboration.addCollaborator(with.mName, collaboratorEffect);
-                    }
-                }
-                for (Player against : other) {
-                    PlayerParticipation collaborationWith = collaborationMap.get(against.mName);
-                    if (collaborationWith != null) {
-                        EffectMargin collaboratorEffect = new EffectMargin(currPlayer, collaborationWith);
-                        playerCollaboration.addOpponent(against.mName, collaboratorEffect);
-                    }
-                }
+                processWithPlayers(team, currPlayer, collaborationMap, playerCollaboration);
+                processAgainstPlayers(other, currPlayer, collaborationMap, playerCollaboration);
             }
             result.players.put(currPlayer.mName, playerCollaboration);
+        }
+    }
+
+    private static void processAgainstPlayers(List<Player> other, Player currPlayer, HashMap<String,
+            PlayerParticipation> collaborationMap, PlayerCollaboration playerCollaboration) {
+        for (Player against : other) {
+            PlayerParticipation collaborationWith = collaborationMap.get(against.mName);
+            if (collaborationWith != null) {
+                EffectMargin collaboratorEffect = new EffectMargin(currPlayer, collaborationWith);
+                playerCollaboration.addOpponent(against.mName, collaboratorEffect);
+            }
+        }
+    }
+
+    private static void processWithPlayers(List<Player> team, Player currPlayer, HashMap<String,
+            PlayerParticipation> collaborationMap, PlayerCollaboration playerCollaboration) {
+        for (Player with : team) {
+            PlayerParticipation collaborationWith = collaborationMap.get(with.mName);
+            if (collaborationWith != null) {
+                EffectMargin collaboratorEffect = new EffectMargin(currPlayer, collaborationWith);
+                playerCollaboration.addCollaborator(with.mName, collaboratorEffect);
+            }
         }
     }
 }

@@ -91,7 +91,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_make_teams_activity);
 
-        teamStatsLayout = findViewById(R.id.total_scores);
+        teamStatsLayout = findViewById(R.id.internal_stats_layout);
         teamData1 = findViewById(R.id.total_list1);
         teamData2 = findViewById(R.id.total_list2);
         headlines = findViewById(R.id.total_headlines);
@@ -155,14 +155,11 @@ public class MakeTeamsActivity extends AppCompatActivity {
         mSetResult = true;
 
         moveView.setVisibility(View.GONE);
-        analysisView.setVisibility(View.VISIBLE);
-
         shuffleView.setVisibility(View.GONE);
         sendView.setVisibility(View.GONE);
         analysisView.setVisibility(View.GONE);
 
         saveView.setVisibility(View.VISIBLE);
-
         team1Score.setVisibility(View.VISIBLE);
         team2Score.setVisibility(View.VISIBLE);
         setGameDate.setVisibility(View.VISIBLE);

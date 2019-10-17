@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 
 import androidx.annotation.NonNull;
@@ -176,8 +177,12 @@ public class DbHelper extends SQLiteOpenHelper {
         return PlayerGamesDbHelper.getPlayersStatistics(getSqLiteDatabase(context), games);
     }
 
-    public static HashMap<String, PlayerParticipation> getPlayersParticipationsStatistics(Context context, int games, String name) {
-        return PlayerGamesDbHelper.getParticipationStatistics(context, getSqLiteDatabase(context), games, name);
+    public static HashMap<String, PlayerParticipation> getPlayersParticipationStatistics(Context context, int games, String name) {
+        return getPlayersParticipationStatistics(context, games, null, name);
+    }
+
+    public static HashMap<String, PlayerParticipation> getPlayersParticipationStatistics(Context context, int games, Date upTo, String name) {
+        return PlayerGamesDbHelper.getParticipationStatistics(getSqLiteDatabase(context), games, upTo, name);
     }
 
     @NonNull

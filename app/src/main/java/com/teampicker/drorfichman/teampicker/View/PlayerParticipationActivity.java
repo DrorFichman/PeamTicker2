@@ -119,7 +119,7 @@ public class PlayerParticipationActivity extends AppCompatActivity implements So
 
     public void refreshPlayers() {
 
-        HashMap<String, PlayerParticipation> result = DbHelper.getPlayersParticipationsStatistics(getApplicationContext(), games, pPlayer.mName);
+        HashMap<String, PlayerParticipation> result = DbHelper.getPlayersParticipationStatistics(this, games, pPlayer.mName);
         players.clear();
         players.addAll(result.values());
 
