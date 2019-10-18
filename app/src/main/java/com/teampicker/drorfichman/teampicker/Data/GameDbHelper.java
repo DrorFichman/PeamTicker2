@@ -81,21 +81,31 @@ public class GameDbHelper {
 
     public static ArrayList<Game> getGames(SQLiteDatabase db, String name) {
 
-        ArrayList<Game> results = new ArrayList<>();
-
         Cursor c = db.rawQuery("select " +
-                PlayerContract.GameEntry.ID + ", " +
-                PlayerContract.GameEntry.GAME + ", " +
-                        PlayerContract.GameEntry.DATE + ", " +
-                        " res."  + PlayerContract.PlayerGameEntry.PLAYER_RESULT + " as " + PlayerContract.PlayerGameEntry.PLAYER_RESULT + ", " +
-                        " res."  + PlayerContract.PlayerGameEntry.PLAYER_GRADE + " as " + PlayerContract.PlayerGameEntry.PLAYER_GRADE + ", " +
-                        PlayerContract.GameEntry.TEAM1_SCORE + ", " +
-                        PlayerContract.GameEntry.TEAM2_SCORE +
-                        " from " + PlayerContract.GameEntry.TABLE_NAME +
-                        " , (select game, result, player_grade from player_game where name = ?) as res " +
-                        " where " + PlayerContract.GameEntry.GAME + " = res.game " +
-                        " order by date(" + PlayerContract.GameEntry.DATE + ") DESC ",
+                        " game_index, g.date as date, " +
+                        " res.date as rdate, res.result as result, res.player_grade as player_grade, " +
+                        " team_one_score, " +
+                        " team_two_score " +
+                        " from game g, player_game res " +
+                        " where name = ? " +
+                        " AND game_index = res.game " +
+                        " order by date(g.date) DESC ",
                 new String[]{name}, null);
+
+        return getGames(c, -1);
+    }
+
+    public static ArrayList<Game> getGames(SQLiteDatabase db, String name, String another) {
+        Cursor c = db.rawQuery("select " +
+                        " game_index, g.date as date, " +
+                        " res1.date as rdate, res1.result as result, res1.player_grade as player_grade, " +
+                        " team_one_score, " +
+                        " team_two_score " +
+                        " from game g, player_game res1, player_game res2  " +
+                        " where res1.name = ? AND res2.name = ? " +
+                        " AND game_index = res1.game AND game_index = res2.game " +
+                        " order by date(g.date) DESC ",
+                new String[]{name, another}, null);
 
         return getGames(c, -1);
     }

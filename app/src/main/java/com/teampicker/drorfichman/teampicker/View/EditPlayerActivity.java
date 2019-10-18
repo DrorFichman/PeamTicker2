@@ -155,7 +155,7 @@ public class EditPlayerActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             hideKeyboard();
-            startActivity(GamesActivity.getGameActivityIntent(EditPlayerActivity.this, pPlayer.mName));
+            startActivity(GamesActivity.getGameActivityIntent(EditPlayerActivity.this, pPlayer.mName, null));
         }
     };
 

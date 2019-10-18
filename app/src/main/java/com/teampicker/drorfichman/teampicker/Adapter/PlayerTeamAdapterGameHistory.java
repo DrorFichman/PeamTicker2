@@ -11,7 +11,6 @@ import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,12 +20,14 @@ public class PlayerTeamAdapterGameHistory extends ArrayAdapter<Player> {
     private Context context;
     private List<Player> mPlayers;
     private String mSelectedPlayer;
+    private String mCollaborator;
 
-    public PlayerTeamAdapterGameHistory(Context ctx, List<Player> players, String selectedPlayer) {
+    public PlayerTeamAdapterGameHistory(Context ctx, List<Player> players, String selectedPlayer, String mPlayerCollaborator) {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
         mSelectedPlayer = selectedPlayer;
+        mCollaborator = mPlayerCollaborator;
     }
 
     @Override
@@ -43,6 +44,6 @@ public class PlayerTeamAdapterGameHistory extends ArrayAdapter<Player> {
 
     private void setName(Player player, TextView name) {
         name.setText(player.mName + (ResultEnum.Missed.getValue() == player.gameResult ? " **" : ""));
-        name.setAlpha(mSelectedPlayer == null || player.mName.equals(mSelectedPlayer) ? 1F : 0.4F);
+        name.setAlpha(player.mName.equals(mSelectedPlayer) || player.mName.equals(mCollaborator) ? 1F : 0.4F);
     }
 }

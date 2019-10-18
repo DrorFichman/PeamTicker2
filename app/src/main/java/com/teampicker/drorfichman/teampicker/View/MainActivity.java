@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_players) {
             // nothing
         } else if (id == R.id.nav_games) {
-            startActivity(GamesActivity.getGameActivityIntent(this, null));
+            startActivity(GamesActivity.getGameActivityIntent(this, null, null));
         } else if (id == R.id.nav_stats) {
             startActivity(new Intent(this, StatisticsActivity.class));
         } else if (id == R.id.nav_save_snapshot) {

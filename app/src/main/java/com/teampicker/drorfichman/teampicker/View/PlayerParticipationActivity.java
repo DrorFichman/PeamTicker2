@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,8 +29,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class PlayerParticipationActivity extends AppCompatActivity implements Sorting.sortingCallbacks {
     private static final String EXTRA_PLAYER = "EXTRA_PLAYER";
-    private static final String EXTRA_BLUE = "EXTRA_BLUE";
-    private static final String EXTRA_ORANGE = "EXTRA_ORANGE";
+    private static final String EXTRA_BLUE_PLAYERS = "EXTRA_BLUE_PLAYERS";
+    private static final String EXTRA_ORANGE_PLAYERS = "EXTRA_ORANGE_PLAYERS";
 
     private ArrayList<PlayerParticipation> players = new ArrayList<>();
     private PlayerParticipationAdapter playersAdapter;
@@ -47,8 +48,8 @@ public class PlayerParticipationActivity extends AppCompatActivity implements So
                                                         ArrayList<Player> blue, ArrayList<Player> orange) {
         Intent intent = new Intent(context, PlayerParticipationActivity.class);
         intent.putExtra(PlayerParticipationActivity.EXTRA_PLAYER, playerName);
-        intent.putExtra(PlayerParticipationActivity.EXTRA_BLUE, blue);
-        intent.putExtra(PlayerParticipationActivity.EXTRA_ORANGE, orange);
+        intent.putExtra(PlayerParticipationActivity.EXTRA_BLUE_PLAYERS, blue);
+        intent.putExtra(PlayerParticipationActivity.EXTRA_ORANGE_PLAYERS, orange);
         return intent;
     }
 
@@ -57,11 +58,26 @@ public class PlayerParticipationActivity extends AppCompatActivity implements So
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_participation_activity);
 
+        playersList = findViewById(R.id.players_participation_list);
+        playersList.setOnItemClickListener(onPlayerClick);
+
+        setTeamIcon();
+
+        refreshPlayers();
+
+        sorting.setHeadlineSorting(this, R.id.player_name, null, sortType.name);
+        sorting.setHeadlineSorting(this, R.id.part_games_count_with, "Games\nWith", sortType.gamesWith);
+        sorting.setHeadlineSorting(this, R.id.part_wins_percentage_with, "Success\nWith", sortType.successWith);
+        sorting.setHeadlineSorting(this, R.id.part_games_count_against, "Games\nVs", sortType.gamesVs);
+        sorting.setHeadlineSorting(this, R.id.part_wins_percentage_against, "Success\nVs", sortType.successVs);
+    }
+
+    private void setTeamIcon() {
         Intent intent = getIntent();
         if (intent.hasExtra(EXTRA_PLAYER)) {
             pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(EXTRA_PLAYER));
-            orange = (ArrayList<Player>) intent.getSerializableExtra(EXTRA_ORANGE);
-            blue = (ArrayList<Player>) intent.getSerializableExtra(EXTRA_BLUE);
+            orange = (ArrayList<Player>) intent.getSerializableExtra(EXTRA_ORANGE_PLAYERS);
+            blue = (ArrayList<Player>) intent.getSerializableExtra(EXTRA_BLUE_PLAYERS);
         }
 
         ImageView teamIcon = findViewById(R.id.team_icon);
@@ -74,16 +90,6 @@ public class PlayerParticipationActivity extends AppCompatActivity implements So
         } else {
             teamIcon.setVisibility(View.INVISIBLE);
         }
-
-        playersList = findViewById(R.id.players_participation_list);
-
-        refreshPlayers();
-
-        sorting.setHeadlineSorting(this, R.id.player_name, null, sortType.name);
-        sorting.setHeadlineSorting(this, R.id.part_games_count_with, "Games\nWith", sortType.gamesWith);
-        sorting.setHeadlineSorting(this, R.id.part_wins_percentage_with, "Success\nWith", sortType.successWith);
-        sorting.setHeadlineSorting(this, R.id.part_games_count_against, "Games\nVs", sortType.gamesVs);
-        sorting.setHeadlineSorting(this, R.id.part_wins_percentage_against, "Success\nVs", sortType.successVs);
     }
 
     @Override
@@ -116,6 +122,12 @@ public class PlayerParticipationActivity extends AppCompatActivity implements So
 
         return super.onOptionsItemSelected(item);
     }
+
+    private AdapterView.OnItemClickListener onPlayerClick = (parent, view, position, id) -> {
+        String selected = ((PlayerParticipation) parent.getItemAtPosition(position)).mName;
+        Intent gameActivityIntent = GamesActivity.getGameActivityIntent(this, pPlayer.mName, selected);
+        startActivity(gameActivityIntent);
+    };
 
     public void refreshPlayers() {
 

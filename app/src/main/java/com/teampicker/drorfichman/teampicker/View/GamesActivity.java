@@ -19,18 +19,20 @@ import com.teampicker.drorfichman.teampicker.R;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class GamesActivity extends AppCompatActivity {
-    private static final String EXTRA_PLAYER = "EXTRA_PLAYER";
+    private static final String EXTRA_PLAYER_FILTER = "EXTRA_PLAYER_FILTER";
+    private static final String EXTRA_PLAYER_COLLABORATOR = "EXTRA_PLAYER_COLLABORATOR";
 
-    private GameAdapter gamesAdapter;
-    private Player pPlayer;
     private String mPlayerName;
+    private String mPlayerCollaborator;
 
     private ListView gamesList;
+    private GameAdapter gamesAdapter;
 
     private int mCurrGameId;
     private ArrayList<Player> mTeam1;
@@ -41,9 +43,10 @@ public class GamesActivity extends AppCompatActivity {
     private ListView team2List;
 
     @NonNull
-    public static Intent getGameActivityIntent(Context context, String playerName) {
+    public static Intent getGameActivityIntent(Context context, String playerName, String collaborator) {
         Intent intent = new Intent(context, GamesActivity.class);
-        intent.putExtra(EXTRA_PLAYER, playerName);
+        intent.putExtra(EXTRA_PLAYER_FILTER, playerName);
+        intent.putExtra(EXTRA_PLAYER_COLLABORATOR, collaborator);
         return intent;
     }
 
@@ -52,10 +55,7 @@ public class GamesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_games_activity);
 
-        Intent intent = getIntent();
-        if (intent.hasExtra(EXTRA_PLAYER) && intent.getStringExtra(EXTRA_PLAYER) != null) {
-            pPlayer = DbHelper.getPlayer(this, intent.getStringExtra(EXTRA_PLAYER));
-        }
+        getPlayers();
 
         gamesList = findViewById(R.id.games_list);
         gameDetails = findViewById(R.id.game_details_layout);
@@ -79,6 +79,17 @@ public class GamesActivity extends AppCompatActivity {
         refreshGames();
     }
 
+    private void getPlayers() {
+        Intent intent = getIntent();
+        mPlayerName = intent.getStringExtra(EXTRA_PLAYER_FILTER);
+        mPlayerCollaborator = intent.getStringExtra(EXTRA_PLAYER_COLLABORATOR);
+
+        String addTitle = "";
+        if (mPlayerName != null) addTitle = " : " + mPlayerName;
+        if (mPlayerName != null && mPlayerCollaborator != null ) addTitle += " + " + mPlayerCollaborator;
+        setTitle(getTitle() + addTitle);
+    }
+
     private void refreshTeams() {
         mTeam1 = DbHelper.getCurrTeam(this, mCurrGameId, TeamEnum.Team1, 0);
         mTeam2 = DbHelper.getCurrTeam(this, mCurrGameId, TeamEnum.Team2, 0);
@@ -86,17 +97,18 @@ public class GamesActivity extends AppCompatActivity {
         mTeam1.sort(Comparator.comparing(Player::name));
         mTeam2.sort(Comparator.comparing(Player::name));
 
-        team1List.setAdapter(new PlayerTeamAdapterGameHistory(this, mTeam1, mPlayerName));
-        team2List.setAdapter(new PlayerTeamAdapterGameHistory(this, mTeam2, mPlayerName));
+        team1List.setAdapter(new PlayerTeamAdapterGameHistory(this, mTeam1, mPlayerName, mPlayerCollaborator));
+        team2List.setAdapter(new PlayerTeamAdapterGameHistory(this, mTeam2, mPlayerName, mPlayerCollaborator));
     }
 
     private void refreshGames() {
 
         ArrayList<Game> games;
-        if (pPlayer != null) {
-            mPlayerName = pPlayer.mName;
+        if (mPlayerName != null && mPlayerCollaborator != null) { // games in which both played
+            games = DbHelper.getGames(this, mPlayerName, mPlayerCollaborator);
+        } else if (mPlayerName != null) { // games in which selected player played
             games = DbHelper.getGames(this, mPlayerName);
-        } else {
+        } else { // all games
             games = DbHelper.getGames(this);
         }
 
@@ -127,13 +139,13 @@ public class GamesActivity extends AppCompatActivity {
     //region game long clicked
     private void onGameLongClick(int gameId) {
         if (mCurrGameId > 0 && mCurrGameId == gameId) { // selected game - copy
-            checkCopyGame(gameId);
+            checkCopyGame();
         } else { // non-selected game - delete
             checkGameDeletion(gameId);
         }
     }
 
-    private void checkCopyGame(final int game) {
+    private void checkCopyGame() {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
         alertDialogBuilder.setTitle(R.string.copy);
