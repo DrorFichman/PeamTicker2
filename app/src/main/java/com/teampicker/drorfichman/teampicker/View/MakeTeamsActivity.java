@@ -28,6 +28,7 @@ import com.teampicker.drorfichman.teampicker.Data.TeamData;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
 import com.teampicker.drorfichman.teampicker.tools.DateHelper;
+import com.teampicker.drorfichman.teampicker.tools.DialogHelper;
 import com.teampicker.drorfichman.teampicker.tools.ScreenshotHelper;
 
 import java.util.ArrayList;
@@ -113,7 +114,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         moveView = findViewById(R.id.move);
         moveView.setOnClickListener(onMoveClicked);
-        moveView.setOnLongClickListener(explainOperation);
+        moveView.setOnLongClickListener(switchTeamsColors);
 
         saveView = findViewById(R.id.save);
         saveView.setOnClickListener(view -> saveResults());
@@ -474,6 +475,18 @@ public class MakeTeamsActivity extends AppCompatActivity {
         }
         return false;
     }
+
+    View.OnLongClickListener switchTeamsColors = v -> {
+        DialogHelper.showApprovalDialog(MakeTeamsActivity.this,
+                "Switch colors?", null,
+                (dialog, which) -> {
+                    ArrayList<Player> temp = players1;
+                    players1 = players2;
+                    players2 = temp;
+                    refreshPlayers();
+                });
+        return true;
+    };
 
     View.OnLongClickListener explainOperation = new View.OnLongClickListener() {
         @Override

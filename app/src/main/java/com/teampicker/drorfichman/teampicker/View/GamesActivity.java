@@ -1,6 +1,5 @@
 package com.teampicker.drorfichman.teampicker.View;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,10 +15,10 @@ import com.teampicker.drorfichman.teampicker.Data.Game;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.DialogHelper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Iterator;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -72,7 +71,7 @@ public class GamesActivity extends AppCompatActivity {
         });
 
         gamesList.setOnItemLongClickListener((adapterView, view, position, l) -> {
-            onGameLongClick(((Game) view.getTag(R.id.game)).gameId);
+            onGameLongClick(((Game) view.getTag(R.id.game)));
             return true;
         });
 
@@ -86,7 +85,8 @@ public class GamesActivity extends AppCompatActivity {
 
         String addTitle = "";
         if (mPlayerName != null) addTitle = " : " + mPlayerName;
-        if (mPlayerName != null && mPlayerCollaborator != null ) addTitle += " + " + mPlayerCollaborator;
+        if (mPlayerName != null && mPlayerCollaborator != null)
+            addTitle += " + " + mPlayerCollaborator;
         setTitle(getTitle() + addTitle);
     }
 
@@ -137,27 +137,19 @@ public class GamesActivity extends AppCompatActivity {
     //endregion
 
     //region game long clicked
-    private void onGameLongClick(int gameId) {
-        if (mCurrGameId > 0 && mCurrGameId == gameId) { // selected game - copy
+    private void onGameLongClick(Game game) {
+        if (mCurrGameId > 0 && mCurrGameId == game.gameId) { // selected game - copy
             checkCopyGame();
         } else { // non-selected game - delete
-            checkGameDeletion(gameId);
+            checkGameDeletion(game);
         }
     }
 
     private void checkCopyGame() {
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle(R.string.copy);
-        alertDialogBuilder
-                .setMessage("Copy coming players and teams?")
-                .setCancelable(true)
-                .setPositiveButton(R.string.yes, (dialog, id) -> {
-                    copyGamePlayers();
-                    dialog.dismiss();
-                });
-
-        alertDialogBuilder.create().show();
+        DialogHelper.showApprovalDialog(this, getString(R.string.copy),
+                "Copy coming players and teams?",
+                ((dialog, which) -> copyGamePlayers()));
     }
 
     private void copyGamePlayers() {
@@ -168,20 +160,15 @@ public class GamesActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.copy_players_success, Toast.LENGTH_SHORT).show();
     }
 
-    private void checkGameDeletion(final int game) {
+    private void checkGameDeletion(final Game game) {
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle(R.string.delete);
-        alertDialogBuilder
-                .setMessage("Do you want to remove this game?")
-                .setCancelable(true)
-                .setPositiveButton(R.string.yes, (dialog, id) -> {
-                    DbHelper.deleteGame(GamesActivity.this, game);
+        DialogHelper.showApprovalDialog(this,
+                getString(R.string.delete), "Do you want to remove (" + game.getDate(this) + ")?",
+                ((dialog, which) -> {
+                    DbHelper.deleteGame(GamesActivity.this, game.gameId);
                     refreshGames();
-                    dialog.dismiss();
-                });
-
-        alertDialogBuilder.create().show();
+                })
+        );
     }
     //endregion
 
@@ -194,17 +181,10 @@ public class GamesActivity extends AppCompatActivity {
 
     private void checkPlayerChange(final Player player) {
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-        alertDialogBuilder.setTitle("Modify");
-        alertDialogBuilder
-                .setMessage("Do you want to modify this player attendance?")
-                .setCancelable(true)
-                .setPositiveButton(R.string.yes, (dialog, id) -> {
-                    movePlayer(player);
-                    dialog.dismiss();
-                });
-
-        alertDialogBuilder.create().show();
+        DialogHelper.showApprovalDialog(this,
+                "Modify", "Do you want to modify this player attendance?",
+                ((dialog, which) -> movePlayer(player))
+        );
     }
 
     private void movePlayer(Player player) {

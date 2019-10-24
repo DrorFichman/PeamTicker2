@@ -373,8 +373,7 @@ public class PlayerGamesDbHelper {
         }
 
         String limitUpToDate = " ";
-        if (upTo != null) {
-            // TODO add check valid time
+        if (upTo != null) { // TODO add check valid time
             // TODO limitUpToDate = " AND date < date(" + DateHelper.getDate(upTo.getTime()) + ") ";
         }
 
