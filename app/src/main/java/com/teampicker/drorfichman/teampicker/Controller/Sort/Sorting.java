@@ -12,8 +12,7 @@ import java.util.HashMap;
 
 public class Sorting {
 
-    private HashMap<Integer, sortType> headlines = new HashMap<>();
-    private Activity activity;
+    private HashMap<TextView, sortType> headlines = new HashMap<>();
 
     public interface sortingCallbacks {
         void refresh();
@@ -60,7 +59,7 @@ public class Sorting {
             case coming:
                 return Comparator.comparing(Sortable::coming);
 
-                // Statistics
+            // Statistics
             case success:
                 return Comparator.comparing(Sortable::success).
                         thenComparing(Sortable::winRate);
@@ -89,52 +88,58 @@ public class Sorting {
         }
     }
 
+    public void setHeadlineSorting(View root, Activity ctx, int textField, String headline, final sortType sorting) {
+        TextView headlineView = null;
+        if (textField > 0)
+            headlineView = root.findViewById(textField);
+
+        setHeadlineSorting(ctx, headlineView, headline, sorting);
+    }
+
     public void setHeadlineSorting(Activity ctx, int textField, String headline, final sortType sorting) {
-
+        TextView headlineView = null;
         if (headline != null)
-            ((TextView) ctx.findViewById(textField)).setText(headline);
+            headlineView = ctx.findViewById(textField);
 
-        headlines.put(textField, sorting);
-        activity = ctx;
-
-        ctx.findViewById(textField).setOnClickListener(view -> {
-            if (sort == sorting) {
-                originalOrder = !originalOrder;
-                if (originalOrder) setSorted(view.getId());
-                else setReverseSorted(view.getId());
-            } else {
-                originalOrder = true;
-                sort = sorting;
-                setSorted(view.getId());
-            }
-            handler.refresh();
-        });
+        setHeadlineSorting(ctx, headlineView, headline, sorting);
     }
 
-    private void setSorted(int sortingView) {
-        TextView view = getTextView(sortingView);
-        if (view != null) view.setTextAppearance(R.style.greenHeadline);
-        resetSorting(sortingView);
-    }
+    void setHeadlineSorting(Activity ctx, TextView headlineView, String headlineTitle, final sortType sorting) {
 
-    private void setReverseSorted(int reversedSortingView) {
-        TextView view = getTextView(reversedSortingView);
-        if (view != null) view.setTextAppearance(R.style.redHeadline);
-        resetSorting(reversedSortingView);
-    }
+        if (headlineView != null) {
+            headlines.put(headlineView, sorting);
 
-    private void resetSorting(int exceptView) {
-        for (Integer otherHeadlines : headlines.keySet()) {
-            if (otherHeadlines != exceptView) {
-                TextView view = getTextView(otherHeadlines);
-                if (view != null) view.setTextAppearance(R.style.regularHeadline);
-            }
+            headlineView.setText(headlineTitle);
+            headlineView.setOnClickListener(view -> {
+                if (sort == sorting) {
+                    originalOrder = !originalOrder;
+                    if (originalOrder) setSorted((TextView) view);
+                    else setReverseSorted((TextView) view);
+                } else {
+                    originalOrder = true;
+                    sort = sorting;
+                    setSorted((TextView) view);
+                }
+                handler.refresh();
+            });
         }
     }
 
-    private TextView getTextView(int id) {
-        View view = activity.findViewById(id);
-        if (view instanceof TextView) return (TextView) view;
-        else return null;
+    private void setSorted(TextView sortingView) {
+        if (sortingView != null) sortingView.setTextAppearance(R.style.greenHeadline);
+        resetSorting(sortingView);
+    }
+
+    private void setReverseSorted(TextView reversedSortingView) {
+        if (reversedSortingView != null) reversedSortingView.setTextAppearance(R.style.redHeadline);
+        resetSorting(reversedSortingView);
+    }
+
+    private void resetSorting(TextView exceptView) {
+        for (TextView otherHeadlines : headlines.keySet()) {
+            if (otherHeadlines.getId() != exceptView.getId()) {
+                otherHeadlines.setTextAppearance(R.style.regularHeadline);
+            }
+        }
     }
 }
