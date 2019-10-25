@@ -76,7 +76,7 @@ public class MainActivity extends AppCompatActivity
 
         playersList.setOnItemClickListener((adapterView, view, i, l) -> {
             Player p = (Player) view.getTag();
-            Intent intent = EditPlayerActivity.getEditPlayerIntent(MainActivity.this, p.mName);
+            Intent intent = PlayerDetailsActivity.getDetailsPlayerIntent(MainActivity.this, p.mName);
             startActivityForResult(intent, ACTIVITY_RESULT_PLAYER);
         });
 

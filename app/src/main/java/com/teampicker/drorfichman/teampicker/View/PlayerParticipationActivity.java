@@ -49,7 +49,7 @@ public class PlayerParticipationActivity extends AppCompatActivity {
                 (PlayerParticipationFragment) getSupportFragmentManager().findFragmentById(R.id.collaboration_container);
 
         if (participationFragment == null) {
-            participationFragment = new PlayerParticipationFragment(pPlayer.mName, blue, orange);
+            participationFragment = PlayerParticipationFragment.newInstance(DbHelper.getPlayer(this, pPlayer.mName), blue, orange);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.add(R.id.collaboration_container, participationFragment);
             transaction.commit();

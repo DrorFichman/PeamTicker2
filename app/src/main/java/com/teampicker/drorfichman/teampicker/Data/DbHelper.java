@@ -139,11 +139,11 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static boolean updatePlayerName(Context context, Player player, String newName) {
-        if (getPlayer(context, newName) != null) {
+        if (getPlayer(context, newName) != null) // new name already exists
             return false;
-        }
 
         PlayerDbHelper.updatePlayerName(getSqLiteDatabase(context), player.mName, newName);
+        player.mName = newName;
 
         return true;
     }

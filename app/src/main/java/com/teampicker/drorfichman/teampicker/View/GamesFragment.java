@@ -3,6 +3,7 @@ package com.teampicker.drorfichman.teampicker.View;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -43,12 +44,18 @@ public class GamesFragment extends Fragment {
     private View gameDetails;
     private ListView team1List;
     private ListView team2List;
+    private boolean editable = true;
 
-    public GamesFragment(String playerName, String collaborator) {
+    public GamesFragment() {
         super(R.layout.layout_games_activity_fragment);
+    }
 
-        mPlayerName = playerName;
-        mPlayerCollaborator = collaborator;
+    public static GamesFragment newInstance(String playerName, String collaborator, boolean editable) {
+        GamesFragment gamesFragment = new GamesFragment();
+        gamesFragment.mPlayerName = playerName;
+        gamesFragment.mPlayerCollaborator = collaborator;
+        gamesFragment.editable = editable;
+        return gamesFragment;
     }
 
     @Nullable
@@ -131,7 +138,9 @@ public class GamesFragment extends Fragment {
 
     //region game long clicked
     private void onGameLongClick(Game game) {
-        if (mCurrGameId > 0 && mCurrGameId == game.gameId) { // selected game - copy
+        if (!editable) { // delete game is not an option
+            checkCopyGame();
+        } else if (mCurrGameId > 0 && mCurrGameId == game.gameId) { // selected game long clicked
             checkCopyGame();
         } else { // non-selected game - delete
             checkGameDeletion(game);

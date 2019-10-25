@@ -52,7 +52,7 @@ public class StatisticsActivity extends AppCompatActivity implements Sorting.sor
         setHeadlines();
 
         playersList.setOnItemClickListener((adapterView, view, i, l) -> {
-            Intent intent = EditPlayerActivity.getEditPlayerIntent(StatisticsActivity.this, (String) view.getTag(R.id.player_id));
+            Intent intent = PlayerDetailsActivity.getDetailsPlayerIntent(StatisticsActivity.this, (String) view.getTag(R.id.player_id));
             startActivityForResult(intent, ACTIVITY_RESULT_PLAYER);
         });
 

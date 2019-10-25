@@ -46,12 +46,17 @@ public class PlayerParticipationFragment extends Fragment implements Sorting.sor
     private View titles;
     private TextView name;
 
-    public PlayerParticipationFragment(String playerName,
-                                       ArrayList<Player> blueTeam, ArrayList<Player> orangeTeam) {
+    public PlayerParticipationFragment() {
         super(R.layout.layout_participation_fragment);
-        pPlayer = DbHelper.getPlayer(getContext(), playerName);
-        orange = orangeTeam;
-        blue = blueTeam;
+    }
+
+    public static PlayerParticipationFragment newInstance(Player p,
+                                                   ArrayList<Player> blueTeam, ArrayList<Player> orangeTeam) {
+        PlayerParticipationFragment fragment = new PlayerParticipationFragment();
+        fragment.pPlayer = p;
+        fragment.orange = orangeTeam;
+        fragment.blue = blueTeam;
+        return fragment;
     }
 
     @Nullable
@@ -131,22 +136,28 @@ public class PlayerParticipationFragment extends Fragment implements Sorting.sor
     };
 
     private void refreshPlayers() {
-        Context context = getContext(); if (context == null) return;
+        Context context = getContext();
+        if (context == null) return;
 
         HashMap<String, PlayerParticipation> result = DbHelper.getPlayersParticipationStatistics(context, games, pPlayer.mName);
         players.clear();
         players.addAll(result.values());
 
-        Player player = DbHelper.getPlayer(context, pPlayer.mName, games);
-        name.setText(getString(R.string.player_participation_statistics,
-                        player.mName,
-                        player.statistics.gamesCount,
-                        player.statistics.getWinRate()));
+        setHeadline(context);
 
         sorting.sort(players);
 
         playersAdapter = new PlayerParticipationAdapter(context, players, blue, orange);
         playersList.setAdapter(playersAdapter);
+    }
+
+    private void setHeadline(Context context) {
+        Player player = DbHelper.getPlayer(context, pPlayer.mName, games);
+
+        name.setText(getString(R.string.player_participation_statistics,
+                player.mName,
+                player.statistics.gamesCount,
+                player.statistics.getWinRate()));
     }
 
     //region sort

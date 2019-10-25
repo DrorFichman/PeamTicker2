@@ -36,7 +36,7 @@ public class GamesActivity extends AppCompatActivity {
                 (GamesFragment) getSupportFragmentManager().findFragmentById(R.id.games_container);
 
         if (gamesFragment == null) {
-            gamesFragment = new GamesFragment(mPlayerName, mPlayerCollaborator);
+            gamesFragment = GamesFragment.newInstance(mPlayerName, mPlayerCollaborator, true);
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.add(R.id.games_container, gamesFragment);
             transaction.commit();

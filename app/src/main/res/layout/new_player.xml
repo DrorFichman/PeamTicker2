@@ -28,7 +28,7 @@
             android:background="@android:color/transparent"
             android:gravity="center"
             android:onClick="showDatePicker"
-            android:text="@string/set_birthday" />
+            android:text="@string/age" />
 
         <EditText
             android:id="@+id/edit_player_name"

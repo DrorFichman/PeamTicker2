@@ -37,13 +37,13 @@
         <activity
             android:name=".View.GamesActivity"
             android:label="Games history"
-            android:theme="@style/Theme.AppCompat.Light">
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
 
         <activity
             android:name=".View.StatisticsActivity"
             android:label="Players statistics"
-            android:theme="@style/Theme.AppCompat.Light">
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
 
         <activity
@@ -53,9 +53,9 @@
         </activity>
 
         <activity
-            android:name=".View.EditPlayerActivity"
-            android:label="Edit player details"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:name=".View.PlayerDetailsActivity"
+            android:label="Player details"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
 
         <activity
@@ -67,7 +67,7 @@
         <activity
             android:name=".View.PlayerParticipationActivity"
             android:label="Player's success with/vs teammates"
-            android:theme="@style/Theme.AppCompat.Light">
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
 
     </application>

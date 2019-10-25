@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
@@ -24,7 +25,7 @@ public class NewPlayerActivity extends AppCompatActivity {
 
     private EditText vGrade;
     private EditText vName;
-    private Button vBirth;
+    private TextView vBirth;
     private CheckBox isGK;
     private CheckBox isDefender;
     private CheckBox isPlaymaker;
@@ -33,7 +34,7 @@ public class NewPlayerActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.new_player);
+        setContentView(R.layout.player_crad_fragment);
 
         vName = findViewById(R.id.edit_player_name);
         vGrade = findViewById(R.id.edit_player_grade);
@@ -42,8 +43,6 @@ public class NewPlayerActivity extends AppCompatActivity {
         isDefender = findViewById(R.id.player_is_defender);
         isPlaymaker = findViewById(R.id.player_is_playmaker);
         isUnbreakable = findViewById(R.id.player_is_unbreaking);
-
-        findViewById(R.id.player_participation_btn).setVisibility(View.INVISIBLE);
 
         findViewById(R.id.save).setOnClickListener(view -> {
             setResult(1);
@@ -82,10 +81,10 @@ public class NewPlayerActivity extends AppCompatActivity {
             }
         });
 
+        vBirth.setOnClickListener(this::showDatePicker);
+
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-
-        findViewById(R.id.back).setOnClickListener(view -> finishNow(0));
     }
 
     private void setAttributes(Player p) {
@@ -133,7 +132,6 @@ public class NewPlayerActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }

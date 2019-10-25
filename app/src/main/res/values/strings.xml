@@ -5,11 +5,11 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
-    <string name="name">name</string>
+    <string name="name">Name</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
-    <string name="grade">grade</string>
-    <string name="set_birthday">set birthday</string>
+    <string name="grade">Grade</string>
+    <string name="age">Age</string>
     <string name="new_score">New score</string>
     <string name="yes">yes</string>
     <string name="clear_all_coming">Clear all</string>
