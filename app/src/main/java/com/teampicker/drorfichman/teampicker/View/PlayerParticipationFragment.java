@@ -131,7 +131,7 @@ public class PlayerParticipationFragment extends Fragment implements Sorting.sor
 
     private AdapterView.OnItemClickListener onPlayerClick = (parent, view, position, id) -> {
         String selected = ((PlayerParticipation) parent.getItemAtPosition(position)).mName;
-        Intent gameActivityIntent = GamesActivity.getGameActivityIntent(getContext(), pPlayer.mName, selected);
+        Intent gameActivityIntent = GamesActivity.getGameActivityIntent(getContext(), pPlayer.mName, selected, false);
         startActivity(gameActivityIntent);
     };
 
@@ -154,10 +154,14 @@ public class PlayerParticipationFragment extends Fragment implements Sorting.sor
     private void setHeadline(Context context) {
         Player player = DbHelper.getPlayer(context, pPlayer.mName, games);
 
-        name.setText(getString(R.string.player_participation_statistics,
-                player.mName,
-                player.statistics.gamesCount,
-                player.statistics.getWinRate()));
+        if (player.statistics.gamesCount == 0) {
+            titles.setVisibility(View.GONE);
+        } else {
+            name.setText(getString(R.string.player_participation_statistics,
+                    player.mName,
+                    player.statistics.gamesCount,
+                    player.statistics.getWinRate()));
+        }
     }
 
     //region sort

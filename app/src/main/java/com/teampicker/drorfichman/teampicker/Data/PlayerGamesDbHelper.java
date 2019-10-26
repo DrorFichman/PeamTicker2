@@ -269,6 +269,17 @@ public class PlayerGamesDbHelper {
         DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerGameEntry.TABLE_NAME);
     }
 
+    public static boolean updateGameDate(SQLiteDatabase db, int gameId, String date) {
+
+        ContentValues values = new ContentValues();
+        values.put(PlayerContract.PlayerGameEntry.DATE, date);
+
+        String where = PlayerContract.PlayerGameEntry.GAME + " = ? ";
+        String[] whereArgs = new String[]{String.valueOf(gameId)};
+
+        return 0 < DbHelper.updateRecord(db, values, where, whereArgs, PlayerContract.PlayerGameEntry.TABLE_NAME);
+    }
+
     public static ArrayList<Player> getPlayersStatistics(SQLiteDatabase db, int gameCount) {
         return getStatistics(db, gameCount, null);
     }
@@ -374,7 +385,7 @@ public class PlayerGamesDbHelper {
 
         String limitUpToDate = " ";
         if (upTo != null) { // TODO add check valid time
-            // TODO limitUpToDate = " AND date < date(" + DateHelper.getDate(upTo.getTime()) + ") ";
+            // TODO limitUpToDate = " AND date < date(" + DateHelper.getDisplayDate(upTo.getTime()) + ") ";
         }
 
         Cursor c = db.rawQuery("select player.name as player_name, " +

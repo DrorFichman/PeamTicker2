@@ -253,6 +253,11 @@ public class DbHelper extends SQLiteOpenHelper {
         PlayerGamesDbHelper.setPlayerGameResult(getSqLiteDatabase(context), gameId, gameDate, TeamEnum.getResult(score1, score2));
     }
 
+    public static void updateGameDate(Context context, Game game, String gameDate) {
+        GameDbHelper.updateGameDate(getSqLiteDatabase(context), game.gameId, gameDate);
+        PlayerGamesDbHelper.updateGameDate(getSqLiteDatabase(context), game.gameId, gameDate);
+    }
+
     public static void setPlayerResult(Context context, int gameId, String name, ResultEnum res) {
         PlayerGamesDbHelper.updatePlayerResult(getSqLiteDatabase(context), gameId, name, res, -1);
     }

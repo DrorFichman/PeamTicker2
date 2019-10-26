@@ -29,6 +29,7 @@
     <string name="team_data_win_rate_stddev">"&#177;%1$d%%"</string>
     <string name="team_public_stats">" Age: %1$d "</string>
     <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
     <string name="copy">Copy</string>
     <string name="win_rate">Win rate</string>
     <string name="player_stat">"Games: %1$s \nWins: %2$s"</string>

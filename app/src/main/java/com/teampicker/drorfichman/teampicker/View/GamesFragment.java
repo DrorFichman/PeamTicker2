@@ -1,9 +1,7 @@
 package com.teampicker.drorfichman.teampicker.View;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +23,6 @@ import java.util.Comparator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
@@ -38,23 +35,22 @@ public class GamesFragment extends Fragment {
     private GameAdapter gamesAdapter;
 
     private int mCurrGameId;
+    private Game mCurrGame;
     private ArrayList<Player> mTeam1;
     private ArrayList<Player> mTeam2;
 
     private View gameDetails;
     private ListView team1List;
     private ListView team2List;
-    private boolean editable = true;
 
     public GamesFragment() {
         super(R.layout.layout_games_activity_fragment);
     }
 
-    public static GamesFragment newInstance(String playerName, String collaborator, boolean editable) {
+    public static GamesFragment newInstance(String playerName, String collaborator) {
         GamesFragment gamesFragment = new GamesFragment();
         gamesFragment.mPlayerName = playerName;
         gamesFragment.mPlayerCollaborator = collaborator;
-        gamesFragment.editable = editable;
         return gamesFragment;
     }
 
@@ -72,15 +68,13 @@ public class GamesFragment extends Fragment {
         team1List.setOnItemLongClickListener(onPlayerClick);
         team2List.setOnItemLongClickListener(onPlayerClick);
 
-        gamesList.setOnItemClickListener((adapterView, view, position, l) -> {
-            Game game = (Game) view.getTag(R.id.game);
-            onGameClick(game);
-        });
+        gamesList.setOnItemClickListener(
+                (adapterView, view, position, l) ->
+                        onGameSelected((Game) view.getTag(R.id.game)));
 
-        gamesList.setOnItemLongClickListener((adapterView, view, position, l) -> {
-            onGameLongClick(((Game) view.getTag(R.id.game)));
-            return true;
-        });
+        gamesList.setOnItemLongClickListener(
+                (adapterView, view, position, l) ->
+                        onGameLongClick(((Game) view.getTag(R.id.game))));
 
         refreshGames();
 
@@ -89,6 +83,7 @@ public class GamesFragment extends Fragment {
 
     private void refreshTeams() {
         Context activity = getContext(); if (activity == null) return;
+        if (mCurrGameId < 0) return;
 
         mTeam1 = DbHelper.getCurrTeam(activity, mCurrGameId, TeamEnum.Team1, 0);
         mTeam2 = DbHelper.getCurrTeam(activity, mCurrGameId, TeamEnum.Team2, 0);
@@ -100,7 +95,7 @@ public class GamesFragment extends Fragment {
         team2List.setAdapter(new PlayerTeamAdapterGameHistory(activity, mTeam2, mPlayerName, mPlayerCollaborator));
     }
 
-    private void refreshGames() {
+    public void refreshGames() {
         Context activity = getContext(); if (activity == null) return;
 
         ArrayList<Game> games;
@@ -123,28 +118,32 @@ public class GamesFragment extends Fragment {
     }
 
     //region game click
-    private void onGameClick(Game game) {
-        if (mCurrGameId == game.gameId) {
+    public void onGameSelected(Game game) {
+        if (game == null || mCurrGameId == game.gameId) {
             mCurrGameId = -1;
+            mCurrGame = null;
             gameDetails.setVisibility(View.GONE);
         } else {
             mCurrGameId = game.gameId;
+            mCurrGame = game;
             gameDetails.setVisibility(View.VISIBLE);
         }
         refreshSelectedGame();
         refreshTeams();
     }
+
+    Game getSelectedGame() {
+        return mCurrGame;
+    }
     //endregion
 
     //region game long clicked
-    private void onGameLongClick(Game game) {
-        if (!editable) { // delete game is not an option
+    private boolean onGameLongClick(Game game) {
+        if (mCurrGameId > 0 && mCurrGameId == game.gameId) { // selected game long clicked
             checkCopyGame();
-        } else if (mCurrGameId > 0 && mCurrGameId == game.gameId) { // selected game long clicked
-            checkCopyGame();
-        } else { // non-selected game - delete
-            checkGameDeletion(game);
+            return true;
         }
+        return false;
     }
 
     private void checkCopyGame() {
@@ -161,18 +160,6 @@ public class GamesFragment extends Fragment {
         DbHelper.setPlayerComing(activity, mTeam2);
         DbHelper.saveTeams(activity, mTeam1, mTeam2);
         Toast.makeText(activity, R.string.copy_players_success, Toast.LENGTH_SHORT).show();
-    }
-
-    private void checkGameDeletion(final Game game) {
-        Context activity = getContext(); if (activity == null) return;
-
-        DialogHelper.showApprovalDialog(activity,
-                getString(R.string.delete), "Do you want to remove (" + game.getDate(activity) + ")?",
-                ((dialog, which) -> {
-                    DbHelper.deleteGame(activity, game.gameId);
-                    refreshGames();
-                })
-        );
     }
     //endregion
 

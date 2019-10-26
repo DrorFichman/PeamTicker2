@@ -53,7 +53,7 @@ public class PlayerDetailsActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.player_tabs);
         tabLayout.setupWithViewPager(mPager);
 
-        mPager.setCurrentItem(1);
+        mPager.setCurrentItem(0);
     }
 
     void finish(String newName) {
@@ -99,7 +99,7 @@ public class PlayerDetailsActivity extends AppCompatActivity {
             if (position == 0) {
                 return PlayerCardFragment.newInstance(p, updateListener);
             } else if (position == 1) {
-                return GamesFragment.newInstance(p.mName, null, false);
+                return GamesFragment.newInstance(p.mName, null);
             } else {
                 return PlayerParticipationFragment.newInstance(p, null, null);
             }

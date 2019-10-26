@@ -50,6 +50,18 @@ public class GameDbHelper {
                 values, SQLiteDatabase.CONFLICT_REPLACE);
     }
 
+    public static boolean updateGameDate(SQLiteDatabase db, int gameId, String gameDate) {
+        ContentValues values = new ContentValues();
+        values.put(PlayerContract.GameEntry.DATE, gameDate);
+
+        String where = PlayerContract.GameEntry.GAME + " = ? ";
+        String[] whereArgs = new String[]{String.valueOf(gameId)};
+
+        return 0 < db.updateWithOnConflict(PlayerContract.GameEntry.TABLE_NAME,
+                values,
+                where, whereArgs, SQLiteDatabase.CONFLICT_IGNORE);
+    }
+
     public static Game getGame(SQLiteDatabase db, int gameId) {
 
         String[] projection = {
