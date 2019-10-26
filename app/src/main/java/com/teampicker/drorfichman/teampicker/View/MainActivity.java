@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity
         sorting.setHeadlineSorting(this, R.id.player_attributes, "Attr", sortType.attributes);
         sorting.setHeadlineSorting(this, R.id.player_recent_performance, "+/-", sortType.suggestedGrade);
         sorting.setHeadlineSorting(this, R.id.player_grade, "Grade", sortType.grade);
-        sorting.setHeadlineSorting(this, R.id.player_grade, "Grade", sortType.grade);
         sorting.setHeadlineSorting(this, R.id.player_coming, null, sortType.coming);
 
         ((CheckBox) findViewById(R.id.player_coming)).setTextColor(Color.BLACK);

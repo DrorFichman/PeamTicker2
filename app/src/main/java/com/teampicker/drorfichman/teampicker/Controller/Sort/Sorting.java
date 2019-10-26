@@ -2,6 +2,7 @@ package com.teampicker.drorfichman.teampicker.Controller.Sort;
 
 import android.app.Activity;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.teampicker.drorfichman.teampicker.R;
@@ -12,7 +13,7 @@ import java.util.HashMap;
 
 public class Sorting {
 
-    private HashMap<TextView, sortType> headlines = new HashMap<>();
+    private HashMap<View, sortType> headlines = new HashMap<>();
 
     public interface sortingCallbacks {
         void refresh();
@@ -98,18 +99,20 @@ public class Sorting {
 
     public void setHeadlineSorting(Activity ctx, int textField, String headline, final sortType sorting) {
         TextView headlineView = null;
-        if (headline != null)
+        if (textField > 0)
             headlineView = ctx.findViewById(textField);
 
         setHeadlineSorting(ctx, headlineView, headline, sorting);
     }
 
-    void setHeadlineSorting(Activity ctx, TextView headlineView, String headlineTitle, final sortType sorting) {
+    void setHeadlineSorting(Activity ctx, View headlineView, String headlineTitle, final sortType sorting) {
 
         if (headlineView != null) {
             headlines.put(headlineView, sorting);
 
-            headlineView.setText(headlineTitle);
+            if (headlineView instanceof TextView)
+                ((TextView) headlineView).setText(headlineTitle);
+
             headlineView.setOnClickListener(view -> {
                 if (sort == sorting) {
                     originalOrder = !originalOrder;
@@ -136,9 +139,12 @@ public class Sorting {
     }
 
     private void resetSorting(TextView exceptView) {
-        for (TextView otherHeadlines : headlines.keySet()) {
+        for (View otherHeadlines : headlines.keySet()) {
             if (otherHeadlines.getId() != exceptView.getId()) {
-                otherHeadlines.setTextAppearance(R.style.regularHeadline);
+                if (otherHeadlines instanceof TextView)
+                    ((TextView) otherHeadlines).setTextAppearance(R.style.regularHeadline);
+                if (otherHeadlines instanceof CheckBox)
+                    ((CheckBox) otherHeadlines).setChecked(false);
             }
         }
     }
