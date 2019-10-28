@@ -384,9 +384,9 @@ public class PlayerGamesDbHelper {
         }
 
         String limitUpToDate = " ";
-        if (upTo != null) { // TODO add check valid time
-            // TODO limitUpToDate = " AND date < date(" + DateHelper.getDisplayDate(upTo.getTime()) + ") ";
-        }
+//        if (upTo != null) { // TODO add check valid time
+//            limitUpToDate = " AND date < date(" + DateHelper.getDisplayDate(upTo.getTime()) + ") ";
+//        }
 
         Cursor c = db.rawQuery("select player.name as player_name, " +
                         " game, team, result " +

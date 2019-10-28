@@ -76,24 +76,6 @@ public class Player extends Sortable implements Serializable, Comparable {
         }
     }
 
-    // TODO improve
-    public String getResults() {
-        String s = "";
-        int grade = 0;
-        if (results != null) {
-            for (PlayerGameStat r : results) {
-                if (r != null) {
-                    if (r.grade != grade) {
-                        grade = r.grade;
-                        s += "[" + String.valueOf(grade) + "->] ";
-                    }
-                    s += r.result.getChar() + " ";
-                }
-            }
-        }
-        return s;
-    }
-
     public int getSuccess() {
         int gameCount = 0;
         int value = 0;
