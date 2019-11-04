@@ -376,7 +376,7 @@ public class PlayerGamesDbHelper {
         return p;
     }
 
-    public static HashMap<String, PlayerParticipation> getParticipationStatistics(SQLiteDatabase db, int gameCount, Date upTo, String name) {
+    public static HashMap<String, PlayerParticipation> getParticipationStatistics(SQLiteDatabase db, int gameCount, GamesPlayersCache cache, Date upTo, String name) {
 
         String limitGamesCount = "";
         if (gameCount > 0) {
@@ -410,8 +410,23 @@ public class PlayerGamesDbHelper {
                     ResultEnum gameResult = ResultEnum.getResultFromOrdinal(c.getInt(c.getColumnIndex("result")));
                     int collaboratorTeam = c.getInt(c.getColumnIndex("team"));
 
-                    ArrayList<Player> team1 = getCurrTeam(db, currGame, TeamEnum.Team1);
-                    ArrayList<Player> team2 = getCurrTeam(db, currGame, TeamEnum.Team2);
+                    ArrayList<Player> team1;
+                    ArrayList<Player> team2;
+
+                    if (cache != null) {
+                        team1 = cache.team1s.get(currGame);
+                        team2 = cache.team2s.get(currGame);
+
+                        if (team1 == null || team2 == null) {
+                            team1 = getCurrTeam(db, currGame, TeamEnum.Team1);
+                            team2 = getCurrTeam(db, currGame, TeamEnum.Team2);
+                            cache.team1s.put(currGame, team1);
+                            cache.team2s.put(currGame, team2);
+                        }
+                    } else {
+                        team1 = getCurrTeam(db, currGame, TeamEnum.Team1);
+                        team2 = getCurrTeam(db, currGame, TeamEnum.Team2);
+                    }
 
                     if (TeamEnum.Team1.ordinal() == collaboratorTeam) {
                         for (Player p1 : team1) { // same team

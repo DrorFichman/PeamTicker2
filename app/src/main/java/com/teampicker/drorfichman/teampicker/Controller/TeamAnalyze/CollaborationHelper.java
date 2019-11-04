@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.BuilderPlayerCollaborationStatistics;
 import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
 
 import java.util.HashMap;
@@ -20,18 +21,26 @@ public class CollaborationHelper {
     public static final int WIN_RATE_MARGIN = 0;        // win rate exceeded by to count effect
 
     public static Collaboration getCollaborationData(Context context, List<Player> team1, List<Player> team2) {
+        return getCollaborationData(context, team1, team2, null);
+    }
+
+    public static Collaboration getCollaborationData(Context context, List<Player> team1, List<Player> team2, BuilderPlayerCollaborationStatistics params) {
         Collaboration result = new Collaboration();
-        processTeam(context, result, team1, team2);
-        processTeam(context, result, team2, team1);
+        processTeam(context, result, team1, team2, params);
+        processTeam(context, result, team2, team1, params);
 
         return result;
     }
 
-    private static void processTeam(Context context, Collaboration result, List<Player> team, List<Player> other) {
+    private static void processTeam(Context context, Collaboration result, List<Player> team, List<Player> other, BuilderPlayerCollaborationStatistics params) {
+
+        if (params == null) params = new BuilderPlayerCollaborationStatistics();
+        params.setGames(RECENT_GAMES);
 
         for (Player currPlayer : team) {
 
-            HashMap<String, PlayerParticipation> collaborationMap = DbHelper.getPlayersParticipationStatistics(context, RECENT_GAMES, currPlayer.mName);
+            HashMap<String, PlayerParticipation> collaborationMap =
+                    DbHelper.getPlayersParticipationStatistics(context, currPlayer.mName, params);
 
             PlayerCollaboration playerCollaboration = new PlayerCollaboration(currPlayer);
             if (currPlayer.statistics != null) {

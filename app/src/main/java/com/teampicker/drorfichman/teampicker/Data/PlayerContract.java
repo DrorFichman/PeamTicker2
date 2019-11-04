@@ -20,7 +20,6 @@ public final class PlayerContract {
         return tables;
     }
 
-
     public static abstract class PlayerEntry {
         public static final String TABLE_NAME = "player";
         public static final String ID = "_id";

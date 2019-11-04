@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerParticipationAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.Sort.Sorting;
 import com.teampicker.drorfichman.teampicker.Controller.Sort.sortType;
+import com.teampicker.drorfichman.teampicker.Data.BuilderPlayerCollaborationStatistics;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
@@ -51,7 +52,7 @@ public class PlayerParticipationFragment extends Fragment implements Sorting.sor
     }
 
     public static PlayerParticipationFragment newInstance(Player p,
-                                                   ArrayList<Player> blueTeam, ArrayList<Player> orangeTeam) {
+                                                          ArrayList<Player> blueTeam, ArrayList<Player> orangeTeam) {
         PlayerParticipationFragment fragment = new PlayerParticipationFragment();
         fragment.pPlayer = p;
         fragment.orange = orangeTeam;
@@ -139,7 +140,8 @@ public class PlayerParticipationFragment extends Fragment implements Sorting.sor
         Context context = getContext();
         if (context == null) return;
 
-        HashMap<String, PlayerParticipation> result = DbHelper.getPlayersParticipationStatistics(context, games, pPlayer.mName);
+        HashMap<String, PlayerParticipation> result = DbHelper.getPlayersParticipationStatistics(context, pPlayer.mName,
+                new BuilderPlayerCollaborationStatistics().setGames(games));
         players.clear();
         players.addAll(result.values());
 

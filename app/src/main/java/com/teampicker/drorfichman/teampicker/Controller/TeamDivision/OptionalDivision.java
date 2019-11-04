@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.Collaboration;
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.CollaborationHelper;
+import com.teampicker.drorfichman.teampicker.Data.BuilderPlayerCollaborationStatistics;
 import com.teampicker.drorfichman.teampicker.Data.TeamData;
 
 /**
@@ -42,8 +43,8 @@ public class OptionalDivision {
             return -1;
     }
 
-    public int winRateStdDiv(Context ctx) {
-        Collaboration collaborationData = CollaborationHelper.getCollaborationData(ctx, players1.players, players2.players);
+    public int winRateStdDiv(Context ctx, BuilderPlayerCollaborationStatistics params) {
+        Collaboration collaborationData = CollaborationHelper.getCollaborationData(ctx, players1.players, players2.players, params);
 
         // 40% team success (winRateDiff), 40% justice for edge players (collaborationStdDev), 20% personal abilities (gradeDiff)
         // Overall division grade calculated 0-25, the lower the better
