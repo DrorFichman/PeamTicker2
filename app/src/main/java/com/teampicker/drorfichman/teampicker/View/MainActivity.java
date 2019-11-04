@@ -167,6 +167,8 @@ public class MainActivity extends AppCompatActivity
         } else if (showArchivedPlayers) { // return from archived players
             showArchivedPlayers = false;
             refreshPlayers();
+        } else if (fab != null && fab.isExpanded()) { // collapse floating button
+            fab.collapse();
         } else {
             super.onBackPressed();
         }
