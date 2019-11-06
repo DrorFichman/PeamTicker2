@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapter;
+import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAnalysisAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.Collaboration;
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.CollaborationHelper;
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.PlayerCollaboration;
@@ -372,8 +373,14 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private void refreshPlayers(boolean showInternalData) {
         sortPlayerNames(players1);
         sortPlayerNames(players2);
-        list1.setAdapter(new PlayerTeamAdapter(this, players1, movedPlayers, missedPlayers, analysisResult, analysisSelectedPlayer, showInternalData));
-        list2.setAdapter(new PlayerTeamAdapter(this, players2, movedPlayers, missedPlayers, analysisResult, analysisSelectedPlayer, showInternalData));
+
+        if (analysisResult != null) {
+            list1.setAdapter(new PlayerTeamAnalysisAdapter(this, players1, movedPlayers, missedPlayers, analysisResult, analysisSelectedPlayer));
+            list2.setAdapter(new PlayerTeamAnalysisAdapter(this, players2, movedPlayers, missedPlayers, analysisResult, analysisSelectedPlayer));
+        } else {
+            list1.setAdapter(new PlayerTeamAdapter(this, players1, movedPlayers, missedPlayers, showInternalData));
+            list2.setAdapter(new PlayerTeamAdapter(this, players2, movedPlayers, missedPlayers, showInternalData));
+        }
 
         updateStats();
     }

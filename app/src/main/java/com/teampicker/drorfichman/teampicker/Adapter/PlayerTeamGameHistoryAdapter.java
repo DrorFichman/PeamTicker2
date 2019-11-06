@@ -16,13 +16,13 @@ import java.util.List;
 /**
  * Created by drorfichman on 7/30/16.
  */
-public class PlayerTeamAdapterGameHistory extends ArrayAdapter<Player> {
+public class PlayerTeamGameHistoryAdapter extends ArrayAdapter<Player> {
     private Context context;
     private List<Player> mPlayers;
     private String mSelectedPlayer;
     private String mCollaborator;
 
-    public PlayerTeamAdapterGameHistory(Context ctx, List<Player> players, String selectedPlayer, String mPlayerCollaborator) {
+    public PlayerTeamGameHistoryAdapter(Context ctx, List<Player> players, String selectedPlayer, String mPlayerCollaborator) {
         super(ctx, -1, players);
         context = ctx;
         mPlayers = players;
@@ -32,7 +32,7 @@ public class PlayerTeamAdapterGameHistory extends ArrayAdapter<Player> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View rowView = LayoutInflater.from(context).inflate(R.layout.player_team_item_game_history, parent, false);
+        View rowView = LayoutInflater.from(context).inflate(R.layout.player_team_game_history_item, parent, false);
 
         Player player = mPlayers.get(position);
 

@@ -10,7 +10,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.teampicker.drorfichman.teampicker.Adapter.GameAdapter;
-import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamAdapterGameHistory;
+import com.teampicker.drorfichman.teampicker.Adapter.PlayerTeamGameHistoryAdapter;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Game;
 import com.teampicker.drorfichman.teampicker.Data.Player;
@@ -91,8 +91,8 @@ public class GamesFragment extends Fragment {
         mTeam1.sort(Comparator.comparing(Player::name));
         mTeam2.sort(Comparator.comparing(Player::name));
 
-        team1List.setAdapter(new PlayerTeamAdapterGameHistory(activity, mTeam1, mPlayerName, mPlayerCollaborator));
-        team2List.setAdapter(new PlayerTeamAdapterGameHistory(activity, mTeam2, mPlayerName, mPlayerCollaborator));
+        team1List.setAdapter(new PlayerTeamGameHistoryAdapter(activity, mTeam1, mPlayerName, mPlayerCollaborator));
+        team2List.setAdapter(new PlayerTeamGameHistoryAdapter(activity, mTeam2, mPlayerName, mPlayerCollaborator));
     }
 
     public void refreshGames() {
