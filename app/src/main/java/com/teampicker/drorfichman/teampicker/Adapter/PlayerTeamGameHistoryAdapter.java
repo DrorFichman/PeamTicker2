@@ -44,6 +44,10 @@ public class PlayerTeamGameHistoryAdapter extends ArrayAdapter<Player> {
 
     private void setName(Player player, TextView name) {
         name.setText(player.mName + (ResultEnum.Missed.getValue() == player.gameResult ? " **" : ""));
-        name.setAlpha(player.mName.equals(mSelectedPlayer) || player.mName.equals(mCollaborator) ? 1F : 0.4F);
+
+        if (mSelectedPlayer != null)
+            name.setAlpha(player.mName.equals(mSelectedPlayer) || player.mName.equals(mCollaborator) ? 1F : 0.4F);
+        else
+            name.setAlpha(1F);
     }
 }
