@@ -5,33 +5,49 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingBottom="5dp"
-    android:paddingLeft="3dp"
-    android:paddingRight="5dp"
+    android:paddingEnd="5dp"
+    android:paddingStart="3dp"
     android:paddingTop="5dp">
 
     <TextView
-        android:id="@+id/player_analysis"
-        android:layout_width="wrap_content"
+        android:id="@+id/player_analysis_win_rate"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:padding="1dp"
+        android:text="WR"
+        android:layout_marginStart="3dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textSize="10sp"
-        android:visibility="gone" />
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/player_analysis_games"
+        android:layout_width="25dp"
+        android:layout_height="wrap_content"
+        android:text="G"
+        android:layout_marginStart="3dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/player_analysis_collaboration_win_rate"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:text="Chem"
+        android:layout_marginStart="3dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="12sp" />
 
     <ImageView
-        android:id="@+id/player_analysis_suggestion"
+        android:id="@+id/player_analysis_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left|center_vertical"
-        android:padding="1dp"
-        android:visibility="gone" />
+        android:padding="1dp" />
 
     <TextView
         android:id="@+id/player_team_name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:gravity="right"
+        android:gravity="start"
         android:paddingRight="3dp"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="14sp" />

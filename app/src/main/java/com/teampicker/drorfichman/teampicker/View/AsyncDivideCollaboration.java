@@ -50,8 +50,8 @@ class AsyncDivideCollaboration extends AsyncTask<Void, Void, String> {
 
         doneHandler.execute();
 
-        activity.progressBarTeamDivision.setVisibility(View.GONE);
         activity.progressBarTeamDivisionStatus.setText("");
+        activity.progressBarTeamDivision.setVisibility(View.GONE);
         activity.teamStatsLayout.setVisibility(View.VISIBLE);
         activity.buttonsLayout.setVisibility(View.VISIBLE);
     }

@@ -81,6 +81,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
     private Button setGameDate;
 
     private AlertDialog makeTeamsDialog;
+    protected View analysisHeaders1;
+    protected View analysisHeaders2;
 
     public static Intent getInstance(Context ctx, boolean setResult) {
         Intent intent = new Intent(ctx, MakeTeamsActivity.class);
@@ -128,6 +130,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
         shuffleView.setOnClickListener(v -> divideComingPlayers(selectedDivision));
         shuffleView.setOnLongClickListener(v -> showMakeTeamOptionsDialog());
 
+        analysisHeaders1 = findViewById(R.id.analysis_headers_1);
+        analysisHeaders2 = findViewById(R.id.analysis_headers_2);
         analysisView = findViewById(R.id.game_prediction_button);
         analysisView.setOnClickListener(v -> analysisClicked());
         analysisView.setOnLongClickListener(explainOperation);
@@ -605,6 +609,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
             analysisResult = null;
             analysisSelectedPlayer = null;
             analysisView.setAlpha(1F);
+            analysisHeaders1.setVisibility(View.INVISIBLE);
+            analysisHeaders2.setVisibility(View.INVISIBLE);
             refreshPlayers();
             return true;
         }

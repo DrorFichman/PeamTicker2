@@ -12,7 +12,7 @@ import androidx.annotation.NonNull;
 
 public class DivideCollaboration extends DividerBase {
 
-    private static final int OPTIONS = 50;
+    private static final int OPTIONS = 40;
 
     BuilderPlayerCollaborationStatistics params;
 

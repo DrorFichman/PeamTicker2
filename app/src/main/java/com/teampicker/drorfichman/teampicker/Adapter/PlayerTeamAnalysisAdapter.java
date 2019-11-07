@@ -26,11 +26,11 @@ import androidx.annotation.NonNull;
  */
 public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
     public static final int HIGH_WIN_RATE = 60;
-    public static final int WIN_RATE_DELTA = 2;
     public static final int ALMOST_HIGH_WIN_RATE = 55;
-    public static final int HIGH_WIN_RATE_DIFF = 10;
-    public static final int LOW_WIN_RATE_DIFF = 40;
     public static final int ALMOST_LOW_WIN_RATE = 45;
+    public static final int LOW_WIN_RATE_DIFF = 40;
+    public static final int WIN_RATE_DELTA = 2;
+    public static final int HIGH_WIN_RATE_DIFF = 10;
 
     private Context context;
     private List<Player> mPlayers;
@@ -60,11 +60,14 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
         TextView name = rowView.findViewById(R.id.player_team_name);
         setName(rowView, player, name);
 
-        TextView analysis = rowView.findViewById(R.id.player_analysis);
-        ImageView suggestion = rowView.findViewById(R.id.player_analysis_suggestion);
-        setCollaborationAnalysis(rowView, player, analysis);
+        TextView games = rowView.findViewById(R.id.player_analysis_games);
+        TextView winRate = rowView.findViewById(R.id.player_analysis_win_rate);
+        TextView collaboration = rowView.findViewById(R.id.player_analysis_collaboration_win_rate);
+        ImageView indicator = rowView.findViewById(R.id.player_analysis_indicator);
+
+        setCollaborationAnalysis(player, games, winRate, collaboration);
         setSelectedPlayer(rowView, player);
-        setColoredPlayers(rowView, suggestion, player);
+        setColoredPlayers(rowView, player, indicator);
 
         return rowView;
     }
@@ -88,8 +91,8 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
         }
     }
 
-    private void setColoredPlayers(View rowView, ImageView suggestion, Player player) {
-        suggestion.setVisibility(View.GONE);
+    private void setColoredPlayers(View rowView, Player player, ImageView indicator) {
+        indicator.setVisibility(View.GONE);
         if (mSelectedPlayer == null) {
             PlayerCollaboration playerData = mCollaboration.getPlayer(player.mName);
 
@@ -104,12 +107,12 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
                         rowView.setBackgroundColor(Color.GREEN);
                     } else if (playerData.winRate > ALMOST_HIGH_WIN_RATE && expectedWinRateDiff > WIN_RATE_DELTA) {
                         // Show high warning
-                        suggestion.setImageResource(R.drawable.increase_warn);
-                        suggestion.setVisibility(View.VISIBLE);
+                        indicator.setImageResource(R.drawable.increase_warn);
+                        indicator.setVisibility(View.VISIBLE);
                     } else if (expectedWinRateDiff > HIGH_WIN_RATE_DIFF) {
                         // Show high effect
-                        suggestion.setImageResource(R.drawable.increase);
-                        suggestion.setVisibility(View.VISIBLE);
+                        indicator.setImageResource(R.drawable.increase);
+                        indicator.setVisibility(View.VISIBLE);
                     }
                 } else if (expectedWinRateDiff < 0) {
                     if (playerData.winRate < LOW_WIN_RATE_DIFF && expectedWinRateDiff < -WIN_RATE_DELTA) {
@@ -117,62 +120,47 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
                         rowView.setBackgroundColor(Color.RED);
                     } else if (playerData.winRate < ALMOST_LOW_WIN_RATE && expectedWinRateDiff < -WIN_RATE_DELTA) {
                         // Show low warning
-                        suggestion.setImageResource(R.drawable.decrease_warn);
-                        suggestion.setVisibility(View.VISIBLE);
+                        indicator.setImageResource(R.drawable.decrease_warn);
+                        indicator.setVisibility(View.VISIBLE);
                     } else if (expectedWinRateDiff < -HIGH_WIN_RATE_DIFF) {
                         // Show high effect
-                        suggestion.setImageResource(R.drawable.decrease);
-                        suggestion.setVisibility(View.VISIBLE);
+                        indicator.setImageResource(R.drawable.decrease);
+                        indicator.setVisibility(View.VISIBLE);
                     }
                 }
             }
         }
     }
 
-    private void setCollaborationAnalysis(View rowView, Player player, TextView analysis) {
-        if (mSelectedPlayer != null) { // selected player view
-            String stats = "";
+    private void setCollaborationAnalysis(Player player, TextView games, TextView winRate, TextView collaboration) {
+        if (mSelectedPlayer != null) { // selected player mode
 
             PlayerCollaboration selectedPlayerData = mCollaboration.getPlayer(mSelectedPlayer);
+
             if (player.mName.equals(mSelectedPlayer)) { // selected player stats
-                stats = context.getString(R.string.player_analysis_selected,
-                        selectedPlayerData.winRate,
-                        selectedPlayerData.games,
-                        selectedPlayerData.getExpectedWinRateString());
+                winRate.setText(context.getString(R.string.player_analysis_selected_win_rate, selectedPlayerData.winRate));
+                games.setText(context.getString(R.string.player_analysis_selected_games, selectedPlayerData.games));
+                collaboration.setText(selectedPlayerData.getExpectedWinRateString());
+                collaboration.setTextColor(Color.BLACK);
+
             } else { // collaborator of selected player stats
                 EffectMargin collaboratorEffect = selectedPlayerData.getEffect(player.mName);
                 if (collaboratorEffect != null) {
-                    stats = context.getString(R.string.player_analysis_collaborator,
-                            collaboratorEffect.winRateWith,
-                            collaboratorEffect.gamesWith,
-                            String.valueOf(collaboratorEffect.getSuccessWithString()));
-                    switch (collaboratorEffect.effect) {
-                        case Positive:
-                            rowView.setBackgroundColor(Color.YELLOW);
-                            break;
-                        case Negative:
-                            rowView.setBackgroundColor(Color.RED);
-                            break;
-                        case NotEnoughData:
-                            rowView.setBackgroundColor(Color.TRANSPARENT);
-                            break;
-                        default:
-                            rowView.setBackgroundColor(Color.GRAY);
-                            break;
-                    }
+
+                    winRate.setText(context.getString(R.string.player_analysis_selected_win_rate, mCollaboration.getPlayer(player.mName).winRate));
+                    games.setText(context.getString(R.string.player_analysis_selected_games, collaboratorEffect.gamesWith));
+                    collaboration.setText(context.getString(R.string.player_analysis_selected_win_rate, collaboratorEffect.winRateWith));
+                    collaboration.setTextColor(collaboratorEffect.effect.color);
                 }
             }
 
-            analysis.setVisibility(View.VISIBLE);
-            analysis.setText(stats);
-        } else { // non-selected player view
+        } else { // non-selected player mode
             PlayerCollaboration data = mCollaboration.getPlayer(player.mName);
-            String stats = context.getString(R.string.player_analysis,
-                    data.winRate,
-                    data.games,
-                    data.getExpectedWinRateString());
-            analysis.setVisibility(View.VISIBLE);
-            analysis.setText(stats);
+
+            winRate.setText(context.getString(R.string.player_analysis_selected_win_rate, data.winRate));
+            games.setText(context.getString(R.string.player_analysis_selected_games, data.games));
+            collaboration.setText(data.getExpectedWinRateString());
+            collaboration.setTextColor(Color.BLACK);
         }
     }
 }
