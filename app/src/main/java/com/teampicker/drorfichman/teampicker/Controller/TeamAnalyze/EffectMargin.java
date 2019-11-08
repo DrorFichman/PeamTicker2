@@ -17,7 +17,7 @@ public class EffectMargin {
     int successWith;
     public int winRateWith;
 
-    int winRateMarginWith;
+    public int winRateMarginWith;
     int successMarginWith;
 
     EffectMargin(Player player, PlayerParticipation with) {

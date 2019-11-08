@@ -8,9 +8,13 @@ public enum EffectType {
     Equal(Color.BLACK),
     NotEnoughData(Color.BLACK);
 
-    public int color;
+    private int color;
 
     EffectType(int c) {
         color = c;
+    }
+
+    public int getColor() {
+        return color;
     }
 }

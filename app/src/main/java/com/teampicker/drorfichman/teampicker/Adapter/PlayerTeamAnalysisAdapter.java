@@ -15,6 +15,7 @@ import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.EffectMargin
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.PlayerCollaboration;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.MathTools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -149,8 +150,15 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
 
                     winRate.setText(context.getString(R.string.player_analysis_selected_win_rate, mCollaboration.getPlayer(player.mName).winRate));
                     games.setText(context.getString(R.string.player_analysis_selected_games, collaboratorEffect.gamesWith));
+
                     collaboration.setText(context.getString(R.string.player_analysis_selected_win_rate, collaboratorEffect.winRateWith));
-                    collaboration.setTextColor(collaboratorEffect.effect.color);
+
+                    int color = collaboratorEffect.effect.getColor();
+                    collaboration.setTextColor(color);
+
+                    float alpha = MathTools.getAlpha(collaboratorEffect.winRateMarginWith, 10);
+                    if (color == Color.BLACK) alpha = (float) 0.5;
+                    collaboration.setTextColor(collaboration.getTextColors().withAlpha((int) (alpha*255)));
                 }
             }
 
