@@ -20,9 +20,10 @@ public class MathTools {
      */
     public static float getAlpha(int value, int max) {
         if (max == 0) return 1;
-        float alpha = Math.abs((float) value / max);
+        value = Math.abs(value);
+        float alpha = Math.abs((float) ((value) / (max)));
         if (alpha > 1) return 1;
-        if (alpha < 0.5) return (float) 0.5;
+        if (alpha < 0.3) return (float) 0.35;
         return alpha;
     }
 }

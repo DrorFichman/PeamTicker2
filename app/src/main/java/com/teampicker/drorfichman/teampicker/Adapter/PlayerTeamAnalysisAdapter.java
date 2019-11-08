@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.Collaboration;
-import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.CollaborationHelper;
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.EffectMargin;
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.PlayerCollaboration;
 import com.teampicker.drorfichman.teampicker.Data.Player;
@@ -26,12 +25,8 @@ import androidx.annotation.NonNull;
  * Created by drorfichman on 7/30/16.
  */
 public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
-    public static final int HIGH_WIN_RATE = 60;
-    public static final int ALMOST_HIGH_WIN_RATE = 55;
-    public static final int ALMOST_LOW_WIN_RATE = 45;
-    public static final int LOW_WIN_RATE_DIFF = 40;
-    public static final int WIN_RATE_DELTA = 2;
-    public static final int HIGH_WIN_RATE_DIFF = 10;
+    public static final int MAX_DELTA_ALPHA = 8;
+    public static final int MAX_DELTA_WIN_RATE_ALPHA = 12;
 
     private Context context;
     private List<Player> mPlayers;
@@ -64,11 +59,9 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
         TextView games = rowView.findViewById(R.id.player_analysis_games);
         TextView winRate = rowView.findViewById(R.id.player_analysis_win_rate);
         TextView collaboration = rowView.findViewById(R.id.player_analysis_collaboration_win_rate);
-        ImageView indicator = rowView.findViewById(R.id.player_analysis_indicator);
 
         setCollaborationAnalysis(player, games, winRate, collaboration);
         setSelectedPlayer(rowView, player);
-        setColoredPlayers(rowView, player, indicator);
 
         return rowView;
     }
@@ -92,73 +85,33 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
         }
     }
 
-    private void setColoredPlayers(View rowView, Player player, ImageView indicator) {
-        indicator.setVisibility(View.GONE);
-        if (mSelectedPlayer == null) {
-            PlayerCollaboration playerData = mCollaboration.getPlayer(player.mName);
-
-            int games = playerData.games;
-            int expectedWinRateDiff = playerData.getExpectedWinRateDiff();
-            rowView.setBackgroundColor(Color.TRANSPARENT);
-
-            if (games > CollaborationHelper.MIN_GAMES_ANALYSIS) {
-                if (expectedWinRateDiff > 0) {
-                    if (playerData.winRate > HIGH_WIN_RATE && expectedWinRateDiff > WIN_RATE_DELTA) {
-                        // Show yellow high warning
-                        rowView.setBackgroundColor(Color.GREEN);
-                    } else if (playerData.winRate > ALMOST_HIGH_WIN_RATE && expectedWinRateDiff > WIN_RATE_DELTA) {
-                        // Show high warning
-                        indicator.setImageResource(R.drawable.increase_warn);
-                        indicator.setVisibility(View.VISIBLE);
-                    } else if (expectedWinRateDiff > HIGH_WIN_RATE_DIFF) {
-                        // Show high effect
-                        indicator.setImageResource(R.drawable.increase);
-                        indicator.setVisibility(View.VISIBLE);
-                    }
-                } else if (expectedWinRateDiff < 0) {
-                    if (playerData.winRate < LOW_WIN_RATE_DIFF && expectedWinRateDiff < -WIN_RATE_DELTA) {
-                        // Show red high warning
-                        rowView.setBackgroundColor(Color.RED);
-                    } else if (playerData.winRate < ALMOST_LOW_WIN_RATE && expectedWinRateDiff < -WIN_RATE_DELTA) {
-                        // Show low warning
-                        indicator.setImageResource(R.drawable.decrease_warn);
-                        indicator.setVisibility(View.VISIBLE);
-                    } else if (expectedWinRateDiff < -HIGH_WIN_RATE_DIFF) {
-                        // Show high effect
-                        indicator.setImageResource(R.drawable.decrease);
-                        indicator.setVisibility(View.VISIBLE);
-                    }
-                }
-            }
-        }
-    }
-
     private void setCollaborationAnalysis(Player player, TextView games, TextView winRate, TextView collaboration) {
         if (mSelectedPlayer != null) { // selected player mode
 
             PlayerCollaboration selectedPlayerData = mCollaboration.getPlayer(mSelectedPlayer);
 
             if (player.mName.equals(mSelectedPlayer)) { // selected player stats
+
                 winRate.setText(context.getString(R.string.player_analysis_selected_win_rate, selectedPlayerData.winRate));
+                setAlpha(winRate, selectedPlayerData.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
+
                 games.setText(context.getString(R.string.player_analysis_selected_games, selectedPlayerData.games));
+
                 collaboration.setText(selectedPlayerData.getExpectedWinRateString());
-                collaboration.setTextColor(Color.BLACK);
+                setAlpha(collaboration, selectedPlayerData.getExpectedWinRateDiff(), MAX_DELTA_ALPHA);
 
             } else { // collaborator of selected player stats
                 EffectMargin collaboratorEffect = selectedPlayerData.getEffect(player.mName);
                 if (collaboratorEffect != null) {
+                    PlayerCollaboration collaborator = mCollaboration.getPlayer(player.mName);
 
-                    winRate.setText(context.getString(R.string.player_analysis_selected_win_rate, mCollaboration.getPlayer(player.mName).winRate));
-                    games.setText(context.getString(R.string.player_analysis_selected_games, collaboratorEffect.gamesWith));
+                    winRate.setText(context.getString(R.string.player_analysis_selected_win_rate, collaborator.winRate));
+                    setAlpha(winRate, collaborator.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
 
-                    collaboration.setText(context.getString(R.string.player_analysis_selected_win_rate, collaboratorEffect.winRateWith));
+                    games.setText(context.getString(R.string.player_analysis_selected_games, collaboratorEffect.getGamesWith()));
 
-                    int color = collaboratorEffect.effect.getColor();
-                    collaboration.setTextColor(color);
-
-                    float alpha = MathTools.getAlpha(collaboratorEffect.winRateMarginWith, 10);
-                    if (color == Color.BLACK) alpha = (float) 0.5;
-                    collaboration.setTextColor(collaboration.getTextColors().withAlpha((int) (alpha*255)));
+                    collaboration.setText(context.getString(R.string.player_analysis_selected_win_rate, collaboratorEffect.getWinRateWith()));
+                    setAlpha(collaboration, collaboratorEffect.getWinRateMarginWith(), MAX_DELTA_ALPHA);
                 }
             }
 
@@ -166,9 +119,22 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
             PlayerCollaboration data = mCollaboration.getPlayer(player.mName);
 
             winRate.setText(context.getString(R.string.player_analysis_selected_win_rate, data.winRate));
+            setAlpha(winRate, data.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
+
             games.setText(context.getString(R.string.player_analysis_selected_games, data.games));
+
             collaboration.setText(data.getExpectedWinRateString());
-            collaboration.setTextColor(Color.BLACK);
+            setAlpha(collaboration,  data.getExpectedWinRate() - data.winRate, MAX_DELTA_ALPHA);
         }
+    }
+
+    private void setAlpha(TextView textView, int delta, int maxDelta) {
+
+        if (delta > 0) textView.setTextColor(Color.GREEN);
+        else if (delta < 0) textView.setTextColor(Color.RED);
+        else textView.setTextColor(Color.BLACK);
+
+        float alpha = MathTools.getAlpha(delta, maxDelta);
+        textView.setTextColor(textView.getTextColors().withAlpha((int) (alpha * 255)));
     }
 }

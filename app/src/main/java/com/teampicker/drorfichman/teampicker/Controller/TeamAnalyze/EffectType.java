@@ -2,7 +2,7 @@ package com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze;
 
 import android.graphics.Color;
 
-public enum EffectType {
+public enum EffectType { // TODO remove?
     Positive(Color.GREEN),
     Negative(Color.RED),
     Equal(Color.BLACK),

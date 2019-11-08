@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -41,6 +42,7 @@ import java.util.Random;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 public class MakeTeamsActivity extends AppCompatActivity {
     private static String EXTRA_SET_RESULT = "EXTRA_SET_RESULT";
@@ -593,6 +595,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
         if (!backFromAnalysis()) { // enter analysis mode
             analysisView.setAlpha(0.5F);
+            list1.setBackgroundColor(Color.GRAY);
+            list2.setBackgroundColor(Color.GRAY);
             AsyncTeamsAnalysis async = new AsyncTeamsAnalysis(this, this::refreshPlayers);
             async.execute();
         }
@@ -611,6 +615,8 @@ public class MakeTeamsActivity extends AppCompatActivity {
             analysisView.setAlpha(1F);
             analysisHeaders1.setVisibility(View.INVISIBLE);
             analysisHeaders2.setVisibility(View.INVISIBLE);
+            list1.setBackgroundColor(ContextCompat.getColor(this, R.color.orangeTeam));
+            list2.setBackgroundColor(ContextCompat.getColor(this, R.color.blueTeam));
             refreshPlayers();
             return true;
         }

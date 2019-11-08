@@ -6,6 +6,10 @@ import java.util.HashMap;
 
 import static com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.CollaborationHelper.MIN_GAMES_TOGETHER;
 
+/**
+ * The collaboration analysis data of a player with a group of collaborators and opponents
+ * Calculated as a total of EffectMargin's.
+ */
 public class PlayerCollaboration {
     public String name;
     public int games;
@@ -41,20 +45,20 @@ public class PlayerCollaboration {
 
     void addCollaborator(String name, EffectMargin effectData) {
         collaborators.put(name, effectData);
-        overallCollaboratorsGames += effectData.gamesWith;
+        overallCollaboratorsGames += effectData.getGamesWith();
         overallCollaboratorsWinsAndLoses += effectData.winsAndLosesWith;
         overallCollaboratorsWins += effectData.winsWith;
         overallCollaboratorsSuccess += effectData.successWith;
 
-        if (effectData.gamesWith > MIN_GAMES_TOGETHER) {
+        if (effectData.getGamesWith() > MIN_GAMES_TOGETHER) {
             overallCollaboratorsWinRateCount++;
-            overallCollaboratorsWinRate += effectData.winRateWith;
+            overallCollaboratorsWinRate += effectData.getWinRateWith();
         }
     }
 
     void addOpponent(String name, EffectMargin effectData) {
         opponents.put(name, effectData);
-        overallOpponentsGames += effectData.gamesWith;
+        overallOpponentsGames += effectData.getGamesWith();
         overallOpponentsWins += effectData.winsWith;
         overallOpponentsSuccess += effectData.successWith;
     }
