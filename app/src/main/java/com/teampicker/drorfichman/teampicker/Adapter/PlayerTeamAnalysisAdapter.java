@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 /**
  * Created by drorfichman on 7/30/16.
@@ -130,8 +131,8 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
 
     private void setAlpha(TextView textView, int delta, int maxDelta) {
 
-        if (delta > 0) textView.setTextColor(Color.GREEN);
-        else if (delta < 0) textView.setTextColor(Color.RED);
+        if (delta > 0) textView.setTextColor(ContextCompat.getColor(getContext(), R.color.high));
+        else if (delta < 0) textView.setTextColor(ContextCompat.getColor(getContext(), R.color.low));
         else textView.setTextColor(Color.BLACK);
 
         float alpha = MathTools.getAlpha(delta, maxDelta);

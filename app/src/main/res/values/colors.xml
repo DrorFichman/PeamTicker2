@@ -12,4 +12,7 @@
     <color name="lose">#FF0000</color>
     <color name="draw">#0000FF</color>
 
+    <color name="low">#FF0045</color>
+    <color name="high">#45FF00</color>
+
 </resources>
