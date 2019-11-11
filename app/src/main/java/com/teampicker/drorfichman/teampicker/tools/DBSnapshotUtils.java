@@ -40,19 +40,9 @@ public class DBSnapshotUtils {
 
     public static void takeDBSnapshot(Activity activity, ExportListener listener) {
 
-        // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(
-                    activity,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
-        } else {
-
-            takeDBSnapshotPermitted(activity, listener);
-        }
+        PermissionTools.checkPermissionsForExecution(activity, 3,
+                () -> takeDBSnapshotPermitted(activity, listener),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     private static void takeDBSnapshotPermitted(final Context ctx, final ExportListener listener) {
@@ -87,7 +77,7 @@ public class DBSnapshotUtils {
         Log.d("IMPORT", "Import from " + snapshotPath);
 
         if (TextUtils.isEmpty(snapshotPath)) {
-            listener.importError("attempt importing local files");
+            listener.importError("attempt importing file from local file manager");
             return;
         }
 

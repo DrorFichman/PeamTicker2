@@ -19,7 +19,7 @@ public class PermissionTools {
         for (String per : check) {
             int permission = ActivityCompat.checkSelfPermission(ctx, per);
             if (permission != PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(ctx, "Permission is required", Toast.LENGTH_LONG).show();
+                Toast.makeText(ctx, "Permission is required; retry after allowing", Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(ctx, check, requestCode);
                 return;
             }
