@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
@@ -241,7 +242,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_stats) {
             startActivity(new Intent(this, StatisticsActivity.class));
         } else if (id == R.id.nav_save_snapshot) {
-            DBSnapshotUtils.takeDBSnapshot(this, getExportListener());
+            DBSnapshotUtils.takeDBSnapshot(this, getExportListener(), null);
         } else if (id == R.id.nav_import_snapshot) {
             selectFileForImport();
         } else if (id == R.id.nav_getting_started) {

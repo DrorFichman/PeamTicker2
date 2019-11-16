@@ -38,34 +38,42 @@ public class DBSnapshotUtils {
         void importError(String msg);
     }
 
-    public static void takeDBSnapshot(Activity activity, ExportListener listener) {
+    public static void takeDBSnapshot(Activity activity, ExportListener listener, String name) {
 
         PermissionTools.checkPermissionsForExecution(activity, 3,
-                () -> takeDBSnapshotPermitted(activity, listener),
+                () -> takeDBSnapshotPermitted(activity, listener, name),
                 Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
-    private static void takeDBSnapshotPermitted(final Context ctx, final ExportListener listener) {
+    public static File getSnapshotPath() {
+        return new File(Environment.getExternalStorageDirectory().toString() + EXPORT_PATH);
+    }
 
-        final File dbs = new File(Environment.getExternalStorageDirectory().toString() + EXPORT_PATH);
+    private static void takeDBSnapshotPermitted(final Context ctx, final ExportListener listener, String name) {
+
+        final File dbs = getSnapshotPath();
         dbs.mkdirs();
 
+        String snapshot = TextUtils.isEmpty(name) ? SNAPSHOT_FILE_NAME : name;
+
+        Log.d("snapshot", "takeDBSnapshotPermitted " + dbs.getAbsolutePath() + " - " + snapshot);
+
         SQLiteToExcel sqliteToExcel = new SQLiteToExcel(ctx, DbHelper.DATABASE_NAME, dbs.getAbsolutePath());
-        sqliteToExcel.exportSpecificTables(PlayerContract.getTables(), SNAPSHOT_FILE_NAME,
+        sqliteToExcel.exportSpecificTables(PlayerContract.getTables(), snapshot,
                 new SQLiteToExcel.ExportListener() {
             @Override
             public void onStart() {
-                listener.exportStarted();
+                if (listener != null) listener.exportStarted();
             }
 
             @Override
             public void onCompleted(String filePath) {
-                listener.exportCompleted(new File(dbs, SNAPSHOT_FILE_NAME));
+                if (listener != null) listener.exportCompleted(new File(dbs, SNAPSHOT_FILE_NAME));
             }
 
             @Override
             public void onError(Exception e) {
-                listener.exportError(e.getMessage());
+                if (listener != null) listener.exportError(e.getMessage());
                 Log.e("EXPORT", "Failed export", e);
             }
         });
@@ -74,34 +82,34 @@ public class DBSnapshotUtils {
     public static void importDBSnapshotSelected(final Context ctx, String snapshotPath,
                                                 final ImportListener listener) {
 
-        Log.d("IMPORT", "Import from " + snapshotPath);
+        Log.d("snapshot", "importDBSnapshotSelected Import from " + snapshotPath);
 
         if (TextUtils.isEmpty(snapshotPath)) {
-            listener.importError("attempt importing file from local file manager");
+            if (listener != null) listener.importError("attempt importing file from local file manager");
             return;
         }
 
         // Remove all existing DB content
         DbHelper.deleteTableContents(ctx);
 
-        listener.preImport();
+        if (listener != null) listener.preImport();
 
         ExcelToSQLite excelToSQLite = new ExcelToSQLite(ctx.getApplicationContext(), DbHelper.DATABASE_NAME, false);
         excelToSQLite.importFromFile(snapshotPath, new ExcelToSQLite.ImportListener() {
             @Override
             public void onStart() {
-                listener.importStarted();
+                if (listener != null) listener.importStarted();
             }
 
             @Override
             public void onCompleted(String dbName) {
-                listener.importCompleted();
+                if (listener != null) listener.importCompleted();
             }
 
             @Override
             public void onError(Exception e) {
                 Log.e("IMPORT", "Failed import", e);
-                listener.importError(e.getMessage());
+                if (listener != null) listener.importError(e.getMessage());
             }
         });
     }
