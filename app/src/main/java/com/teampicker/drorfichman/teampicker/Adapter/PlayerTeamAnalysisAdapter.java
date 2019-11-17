@@ -93,39 +93,51 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
             if (player.mName.equals(mSelectedPlayer)) { // selected player stats
 
                 winRate.setText(context.getString(R.string.player_analysis_selected_win_rate, selectedPlayerData.winRate));
-                setAlpha(winRate, selectedPlayerData.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
-
                 games.setText(context.getString(R.string.player_analysis_selected_games, selectedPlayerData.games));
-
                 collaboration.setText(selectedPlayerData.getExpectedWinRateString());
+
+                setAlpha(winRate, selectedPlayerData.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
                 setAlpha(collaboration, selectedPlayerData.getExpectedWinRateDiff(), MAX_DELTA_ALPHA);
 
             } else { // collaborator of selected player stats
                 EffectMargin collaboratorEffect = selectedPlayerData.getEffect(player.mName);
-                if (collaboratorEffect != null) {
-                    PlayerCollaboration collaborator = mCollaboration.getPlayer(player.mName);
+                PlayerCollaboration collaborator = mCollaboration.getPlayer(player.mName);
 
+                if (collaboratorEffect != null && collaborator != null) { // or - no games together
                     winRate.setText(context.getString(R.string.player_analysis_selected_win_rate, collaborator.winRate));
-                    setAlpha(winRate, collaborator.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
-
                     games.setText(context.getString(R.string.player_analysis_selected_games, collaboratorEffect.getGamesWith()));
-
                     collaboration.setText(context.getString(R.string.player_analysis_selected_win_rate, collaboratorEffect.getWinRateWith()));
+
+                    setAlpha(winRate, collaborator.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
                     setAlpha(collaboration, collaboratorEffect.getWinRateMarginWith(), MAX_DELTA_ALPHA);
+                } else {
+                    setEmptyData(winRate, games, collaboration);
                 }
             }
 
         } else { // non-selected player mode
             PlayerCollaboration data = mCollaboration.getPlayer(player.mName);
 
-            winRate.setText(context.getString(R.string.player_analysis_selected_win_rate, data.winRate));
-            setAlpha(winRate, data.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
+            if (data != null) {
+                winRate.setText(context.getString(R.string.player_analysis_selected_win_rate, data.winRate));
+                games.setText(context.getString(R.string.player_analysis_selected_games, data.games));
+                collaboration.setText(data.getExpectedWinRateString());
 
-            games.setText(context.getString(R.string.player_analysis_selected_games, data.games));
-
-            collaboration.setText(data.getExpectedWinRateString());
-            setAlpha(collaboration,  data.getExpectedWinRate() - data.winRate, MAX_DELTA_ALPHA);
+                setAlpha(winRate, data.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
+                setAlpha(collaboration,  data.getExpectedWinRate() - data.winRate, MAX_DELTA_ALPHA);
+            } else {
+                setEmptyData(winRate, games, collaboration);
+            }
         }
+    }
+
+    private void setEmptyData(TextView winRate, TextView games, TextView collaboration) {
+        winRate.setText("-");
+        games.setText("-");
+        collaboration.setText("-");
+        winRate.setAlpha(1);
+        games.setAlpha(1);
+        collaboration.setAlpha(1);
     }
 
     private void setAlpha(TextView textView, int delta, int maxDelta) {
