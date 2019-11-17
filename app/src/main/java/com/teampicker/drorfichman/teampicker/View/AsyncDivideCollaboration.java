@@ -40,6 +40,8 @@ class AsyncDivideCollaboration extends AsyncTask<Void, Void, String> {
         activity.progressBarTeamDivision.setVisibility(View.VISIBLE);
         activity.teamStatsLayout.setVisibility(View.INVISIBLE);
         activity.buttonsLayout.setVisibility(View.INVISIBLE);
+
+        activity.clearLists();
     }
 
     @Override

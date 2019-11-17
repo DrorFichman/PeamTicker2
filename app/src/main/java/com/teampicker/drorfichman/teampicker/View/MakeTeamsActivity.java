@@ -391,6 +391,11 @@ public class MakeTeamsActivity extends AppCompatActivity {
         updateStats();
     }
 
+    public void clearLists() {
+        list1.setAdapter(null);
+        list2.setAdapter(null);
+    }
+
     private void refreshPlayers() {
         refreshPlayers(true);
     }
