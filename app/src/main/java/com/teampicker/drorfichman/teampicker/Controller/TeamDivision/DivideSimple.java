@@ -10,12 +10,7 @@ public class DivideSimple extends DividerBase {
     }
 
     @Override
-    boolean preferNewOption(int selected, int another) {
+    boolean preferNewOption(int current, int another) {
         return false;
-    }
-
-    @Override
-    int optionsCount() {
-        return 1;
     }
 }

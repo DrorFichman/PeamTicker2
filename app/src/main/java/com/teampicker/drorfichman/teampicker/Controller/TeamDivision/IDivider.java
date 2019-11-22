@@ -13,5 +13,5 @@ public interface IDivider {
 
     void divide(Context ctx, @NonNull ArrayList<Player> comingPlayers,
                 @NonNull List<Player> players1,
-                @NonNull List<Player> players2, TeamDivision.onTaskInProgress update);
+                @NonNull List<Player> players2, int divideAttemptsCount, TeamDivision.onTaskInProgress update);
 }

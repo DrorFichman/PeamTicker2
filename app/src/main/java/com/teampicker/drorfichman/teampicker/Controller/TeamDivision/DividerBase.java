@@ -16,16 +16,16 @@ import androidx.annotation.NonNull;
 
 public abstract class DividerBase implements IDivider {
 
-    abstract int optionsCount();
-
     abstract int gradeOption(Context ctx, OptionalDivision option);
 
-    abstract boolean preferNewOption(int selected, int another);
+    abstract boolean preferNewOption(int current, int another);
 
     @Override
-    public void divide(Context ctx, @NonNull ArrayList<Player> comingPlayers,
-                       @NonNull List<Player> players1,
-                       @NonNull List<Player> players2, TeamDivision.onTaskInProgress update) {
+    public void divide(Context ctx,
+                       @NonNull ArrayList<Player> comingPlayers,
+                       @NonNull List<Player> players1, @NonNull List<Player> players2,
+                       int divideAttemptsCount,
+                       TeamDivision.onTaskInProgress update) {
 
 
         ArrayList<Player> GKs = new ArrayList<>();
@@ -45,7 +45,7 @@ public abstract class DividerBase implements IDivider {
         OptionalDivision selected = getDivision(comingPlayers.size() / 2, Others, GKs, Defenders, Playmakers, Divs);
         int selectedGrade = gradeOption(ctx, selected);
 
-        for (int option = 0; option < optionsCount(); ++option) {
+        for (int option = 0; option < divideAttemptsCount; ++option) {
             OptionalDivision another = getDivision(comingPlayers.size() / 2, Others, GKs, Defenders, Playmakers, Divs);
             int otherGrade = gradeOption(ctx, another);
             if (preferNewOption(selectedGrade, otherGrade)) {
@@ -53,7 +53,7 @@ public abstract class DividerBase implements IDivider {
                 selectedGrade = otherGrade;
             }
             if (update != null)
-                update.update(getProgress(option, optionsCount()), String.valueOf(selectedGrade));
+                update.update(getProgress(option, divideAttemptsCount), String.valueOf(selectedGrade));
         }
 
         players1.addAll(selected.players1.players);

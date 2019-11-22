@@ -3,6 +3,7 @@ package com.teampicker.drorfichman.teampicker.Controller.TeamDivision;
 import android.content.Context;
 
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.tools.SettingsHelper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +44,9 @@ public class TeamDivision {
         ArrayList<Player> players = cloneList(comingPlayers);
         Collections.sort(players);
 
-        strategy.divider.divide(ctx, players, resultPlayers1, resultPlayers2, update);
+        int divideAttemptsCount = SettingsHelper.getDivideAttemptsCount(ctx);
+
+        strategy.divider.divide(ctx, players, resultPlayers1, resultPlayers2, divideAttemptsCount, update);
     }
 
     public static ArrayList<Player> cloneList(List<Player> players) {

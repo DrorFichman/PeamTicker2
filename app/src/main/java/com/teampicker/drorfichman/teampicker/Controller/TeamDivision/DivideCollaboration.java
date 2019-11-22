@@ -12,14 +12,7 @@ import androidx.annotation.NonNull;
 
 public class DivideCollaboration extends DividerBase {
 
-    private static final int OPTIONS = 40;
-
     BuilderPlayerCollaborationStatistics params;
-
-    @Override
-    int optionsCount() {
-        return OPTIONS;
-    }
 
     @Override
     int gradeOption(Context ctx, OptionalDivision option) {
@@ -29,13 +22,13 @@ public class DivideCollaboration extends DividerBase {
     @Override
     public void divide(Context ctx, @NonNull ArrayList<Player> comingPlayers,
                        @NonNull List<Player> players1,
-                       @NonNull List<Player> players2, TeamDivision.onTaskInProgress update) {
+                       @NonNull List<Player> players2, int divideAttemptsCount, TeamDivision.onTaskInProgress update) {
         params = new BuilderPlayerCollaborationStatistics().setCached();
-        super.divide(ctx, comingPlayers, players1, players2, update);
+        super.divide(ctx, comingPlayers, players1, players2, divideAttemptsCount, update);
     }
 
     @Override
-    boolean preferNewOption(int selected, int another) {
-        return (another < selected && another > 0) || (selected == -1);
+    boolean preferNewOption(int current, int another) {
+        return (another < current && another > 0) || (current == -1);
     }
 }

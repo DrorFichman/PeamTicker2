@@ -23,13 +23,22 @@
             android:checkableBehavior="none">
             <item
                 android:id="@+id/nav_save_snapshot"
-                android:icon="@android:drawable/ic_menu_save"
+                android:icon="@drawable/backup"
                 android:title="Backup Data"
                 android:visible="true" />
             <item
                 android:id="@+id/nav_import_snapshot"
                 android:icon="@android:drawable/ic_menu_upload"
                 android:title="Import Data"
+                android:visible="true" />
+        </group>
+        <group
+            android:id="@+id/menu_settings"
+            android:checkableBehavior="none">
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/settings"
+                android:title="Settings"
                 android:visible="true" />
         </group>
         <group
