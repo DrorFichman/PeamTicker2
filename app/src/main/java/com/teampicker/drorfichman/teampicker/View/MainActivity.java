@@ -245,6 +245,8 @@ public class MainActivity extends AppCompatActivity
             DBSnapshotUtils.takeDBSnapshot(this, getExportListener(), null);
         } else if (id == R.id.nav_import_snapshot) {
             selectFileForImport();
+        } else if (id == R.id.nav_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.nav_getting_started) {
             showTutorialDialog();
         }

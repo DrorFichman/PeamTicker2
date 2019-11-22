@@ -45,7 +45,7 @@ public class PreferenceHelper {
         editor.apply();
     }
 
-    static SharedPreferences getSharedPreference(Context context){
+    public static SharedPreferences getSharedPreference(Context context){
         return context.getSharedPreferences(PREF_FILE, 0);
     }
 }
