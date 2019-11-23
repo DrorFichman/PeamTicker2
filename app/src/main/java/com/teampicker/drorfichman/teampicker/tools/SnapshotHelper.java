@@ -14,6 +14,9 @@ import androidx.core.content.FileProvider;
 
 public class SnapshotHelper {
 
+    public static String ginnegar = "Ginnegar_snapshot.xls";
+    public static String autodesk = "Autodesk_snapshot.xls";
+
     public static void checkImportApproved(Context ctx, final DBSnapshotUtils.ImportListener handler, final String importPath) {
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);

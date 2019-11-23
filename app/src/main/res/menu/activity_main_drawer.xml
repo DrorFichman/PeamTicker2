@@ -33,6 +33,20 @@
                 android:visible="true" />
         </group>
         <group
+            android:id="@+id/menu_snapshots"
+            android:checkableBehavior="none">
+            <item
+                android:id="@+id/ginnegar"
+                android:icon="@android:drawable/ic_menu_more"
+                android:title="Ginnegar"
+                android:visible="true" />
+            <item
+                android:id="@+id/autodesk"
+                android:icon="@android:drawable/ic_menu_more"
+                android:title="Autodesk"
+                android:visible="true" />
+        </group>
+        <group
             android:id="@+id/menu_settings"
             android:checkableBehavior="none">
             <item

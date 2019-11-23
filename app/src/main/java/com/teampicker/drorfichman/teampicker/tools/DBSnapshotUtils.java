@@ -43,7 +43,7 @@ public class DBSnapshotUtils {
         void importError(String msg);
     }
 
-    public static void takeDBSnapshot(Activity activity, ExportListener listener, String name) {
+    public static void takeDBSnapshot(Activity activity, String name, ExportListener listener) {
 
         PermissionTools.checkPermissionsForExecution(activity, 3,
                 () -> takeDBSnapshotPermitted(activity, listener, name),

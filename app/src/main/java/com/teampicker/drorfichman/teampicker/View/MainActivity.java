@@ -242,18 +242,40 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_stats) {
             startActivity(new Intent(this, StatisticsActivity.class));
         } else if (id == R.id.nav_save_snapshot) {
-            DBSnapshotUtils.takeDBSnapshot(this, getExportListener(), null);
+            DBSnapshotUtils.takeDBSnapshot(this, null, getExportListener());
         } else if (id == R.id.nav_import_snapshot) {
             selectFileForImport();
         } else if (id == R.id.nav_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.nav_getting_started) {
             showTutorialDialog();
+        } else if (id == R.id.ginnegar) {
+            switchGroup(SnapshotHelper.ginnegar, SnapshotHelper.autodesk);
+        } else if (id == R.id.autodesk) {
+            switchGroup(SnapshotHelper.autodesk, SnapshotHelper.ginnegar);
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void switchGroup(String switchTo, String switchFrom) {
+        DBSnapshotUtils.takeDBSnapshot(this, switchFrom, new DBSnapshotUtils.ExportListener() {
+            @Override
+            public void exportStarted() {
+            }
+
+            @Override
+            public void exportCompleted(File filePath) {
+                Log.d("snap", "import snap from " + switchTo);
+                SnapshotHelper.checkImportApproved(MainActivity.this, getImportListener(), DBSnapshotUtils.getSnapshotPath() + "/" + switchTo);
+            }
+
+            @Override
+            public void exportError(String msg) {
+            }
+        });
     }
     //endregion
 
