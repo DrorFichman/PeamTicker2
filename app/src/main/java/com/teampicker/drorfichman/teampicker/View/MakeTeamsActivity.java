@@ -412,7 +412,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
             team2Data.forecastStdDev = analysisResult.getExpectedWinRateStdDiv(team2Data.players);
             if (team1Data.forecastWinRate > 0 && team2Data.forecastWinRate > 0) {
                 int sum = team1Data.forecastWinRate + team2Data.forecastWinRate;
-                team1Data.forecastWinRate = team1Data.forecastWinRate * 100 / sum;
+                team1Data.forecastWinRate = (int) Math.round((double)team1Data.forecastWinRate * 100 / sum);
                 team2Data.forecastWinRate = 100 - team1Data.forecastWinRate;
             }
         }
