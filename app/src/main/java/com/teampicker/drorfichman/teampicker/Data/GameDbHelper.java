@@ -101,7 +101,7 @@ public class GameDbHelper {
                         " from game g, player_game res " +
                         " where name = ? " +
                         " AND game_index = res.game " +
-                        " order by date(g.date) DESC ",
+                        " order by date(g.date) DESC, game_index DESC",
                 new String[]{name}, null);
 
         return getGames(c, -1);
@@ -116,7 +116,7 @@ public class GameDbHelper {
                         " from game g, player_game res1, player_game res2  " +
                         " where res1.name = ? AND res2.name = ? " +
                         " AND game_index = res1.game AND game_index = res2.game " +
-                        " order by date(g.date) DESC ",
+                        " order by date(g.date) DESC, game_index DESC ",
                 new String[]{name, another}, null);
 
         return getGames(c, -1);
@@ -135,7 +135,7 @@ public class GameDbHelper {
         };
 
         // How you want the results sorted in the resulting Cursor
-        String sortOrder = "date(" + PlayerContract.GameEntry.DATE + ") DESC";
+        String sortOrder = "date(date) DESC, game_index DESC";
 
         Cursor c = db.query(
                 PlayerContract.GameEntry.TABLE_NAME,  // The table to query
