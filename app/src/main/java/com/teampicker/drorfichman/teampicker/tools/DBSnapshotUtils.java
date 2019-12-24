@@ -22,19 +22,24 @@ import androidx.core.app.ActivityCompat;
  */
 public class DBSnapshotUtils {
 
-    private static final String SNAPSHOT_FILE_NAME = "peamticker_snapshot.xls";
+    private static final String SNAPSHOT_FILE_NAME = "peamticker_snapshot";
     private static final String EXPORT_PATH = "/TeamPicker/DBs/";
 
     public interface ExportListener {
         void exportStarted();
+
         void exportCompleted(File filePath);
+
         void exportError(String msg);
     }
 
     public interface ImportListener {
         void preImport();
+
         void importStarted();
+
         void importCompleted();
+
         void importError(String msg);
     }
 
@@ -49,34 +54,38 @@ public class DBSnapshotUtils {
         return new File(Environment.getExternalStorageDirectory().toString() + EXPORT_PATH);
     }
 
+    private static String getSnapshotFileName() {
+        return SNAPSHOT_FILE_NAME + "-" + DateHelper.getNow() + ".xls";
+    }
+
     private static void takeDBSnapshotPermitted(final Context ctx, final ExportListener listener, String name) {
 
         final File dbs = getSnapshotPath();
         dbs.mkdirs();
 
-        String snapshot = TextUtils.isEmpty(name) ? SNAPSHOT_FILE_NAME : name;
+        String snapshot = TextUtils.isEmpty(name) ? getSnapshotFileName() : name;
 
         Log.d("snapshot", "takeDBSnapshotPermitted " + dbs.getAbsolutePath() + " - " + snapshot);
 
         SQLiteToExcel sqliteToExcel = new SQLiteToExcel(ctx, DbHelper.DATABASE_NAME, dbs.getAbsolutePath());
         sqliteToExcel.exportSpecificTables(PlayerContract.getTables(), snapshot,
                 new SQLiteToExcel.ExportListener() {
-            @Override
-            public void onStart() {
-                if (listener != null) listener.exportStarted();
-            }
+                    @Override
+                    public void onStart() {
+                        if (listener != null) listener.exportStarted();
+                    }
 
-            @Override
-            public void onCompleted(String filePath) {
-                if (listener != null) listener.exportCompleted(new File(dbs, SNAPSHOT_FILE_NAME));
-            }
+                    @Override
+                    public void onCompleted(String filePath) {
+                        if (listener != null) listener.exportCompleted(new File(dbs, snapshot));
+                    }
 
-            @Override
-            public void onError(Exception e) {
-                if (listener != null) listener.exportError(e.getMessage());
-                Log.e("EXPORT", "Failed export", e);
-            }
-        });
+                    @Override
+                    public void onError(Exception e) {
+                        if (listener != null) listener.exportError(e.getMessage());
+                        Log.e("EXPORT", "Failed export", e);
+                    }
+                });
     }
 
     public static void importDBSnapshotSelected(final Context ctx, String snapshotPath,
@@ -85,7 +94,8 @@ public class DBSnapshotUtils {
         Log.d("snapshot", "importDBSnapshotSelected Import from " + snapshotPath);
 
         if (TextUtils.isEmpty(snapshotPath)) {
-            if (listener != null) listener.importError("attempt importing file from local file manager");
+            if (listener != null)
+                listener.importError("attempt importing file from local file manager");
             return;
         }
 
