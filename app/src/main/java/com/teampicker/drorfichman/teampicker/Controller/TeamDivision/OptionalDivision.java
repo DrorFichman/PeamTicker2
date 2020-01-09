@@ -6,6 +6,8 @@ import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.Collaboratio
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.CollaborationHelper;
 import com.teampicker.drorfichman.teampicker.Data.BuilderPlayerCollaborationStatistics;
 import com.teampicker.drorfichman.teampicker.Data.TeamData;
+import com.teampicker.drorfichman.teampicker.tools.MathTools;
+import com.teampicker.drorfichman.teampicker.tools.SettingsHelper;
 
 /**
  * Created by drorfichman on 9/17/16.
@@ -48,20 +50,30 @@ public class OptionalDivision {
 
         // 40% team success (winRateDiff), 40% justice for edge players (collaborationStdDev), 20% personal abilities (gradeDiff)
         // Overall division grade calculated 0-25, the lower the better
+
+        SettingsHelper.DivisionWeight divisionWeight = SettingsHelper.getDivisionWeight(ctx);
+
         int chemistryWinRateDiff = getChemistryWinRateDiff(collaborationData); // rank out of 10 (0 - 20)
+        int chemistry = MathTools.getPercentageOf(chemistryWinRateDiff, 20);
+
         int collaborationStdDev = getCollaborationWinRateStdDevFromOptimal(collaborationData); // rank out of 10 (0 - 30)
+        int stdDev = MathTools.getPercentageOf(collaborationStdDev, 30);
+
         int gradeDiff = getGradeDiff(); // rank out of 5 (0 - 20)
+        int grade = MathTools.getPercentageOf(gradeDiff, 20);
 
-        int wr = getStandardScore(10, 2, chemistryWinRateDiff);
-        int c = getStandardScore(10, 3, collaborationStdDev);
-        int g = getStandardScore(5, 4, gradeDiff);
+        int res = (int) (((double) chemistry * divisionWeight.chemistry()) + ((double) stdDev * divisionWeight.stdDev()) + ((double) grade * divisionWeight.grade()));
 
-        // Log.d("DIV", "WR : " + chemistryWinRateDiff + " (" +  wr + "), Std50 : " + collaborationStdDev + " (" +  c + "), Grade : " + gradeDiff + " (" + g + "), total : " + (chemistryWinRateDiff + collaborationStdDev + gradeDiff) + " [" + (g + wr + c) + "]");
+/*
+//        Log.d("DIV1", "WR : " + chemistry + " (" +  chemistryWinRateDiff + "), Std50 : " + stdDev + " (" +  collaborationStdDev + "), Grade : " + grade + " (" + gradeDiff + "), total : " + res);
+//        int wr = Math.min(chemistryWinRateDiff / 2, 10);
+//        int c = Math.min(collaborationStdDev / 3, 10);
+//        int g = Math.min(gradeDiff / 4, 5);
+//        Log.d("DIV2", "WR : " + chemistryWinRateDiff + " (" +  wr + "), Std50 : " + collaborationStdDev + " (" +  c + "), Grade : " + gradeDiff + " (" + g + "), total : " + (chemistryWinRateDiff + collaborationStdDev + gradeDiff) + " [" + (g + wr + c) + "]");
+//        int res2 = wr + c + g;
+//        Log.d("DIV3", res2 + " / 25 = " + res2*100/25 + " == " + res);
+*/
 
-        return wr + c + g;
-    }
-
-    private int getStandardScore(int max, int steps, int value) {
-        return Math.min(value / steps, max);
+        return res;
     }
 }

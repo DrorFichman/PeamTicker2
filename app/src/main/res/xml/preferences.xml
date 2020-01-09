@@ -4,7 +4,14 @@
     <EditTextPreference
         android:icon="@drawable/settings"
         android:key="divide_attempts"
-        android:summary="Make teams - number of teams division to consider"
+        android:summary="Make teams - number of teams division to consider (1-100)"
         android:title="Divide attempts" />
+
+    <EditTextPreference
+        android:icon="@drawable/settings"
+        android:key="divide_grade_percentage"
+        android:summary="Make teams - grade weight % (0-100)"
+        android:title="Grade weight" />
+
 
 </PreferenceScreen>

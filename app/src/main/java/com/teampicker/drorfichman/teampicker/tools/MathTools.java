@@ -26,4 +26,12 @@ public class MathTools {
         if (alpha < 0.3) return (float) 0.35;
         return alpha;
     }
+
+    public static int getPercentageOf(int value, int max) {
+        return getLimitedValue(value, 0, max) * 100 / max;
+    }
+
+    public static int getLimitedValue(int value, int min, int max) {
+        return Math.max(min, Math.min(value, max));
+    }
 }
