@@ -13,18 +13,12 @@ import static com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.Colla
 public class PlayerCollaboration {
     public String name;
     public int games;
-    public int success;
     public int winRate;
-    int wins;
 
     HashMap<String, EffectMargin> collaborators = new HashMap<>();
     HashMap<String, EffectMargin> opponents = new HashMap<>();
 
-    int overallCollaboratorsGames = 0;
     int overallCollaboratorsWins = 0;
-    int overallCollaboratorsSuccess = 0;
-
-    int overallCollaboratorsWinRate = 0;
     int overallCollaboratorsWithMinGames = 0;
 
     // TODO use for win rate with opponents?
@@ -37,21 +31,16 @@ public class PlayerCollaboration {
         name = p.mName;
         if (p.statistics != null) {
             games = p.statistics.gamesCount;
-            wins = p.statistics.wins;
-            success = p.statistics.successRate;
             winRate = p.statistics.getWinRate();
         }
     }
 
     void addCollaborator(String name, EffectMargin effectData) {
         collaborators.put(name, effectData);
-        overallCollaboratorsGames += effectData.getGamesWith();
         overallCollaboratorsWinsAndLoses += effectData.winsAndLosesWith;
         overallCollaboratorsWins += effectData.winsWith;
-        overallCollaboratorsSuccess += effectData.successWith;
 
         if (effectData.getGamesWith() > MIN_GAMES_TOGETHER) {
-            overallCollaboratorsWinRate += effectData.getWinRateWith();
             overallCollaboratorsWithMinGames++;
         }
     }
