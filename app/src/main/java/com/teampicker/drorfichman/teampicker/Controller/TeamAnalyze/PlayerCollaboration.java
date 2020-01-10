@@ -25,7 +25,7 @@ public class PlayerCollaboration {
     int overallCollaboratorsSuccess = 0;
 
     int overallCollaboratorsWinRate = 0;
-    int overallCollaboratorsWinRateCount = 0;
+    int overallCollaboratorsWithMinGames = 0;
 
     // TODO use for win rate with opponents?
     int overallOpponentsGames = 0;
@@ -51,8 +51,8 @@ public class PlayerCollaboration {
         overallCollaboratorsSuccess += effectData.successWith;
 
         if (effectData.getGamesWith() > MIN_GAMES_TOGETHER) {
-            overallCollaboratorsWinRateCount++;
             overallCollaboratorsWinRate += effectData.getWinRateWith();
+            overallCollaboratorsWithMinGames++;
         }
     }
 
@@ -80,8 +80,8 @@ public class PlayerCollaboration {
     }
 
     public int getExpectedWinRate() {
-        if (overallCollaboratorsWinRateCount > 0)
-            return overallCollaboratorsWinRate / overallCollaboratorsWinRateCount;
+        if (overallCollaboratorsWithMinGames > 0 && overallCollaboratorsWinsAndLoses > 0)
+            return (overallCollaboratorsWins * 100) / overallCollaboratorsWinsAndLoses;
         else
             return -1;
     }
