@@ -10,7 +10,7 @@ import androidx.preference.PreferenceManager;
 public class SettingsHelper {
 
     public static final String SETTING_DIVIDE_ATTEMPTS = "divide_attempts";
-    private static final String SETTING_DIVIDE_GRADE = "divide_grade_percentage";
+    public static final String SETTING_DIVIDE_GRADE = "divide_grade_percentage";
 
     private static int getPreferenceValue(Context ctx, String preferenceKey, int defaultValue) {
         try {

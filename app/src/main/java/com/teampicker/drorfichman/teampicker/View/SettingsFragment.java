@@ -20,8 +20,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
     }
 
     private void setDivisionGradePercentage() {
-        EditTextPreference attemptsPref = findPreference(SettingsHelper.SETTING_DIVIDE_ATTEMPTS);
-        attemptsPref.setOnBindEditTextListener(editText ->
+        EditTextPreference gradeWeight = findPreference(SettingsHelper.SETTING_DIVIDE_GRADE);
+        gradeWeight.setOnBindEditTextListener(editText ->
         {
             editText.setInputType(InputType.TYPE_CLASS_NUMBER);
             editText.setSingleLine();
