@@ -3,6 +3,8 @@ package com.teampicker.drorfichman.teampicker.tools;
 import android.content.Context;
 import android.util.Log;
 
+import com.teampicker.drorfichman.teampicker.Controller.TeamDivision.DivisionWeight;
+
 import androidx.preference.PreferenceManager;
 
 public class SettingsHelper {
@@ -25,35 +27,11 @@ public class SettingsHelper {
         return MathTools.getLimitedValue(divideAttempts, 1, 100);
     }
 
-    public static class DivisionWeight {
-        double grade;
-        double chemistry;
-        double stdDev;
-
-        public double grade() {
-            return grade / 100;
-        }
-
-        public double chemistry() {
-            return chemistry / 100;
-        }
-
-        public double stdDev() {
-            return stdDev / 100;
-        }
-
-        DivisionWeight(int g, int c, int s) {
-            grade = g;
-            chemistry = c;
-            stdDev = s;
-        }
-    }
-
     public static DivisionWeight getDivisionWeight(Context ctx) {
         int gradeWeight = getPreferenceValue(ctx, SETTING_DIVIDE_GRADE, 20);
         int grade = MathTools.getLimitedValue(gradeWeight, 0, 100);
-        int chemistry = (100 - grade) / 2;
-        int stdDev = 100 - grade - chemistry;
+        int chemistry = (100 - grade) / 2; // default 40
+        int stdDev = 100 - grade - chemistry; // default 40
         return new DivisionWeight(grade, chemistry, stdDev);
     }
 }

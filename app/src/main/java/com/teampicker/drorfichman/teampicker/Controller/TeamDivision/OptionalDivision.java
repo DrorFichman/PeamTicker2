@@ -48,21 +48,19 @@ public class OptionalDivision {
     public int winRateStdDiv(Context ctx, BuilderPlayerCollaborationStatistics params) {
         Collaboration collaborationData = CollaborationHelper.getCollaborationData(ctx, players1.players, players2.players, params);
 
-        // 40% team success (winRateDiff), 40% justice for edge players (collaborationStdDev), 20% personal abilities (gradeDiff)
-        // Overall division grade calculated 0-25, the lower the better
+        // default : 40% team success (winRateDiff), 40% justice for edge players (collaborationStdDev), 20% personal abilities (gradeDiff)
+        DivisionWeight weights = SettingsHelper.getDivisionWeight(ctx);
 
-        SettingsHelper.DivisionWeight divisionWeight = SettingsHelper.getDivisionWeight(ctx);
-
-        int chemistryWinRateDiff = getChemistryWinRateDiff(collaborationData); // rank out of 10 (0 - 20)
+        int chemistryWinRateDiff = getChemistryWinRateDiff(collaborationData); // rank 0 - 20
         int chemistry = MathTools.getPercentageOf(chemistryWinRateDiff, 20);
 
-        int collaborationStdDev = getCollaborationWinRateStdDevFromOptimal(collaborationData); // rank out of 10 (0 - 30)
+        int collaborationStdDev = getCollaborationWinRateStdDevFromOptimal(collaborationData); // rank 0 - 30
         int stdDev = MathTools.getPercentageOf(collaborationStdDev, 30);
 
-        int gradeDiff = getGradeDiff(); // rank out of 5 (0 - 20)
+        int gradeDiff = getGradeDiff(); // rank 0 - 20
         int grade = MathTools.getPercentageOf(gradeDiff, 20);
 
-        int res = (int) (((double) chemistry * divisionWeight.chemistry()) + ((double) stdDev * divisionWeight.stdDev()) + ((double) grade * divisionWeight.grade()));
+        int res = (int) (((double) chemistry * weights.chemistry()) + ((double) stdDev * weights.stdDev()) + ((double) grade * weights.grade()));
 
 /*
 //        Log.d("DIV1", "WR : " + chemistry + " (" +  chemistryWinRateDiff + "), Std50 : " + stdDev + " (" +  collaborationStdDev + "), Grade : " + grade + " (" + gradeDiff + "), total : " + res);
