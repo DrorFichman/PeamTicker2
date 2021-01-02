@@ -37,7 +37,6 @@ public class PlayerGamesDbHelper {
                     PlayerContract.PlayerGameEntry.ASSISTS + " INTEGER, " +
                     PlayerContract.PlayerGameEntry.DID_WIN + " INTEGER, " +
                     PlayerContract.PlayerGameEntry.PLAYER_RESULT + " INTEGER DEFAULT " + EMPTY_RESULT + ", " +
-                    PlayerContract.PlayerGameEntry.PLAYER_AGE + " INTEGER, " +
                     PlayerContract.PlayerGameEntry.ATTRIBUTES + " TEXT DEFAULT '' " +
                     ")";
 
