@@ -22,8 +22,6 @@ public class PlayerDbHelper {
                     PlayerContract.PlayerEntry.IS_COMING + " INTEGER, " +
                     PlayerContract.PlayerEntry.BIRTH_YEAR + " INTEGER, " +
                     PlayerContract.PlayerEntry.BIRTH_MONTH + " INTEGER, " +
-                    PlayerContract.PlayerEntry.BIRTH_YEAR + " INTEGER, " +
-                    PlayerContract.PlayerEntry.BIRTH_MONTH + " INTEGER, " +
                     PlayerContract.PlayerEntry.ARCHIVED + " INTEGER DEFAULT 0, " +
                     PlayerContract.PlayerEntry.ATTRIBUTES + " TEXT DEFAULT '' " +
                     " )";

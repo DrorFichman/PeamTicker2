@@ -45,6 +45,10 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
+        createTables(db);
+    }
+
+    public void createTables(SQLiteDatabase db) {
         try {
             db.execSQL(PlayerDbHelper.getSqlCreate());
             db.execSQL(PlayerGamesDbHelper.getSqlCreate());
@@ -53,7 +57,7 @@ public class DbHelper extends SQLiteOpenHelper {
             Log.w("Create", "Tables already exist " + e.getMessage());
         }
 
-        Log.d("IMPORT", "No new data");
+        Log.d("Create", "Create new tables called");
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -116,6 +120,7 @@ public class DbHelper extends SQLiteOpenHelper {
         if (writableDatabase == null) {
             DbHelper mDbHelper = new DbHelper(context.getApplicationContext());
             writableDatabase = mDbHelper.getWritableDatabase();
+            mDbHelper.createTables(writableDatabase);
         }
         return writableDatabase;
     }
