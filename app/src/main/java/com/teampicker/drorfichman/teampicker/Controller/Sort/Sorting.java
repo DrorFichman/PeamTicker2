@@ -89,12 +89,12 @@ public class Sorting {
         }
     }
 
-    public void setHeadlineSorting(View root, Activity ctx, int textField, String headline, final sortType sorting) {
+    public void setHeadlineSorting(View root, int textField, String headline, final sortType sorting) {
         TextView headlineView = null;
         if (textField > 0)
             headlineView = root.findViewById(textField);
 
-        setHeadlineSorting(ctx, headlineView, headline, sorting);
+        setHeadlineSorting(headlineView, headline, sorting);
     }
 
     public void setHeadlineSorting(Activity ctx, int textField, String headline, final sortType sorting) {
@@ -102,10 +102,10 @@ public class Sorting {
         if (textField > 0)
             headlineView = ctx.findViewById(textField);
 
-        setHeadlineSorting(ctx, headlineView, headline, sorting);
+        setHeadlineSorting(headlineView, headline, sorting);
     }
 
-    void setHeadlineSorting(Activity ctx, View headlineView, String headlineTitle, final sortType sorting) {
+    void setHeadlineSorting(View headlineView, String headlineTitle, final sortType sorting) {
 
         if (headlineView != null) {
             headlines.put(headlineView, sorting);

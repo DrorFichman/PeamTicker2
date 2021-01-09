@@ -120,7 +120,6 @@ public class DbHelper extends SQLiteOpenHelper {
         if (writableDatabase == null) {
             DbHelper mDbHelper = new DbHelper(context.getApplicationContext());
             writableDatabase = mDbHelper.getWritableDatabase();
-            mDbHelper.createTables(writableDatabase);
         }
         return writableDatabase;
     }
