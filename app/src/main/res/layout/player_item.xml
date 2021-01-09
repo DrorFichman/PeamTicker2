@@ -6,6 +6,7 @@
     android:orientation="horizontal"
     android:paddingBottom="5dp"
     android:paddingRight="5dp"
+    android:layoutDirection="ltr"
     android:paddingTop="5dp">
 
     <CheckBox
