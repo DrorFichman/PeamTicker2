@@ -74,10 +74,10 @@ public class PlayerParticipationFragment extends Fragment implements Sorting.sor
         setTeamIcon(root);
 
         sorting.setHeadlineSorting(root, R.id.player_name, null, sortType.name);
-        sorting.setHeadlineSorting(root, R.id.part_games_count_with, "Games\nWith", sortType.gamesWith);
-        sorting.setHeadlineSorting(root, R.id.part_wins_percentage_with, "Success\nWith", sortType.successWith);
-        sorting.setHeadlineSorting(root, R.id.part_games_count_against, "Games\nVs", sortType.gamesVs);
-        sorting.setHeadlineSorting(root, R.id.part_wins_percentage_against, "Success\nVs", sortType.successVs);
+        sorting.setHeadlineSorting(root, R.id.part_games_count_with, this.getString(R.string.games_with) , sortType.gamesWith);
+        sorting.setHeadlineSorting(root, R.id.part_wins_percentage_with, this.getString(R.string.success_with), sortType.successWith);
+        sorting.setHeadlineSorting(root, R.id.part_games_count_against, this.getString(R.string.games_vs), sortType.gamesVs);
+        sorting.setHeadlineSorting(root, R.id.part_wins_percentage_against, this.getString(R.string.success_vs), sortType.successVs);
 
         refreshPlayers();
 

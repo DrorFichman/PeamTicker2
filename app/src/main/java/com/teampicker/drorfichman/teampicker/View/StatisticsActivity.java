@@ -61,11 +61,11 @@ public class StatisticsActivity extends AppCompatActivity implements Sorting.sor
 
     private void setHeadlines() {
         gradeTitle = findViewById(R.id.stat_player_grade);
-        sorting.setHeadlineSorting(this, R.id.stat_player_grade, "Grade", sortType.grade);
-        sorting.setHeadlineSorting(this, R.id.player_name, "Name", sortType.name);
-        sorting.setHeadlineSorting(this, R.id.stat_success, "Success", sortType.success);
-        sorting.setHeadlineSorting(this, R.id.stat_games_count, "Games", sortType.games);
-        sorting.setHeadlineSorting(this, R.id.stat_wins_percentage, "Win rate", sortType.winPercentage);
+        sorting.setHeadlineSorting(this, R.id.stat_player_grade, this.getString(R.string.grade), sortType.grade);
+        sorting.setHeadlineSorting(this, R.id.player_name, this.getString(R.string.name), sortType.name);
+        sorting.setHeadlineSorting(this, R.id.stat_success, this.getString(R.string.success), sortType.success);
+        sorting.setHeadlineSorting(this, R.id.stat_games_count, this.getString(R.string.games), sortType.games);
+        sorting.setHeadlineSorting(this, R.id.stat_wins_percentage, this.getString(R.string.win_rate), sortType.winPercentage);
     }
 
     @Override
