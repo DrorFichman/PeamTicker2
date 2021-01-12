@@ -1,18 +1,36 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
+import android.content.Context;
+
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.ColorHelper;
+
+import androidx.annotation.DrawableRes;
 
 /**
  * Created by drorfichman on 10/3/16.
  */
 public enum TeamEnum {
-    Team1(R.drawable.circle_orange),
-    Team2(R.drawable.circle_blue),
-    Tie(R.drawable.circle_draw);
+    Team1(0, -1),
+    Team2(1, -1),
+    Tie(-1, R.drawable.circle_draw);
 
-    public int drawable;
-    TeamEnum(int c) {
-        drawable = c;
+    private int drawable;
+    private int drawableIndex;
+
+    TeamEnum(int index, int draw) {
+        drawableIndex = index;
+        drawable = draw;
+    }
+
+    @DrawableRes
+    public int getDrawable(Context ctx) {
+        if (drawableIndex == 0 || drawableIndex == 1) {
+            int[] colors = ColorHelper.getTeamsIcons(ctx);
+            return colors[drawableIndex];
+        } else {
+            return drawable;
+        }
     }
 
     public static TeamEnum getResult(int team1Score, int team2Score) {

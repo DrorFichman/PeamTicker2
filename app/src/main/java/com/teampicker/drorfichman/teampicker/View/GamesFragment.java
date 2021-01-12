@@ -16,6 +16,7 @@ import com.teampicker.drorfichman.teampicker.Data.Game;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.ColorHelper;
 import com.teampicker.drorfichman.teampicker.tools.DialogHelper;
 
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ public class GamesFragment extends Fragment {
 
         team1List = root.findViewById(R.id.game_details_team1);
         team2List = root.findViewById(R.id.game_details_team2);
+        setDefaultColors();
 
         team1List.setOnItemLongClickListener(onPlayerClick);
         team2List.setOnItemLongClickListener(onPlayerClick);
@@ -115,6 +117,12 @@ public class GamesFragment extends Fragment {
     private void refreshSelectedGame() {
         gamesAdapter.setSelectedGameId(mCurrGameId);
         gamesAdapter.notifyDataSetChanged();
+    }
+
+    private void setDefaultColors() {
+        int[] colors = ColorHelper.getTeamsColors(getActivity());
+        team1List.setBackgroundColor(colors[0]);
+        team2List.setBackgroundColor(colors[1]);
     }
 
     //region game click

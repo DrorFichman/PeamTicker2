@@ -47,7 +47,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="@color/orangeTeam"
                 android:divider="@null"
                 android:padding="5dp" />
 
@@ -88,7 +87,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="@color/blueTeam"
                 android:divider="@null"
                 android:padding="5dp" />
 

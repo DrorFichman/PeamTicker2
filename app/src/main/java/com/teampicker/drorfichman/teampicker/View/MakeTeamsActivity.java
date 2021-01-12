@@ -29,6 +29,7 @@ import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.Data.TeamData;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.ColorHelper;
 import com.teampicker.drorfichman.teampicker.tools.DateHelper;
 import com.teampicker.drorfichman.teampicker.tools.DialogHelper;
 import com.teampicker.drorfichman.teampicker.tools.ScreenshotHelper;
@@ -116,6 +117,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
         list2 = findViewById(R.id.team_2);
         list1.setOnItemClickListener(playerClicked);
         list2.setOnItemClickListener(playerClicked);
+        setDefaultTeamColors();
 
         moveView = findViewById(R.id.move);
         moveView.setOnClickListener(onMoveClicked);
@@ -620,12 +622,19 @@ public class MakeTeamsActivity extends AppCompatActivity {
             analysisView.setAlpha(1F);
             analysisHeaders1.setVisibility(View.INVISIBLE);
             analysisHeaders2.setVisibility(View.INVISIBLE);
-            list1.setBackgroundColor(ContextCompat.getColor(this, R.color.orangeTeam));
-            list2.setBackgroundColor(ContextCompat.getColor(this, R.color.blueTeam));
+
+            setDefaultTeamColors();
+
             refreshPlayers();
             return true;
         }
         return false;
+    }
+
+    private void setDefaultTeamColors() {
+        int[] colors = ColorHelper.getTeamsColors(this);
+        list1.setBackgroundColor(colors[0]);
+        list2.setBackgroundColor(colors[1]);
     }
 
     private void initCollaboration() {

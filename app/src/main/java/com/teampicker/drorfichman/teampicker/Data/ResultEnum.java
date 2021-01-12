@@ -4,6 +4,8 @@ import android.graphics.Color;
 
 import com.teampicker.drorfichman.teampicker.R;
 
+import androidx.annotation.DrawableRes;
+
 /**
  * Created by drorfichman on 10/3/16.
  */
@@ -18,13 +20,18 @@ public enum ResultEnum {
         sign = s;
         value = v;
         color = c;
-        drawble = d;
+        drawable = d;
     }
 
     private final int value;
     private final String sign;
     public final int color;
-    public final int drawble;
+    private final int drawable;
+
+    @DrawableRes
+    public int getDrawable() {
+        return drawable;
+    }
 
     public String getChar() {
         return sign;

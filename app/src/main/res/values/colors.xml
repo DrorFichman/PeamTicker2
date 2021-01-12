@@ -7,6 +7,8 @@
     <!--  TODO fix blue,orange references  -->
     <color name="orangeTeam">@android:color/holo_orange_dark</color>
     <color name="blueTeam">@android:color/holo_blue_light</color>
+    <color name="blackTeam">#555555</color>
+    <color name="whiteTeam">#EEEEEE</color>
 
     <color name="win">#00FF00</color>
     <color name="lose">#FF0000</color>

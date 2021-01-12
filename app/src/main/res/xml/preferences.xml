@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <EditTextPreference
-        android:icon="@drawable/settings"
-        android:key="divide_attempts"
-        android:summary="Make teams - number of teams division to consider (1-100)"
-        android:title="Divide attempts" />
+    <PreferenceCategory android:title="Make Teams">
 
-    <EditTextPreference
-        android:icon="@drawable/settings"
-        android:key="divide_grade_percentage"
-        android:summary="Make teams - grade weight % (0-100)"
-        android:title="Grade weight" />
+        <EditTextPreference
+            android:icon="@drawable/settings"
+            android:key="divide_attempts"
+            android:summary="Make teams - number of teams division to consider (1-100)"
+            android:title="Divide attempts" />
 
+        <EditTextPreference
+            android:icon="@drawable/settings"
+            android:key="divide_grade_percentage"
+            android:summary="Make teams - grade weight % (0-100)"
+            android:title="Grade weight" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Appearance">
+        <DropDownPreference
+            android:entries="@array/settings_team_color_scheme"
+            android:entryValues="@array/settings_team_color_scheme"
+            android:icon="@drawable/settings"
+            android:key="teams_color_scheme"
+            android:summary="Teams visualization - select color scheme"
+            android:title="Teams Colors" />
+    </PreferenceCategory>
 
 </PreferenceScreen>

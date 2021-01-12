@@ -11,11 +11,21 @@ public class SettingsHelper {
 
     public static final String SETTING_DIVIDE_ATTEMPTS = "divide_attempts";
     public static final String SETTING_DIVIDE_GRADE = "divide_grade_percentage";
+    public static final String SETTING_TEAM_COLOR_SCHEME = "teams_color_scheme";
 
     private static int getPreferenceValue(Context ctx, String preferenceKey, int defaultValue) {
         try {
             String value = PreferenceManager.getDefaultSharedPreferences(ctx).getString(preferenceKey, String.valueOf(defaultValue));
             return Integer.parseInt(value);
+        } catch (Exception e) {
+            Log.e(preferenceKey, "failed getting " + preferenceKey, e);
+        }
+        return defaultValue;
+    }
+
+    private static String getPreferenceValue(Context ctx, String preferenceKey, String defaultValue) {
+        try {
+            return PreferenceManager.getDefaultSharedPreferences(ctx).getString(preferenceKey, String.valueOf(defaultValue));
         } catch (Exception e) {
             Log.e(preferenceKey, "failed getting " + preferenceKey, e);
         }
@@ -33,5 +43,10 @@ public class SettingsHelper {
         int chemistry = (100 - grade) / 2; // default 40
         int stdDev = 100 - grade - chemistry; // default 40
         return new DivisionWeight(grade, chemistry, stdDev);
+    }
+
+    public static String getColorScheme(Context ctx) {
+        return getPreferenceValue(ctx, SETTING_TEAM_COLOR_SCHEME,
+                ctx.getString(ColorHelper.ColorScheme.OrangeBlue.stringRes));
     }
 }

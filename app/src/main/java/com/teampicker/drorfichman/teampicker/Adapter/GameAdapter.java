@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.teampicker.drorfichman.teampicker.Data.Game;
-import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.R;
 import com.teampicker.drorfichman.teampicker.tools.DateHelper;
 
@@ -71,10 +70,10 @@ public class GameAdapter extends ArrayAdapter<Game> {
 
     private void setPlayerResult(ImageView starView, Game g) {
         if (g.playerResult != null) { // player's results - green/red
-            starView.setImageResource(g.playerResult.drawble);
+            starView.setImageResource(g.playerResult.getDrawable());
             starView.setVisibility(View.VISIBLE);
         } else if (g.winningTeam != null) { // winning team - orange/blue/tie
-            starView.setImageResource(g.winningTeam.drawable);
+            starView.setImageResource(g.winningTeam.getDrawable(context));
             starView.setVisibility(View.VISIBLE);
         } else { // unreachable
             starView.setVisibility(View.GONE);

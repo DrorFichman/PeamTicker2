@@ -23,6 +23,7 @@ import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.ColorHelper;
 import com.teampicker.drorfichman.teampicker.tools.ScreenshotHelper;
 
 import java.util.ArrayList;
@@ -37,8 +38,10 @@ public class PlayerParticipationFragment extends Fragment implements Sorting.sor
     private ArrayList<PlayerParticipation> players = new ArrayList<>();
     private PlayerParticipationAdapter playersAdapter;
     private Player pPlayer;
+
     private ArrayList<Player> blue;
     private ArrayList<Player> orange;
+    private int[] teamsIcons;
 
     private int games = 50;
     private Sorting sorting = new Sorting(this, sortType.gamesWith);
@@ -57,6 +60,7 @@ public class PlayerParticipationFragment extends Fragment implements Sorting.sor
         fragment.pPlayer = p;
         fragment.orange = orangeTeam;
         fragment.blue = blueTeam;
+
         return fragment;
     }
 
@@ -88,12 +92,14 @@ public class PlayerParticipationFragment extends Fragment implements Sorting.sor
 
     private void setTeamIcon(View root) {
 
+        teamsIcons = ColorHelper.getTeamsIcons(getActivity());
+
         ImageView teamIcon = root.findViewById(R.id.team_icon);
         if (orange != null && orange.contains(pPlayer)) {
-            teamIcon.setImageResource(R.drawable.circle_orange);
+            teamIcon.setImageResource(teamsIcons[0]);
             teamIcon.setVisibility(View.VISIBLE);
         } else if (blue != null && blue.contains(pPlayer)) {
-            teamIcon.setImageResource(R.drawable.circle_blue);
+            teamIcon.setImageResource(teamsIcons[1]);
             teamIcon.setVisibility(View.VISIBLE);
         } else {
             teamIcon.setVisibility(View.INVISIBLE);

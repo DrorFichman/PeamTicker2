@@ -40,6 +40,10 @@
     <string name="action_statistics_50">Last 50 games</string>
     <string name="action_statistics_no_limit">All games</string>
 
+    <!--    Settings - values are saved in preferences - don't change-->
+    <string name="setting_team_color_scheme_color_1">Orange -- Blue</string>
+    <string name="setting_team_color_scheme_color_2">Black -- White</string>
+
     <!--    Messages-->
     <string name="parentheses">"(%1$d)"</string>
     <string name="team_data_headline">" Count \n Grade \n Success \n  Win Rate \n \n  "</string>

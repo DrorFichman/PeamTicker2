@@ -1,6 +1,7 @@
 package com.teampicker.drorfichman.teampicker.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerParticipation;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.ColorHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,7 @@ public class PlayerParticipationAdapter extends ArrayAdapter<PlayerParticipation
     private final List<PlayerParticipation> mPlayers;
     private final ArrayList<Player> mBlue;
     private final ArrayList<Player> mOrange;
+    private final int[] teamsIcons;
 
     public PlayerParticipationAdapter(Context ctx, List<PlayerParticipation> players,
                                       ArrayList<Player> blue, ArrayList<Player> orange) {
@@ -32,6 +35,8 @@ public class PlayerParticipationAdapter extends ArrayAdapter<PlayerParticipation
         mPlayers = players;
         mBlue = blue;
         mOrange = orange;
+
+        teamsIcons = ColorHelper.getTeamsIcons(ctx);
     }
 
     @Override
@@ -65,11 +70,11 @@ public class PlayerParticipationAdapter extends ArrayAdapter<PlayerParticipation
         ImageView teamIcon = view.findViewById(R.id.team_icon);
         teamIcon.setVisibility(View.INVISIBLE);
         Player player = new Player(p.mName, 0);
-        if (mBlue != null && mBlue.contains(player)) {
-            teamIcon.setImageResource(R.drawable.circle_blue);
+        if (mOrange != null && mOrange.contains(player)) {
+            teamIcon.setImageResource(teamsIcons[0]);
             teamIcon.setVisibility(View.VISIBLE);
-        } else if (mOrange != null && mOrange.contains(player)) {
-            teamIcon.setImageResource(R.drawable.circle_orange);
+        } else if (mBlue != null && mBlue.contains(player)) {
+            teamIcon.setImageResource(teamsIcons[1]);
             teamIcon.setVisibility(View.VISIBLE);
         }
 
