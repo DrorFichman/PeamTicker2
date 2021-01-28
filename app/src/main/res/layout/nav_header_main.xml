@@ -27,7 +27,6 @@
     <TextView
         android:id="@+id/appTextName"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Kibbutz Ginegar" />
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
