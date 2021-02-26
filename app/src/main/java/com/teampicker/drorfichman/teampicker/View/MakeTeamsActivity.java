@@ -24,6 +24,7 @@ import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.Collaboratio
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.PlayerCollaboration;
 import com.teampicker.drorfichman.teampicker.Controller.TeamDivision.TeamDivision;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
+import com.teampicker.drorfichman.teampicker.Data.Game;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.ResultEnum;
 import com.teampicker.drorfichman.teampicker.Data.TeamData;
@@ -32,6 +33,7 @@ import com.teampicker.drorfichman.teampicker.R;
 import com.teampicker.drorfichman.teampicker.tools.ColorHelper;
 import com.teampicker.drorfichman.teampicker.tools.DateHelper;
 import com.teampicker.drorfichman.teampicker.tools.DialogHelper;
+import com.teampicker.drorfichman.teampicker.tools.FirebaseHelper;
 import com.teampicker.drorfichman.teampicker.tools.ScreenshotHelper;
 
 import java.util.ArrayList;
@@ -154,7 +156,15 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void saveResults() {
         int currGame = DbHelper.getActiveGame(this);
-        DbHelper.insertGame(this, currGame, getGameDateString(), getScoreValue(team1Score), getScoreValue(team2Score));
+        Game game = new Game(currGame,
+                getGameDateString() != null ? getGameDateString() : DateHelper.getNow(),
+                getScoreValue(team1Score), getScoreValue(team2Score));
+
+        DbHelper.insertGame(this, game);
+
+        // TODO FirebaseHelper.syncGame(this, game)
+
+        // TODO initCollaboration(); and print / keep expected winner?
 
         Toast.makeText(this, "Results saved", Toast.LENGTH_LONG).show();
         finish();

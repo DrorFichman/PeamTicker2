@@ -19,20 +19,6 @@
                 android:title="Statistics" />
         </group>
         <group
-            android:id="@+id/menu_snapshot"
-            android:checkableBehavior="none">
-            <item
-                android:id="@+id/nav_save_snapshot"
-                android:icon="@drawable/backup"
-                android:title="Backup Data"
-                android:visible="true" />
-            <item
-                android:id="@+id/nav_import_snapshot"
-                android:icon="@android:drawable/ic_menu_upload"
-                android:title="Import Data"
-                android:visible="true" />
-        </group>
-        <group
             android:id="@+id/menu_settings"
             android:checkableBehavior="none">
             <item
@@ -40,6 +26,40 @@
                 android:icon="@drawable/settings"
                 android:title="Settings"
                 android:visible="true" />
+        </group>
+        <group
+            android:id="@+id/menu_snapshot"
+            android:checkableBehavior="none"
+            android:title="To file">
+            <item
+                android:id="@+id/nav_save_snapshot"
+                android:icon="@drawable/backup"
+                android:title="Backup to file"
+                android:visible="true" />
+            <item
+                android:id="@+id/nav_import_snapshot"
+                android:icon="@android:drawable/ic_menu_upload"
+                android:title="Import from file"
+                android:visible="true" />
+        </group>
+        <group
+            android:id="@+id/menu_sync"
+            android:checkableBehavior="none">
+            <item
+                android:id="@+id/nav_data_sync"
+                android:icon="@drawable/backup"
+                android:title="Sync to cloud"
+                android:visible="true" />
+            <item
+                android:id="@+id/nav_data_pull"
+                android:icon="@android:drawable/ic_menu_upload"
+                android:title="Pull from cloud"
+                android:visible="true" />
+            <item
+                android:id="@+id/nav_auth_logout"
+                android:icon="@drawable/help"
+                android:title="Logout"
+                android:visible="false" />
         </group>
         <group
             android:id="@+id/menu_help"

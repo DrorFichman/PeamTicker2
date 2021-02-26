@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.teampicker.drorfichman.teampicker.tools.DateHelper;
-
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -32,17 +30,17 @@ public class GameDbHelper {
         return SQL_CREATE_GAMES;
     }
 
-    public static void insertGameResults(SQLiteDatabase db, int gameId,
-                                         String gameDate, int team1Score, int team2Score) {
+    public static void insertGameResults(SQLiteDatabase db,
+                                         Game g) {
 
-        Log.d("TEAMS", "Saving result " + team1Score + " - " + team2Score);
+        Log.d("TEAMS", "Saving result " + g.getScore());
 
         ContentValues values = new ContentValues();
-        values.put(PlayerContract.GameEntry.GAME, gameId);
-        values.put(PlayerContract.GameEntry.DATE, gameDate != null ? gameDate : DateHelper.getNow());
-        values.put(PlayerContract.GameEntry.TEAM1_SCORE, team1Score);
-        values.put(PlayerContract.GameEntry.TEAM2_SCORE, team2Score);
-        values.put(PlayerContract.GameEntry.TEAM_RESULT, TeamEnum.getResult(team1Score, team2Score).ordinal());
+        values.put(PlayerContract.GameEntry.GAME, g.gameId);
+        values.put(PlayerContract.GameEntry.DATE, g.dateString);
+        values.put(PlayerContract.GameEntry.TEAM1_SCORE, g.team1Score);
+        values.put(PlayerContract.GameEntry.TEAM2_SCORE, g.team2Score);
+        values.put(PlayerContract.GameEntry.TEAM_RESULT, g.winningTeam.ordinal());
 
         // Insert the new row, returning the primary key value of the new row
         db.insertWithOnConflict(PlayerContract.GameEntry.TABLE_NAME,
@@ -159,10 +157,9 @@ public class GameDbHelper {
                 int i = 0;
                 do {
                     Game g = new Game(c.getInt(c.getColumnIndex(PlayerContract.GameEntry.GAME)),
-                            c.getString(c.getColumnIndex(PlayerContract.GameEntry.DATE)));
-                    g.team1Score = c.getInt(c.getColumnIndex(PlayerContract.GameEntry.TEAM1_SCORE));
-                    g.team2Score = c.getInt(c.getColumnIndex(PlayerContract.GameEntry.TEAM2_SCORE));
-                    g.winningTeam = TeamEnum.getResult(g.team1Score, g.team2Score);
+                            c.getString(c.getColumnIndex(PlayerContract.GameEntry.DATE)),
+                            c.getInt(c.getColumnIndex(PlayerContract.GameEntry.TEAM1_SCORE)),
+                            c.getInt(c.getColumnIndex(PlayerContract.GameEntry.TEAM2_SCORE)));
 
                     if (c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT) > 0)
                         g.playerResult = ResultEnum.getResultFromOrdinal(c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT)));

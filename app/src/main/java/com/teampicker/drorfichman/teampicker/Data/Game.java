@@ -21,9 +21,12 @@ public class Game implements Serializable {
     public ResultEnum playerResult;
     public int playerGrade;
 
-    public Game(int gameId, String date) {
+    public Game(int gameId, String date, int score1, int score2) {
         this.gameId = gameId;
         this.dateString = date;
+        this.team1Score = score1;
+        this.team2Score = score2;
+        this.winningTeam = TeamEnum.getResult(this.team1Score, this.team2Score);
     }
 
     public String getScore() {

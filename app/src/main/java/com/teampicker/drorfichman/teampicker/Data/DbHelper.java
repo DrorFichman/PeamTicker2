@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.PlayerCollaboration;
+import com.teampicker.drorfichman.teampicker.tools.FirebaseHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,6 +64,8 @@ public class DbHelper extends SQLiteOpenHelper {
         onCreate(db);
 
         addColumns(db);
+
+        // TODO sanitize player names
     }
 
     /*
@@ -130,6 +132,10 @@ public class DbHelper extends SQLiteOpenHelper {
         getSqLiteDatabase(context).execSQL(PlayerGamesDbHelper.SQL_DROP_PLAYER_GAMES_TABLE);
     }
 
+    public static void deletePlayersContents(Context context) {
+        getSqLiteDatabase(context).execSQL(PlayerDbHelper.SQL_DROP_PLAYER_TABLE);
+    }
+
     public static void setPlayerComing(Context context, ArrayList<Player> team) {
         for (Player p : team) {
             PlayerDbHelper.updatePlayerComing(getSqLiteDatabase(context), p.mName, true);
@@ -162,8 +168,9 @@ public class DbHelper extends SQLiteOpenHelper {
         PlayerDbHelper.updatePlayerBirth(getSqLiteDatabase(context), name, year, month);
     }
 
-    public static boolean insertPlayer(Context context, String name, int grade) {
-        return PlayerDbHelper.insertPlayer(getSqLiteDatabase(context), name, grade);
+    public static boolean insertPlayer(Context context, Player p) {
+        p.mName = FirebaseHelper.sanitizeKey(p.mName);
+        return PlayerDbHelper.insertPlayer(getSqLiteDatabase(context), p);
     }
 
     public static Player getPlayer(Context context, String name) {
@@ -191,6 +198,11 @@ public class DbHelper extends SQLiteOpenHelper {
         return PlayerGamesDbHelper.getParticipationStatistics(getSqLiteDatabase(context), games, cache, upTo, name);
     }
 
+    public static ArrayList<Player> getPlayers(Context context) {
+        ArrayList<Player> players = PlayerDbHelper.getPlayers(getSqLiteDatabase(context));
+        return players;
+    }
+
     @NonNull
     public static ArrayList<Player> getPlayers(Context context, int gamesCount, boolean showArchived) {
         ArrayList<Player> players = PlayerDbHelper.getPlayers(getSqLiteDatabase(context), showArchived);
@@ -213,7 +225,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static void archivePlayer(Context context, String name, boolean archiveValue) {
-        PlayerDbHelper.archivePlayer(getSqLiteDatabase(context), name, archiveValue);
+        PlayerDbHelper.setPlayerArchive(getSqLiteDatabase(context), name, archiveValue);
     }
 
     public static void clearOldGameTeams(Context context) {
@@ -254,9 +266,10 @@ public class DbHelper extends SQLiteOpenHelper {
         return GameDbHelper.getGames(getSqLiteDatabase(context), name, another);
     }
 
-    public static void insertGame(Context context, int gameId, String gameDate, int score1, int score2) {
-        GameDbHelper.insertGameResults(getSqLiteDatabase(context), gameId, gameDate, score1, score2);
-        PlayerGamesDbHelper.setPlayerGameResult(getSqLiteDatabase(context), gameId, gameDate, TeamEnum.getResult(score1, score2));
+    public static void insertGame(Context context, Game game) {
+        GameDbHelper.insertGameResults(getSqLiteDatabase(context), game);
+        PlayerGamesDbHelper.setPlayerGameResult(getSqLiteDatabase(context),
+                game.gameId, game.dateString, game.winningTeam);
     }
 
     public static void updateGameDate(Context context, Game game, String gameDate) {

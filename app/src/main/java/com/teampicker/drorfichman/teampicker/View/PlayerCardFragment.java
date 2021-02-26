@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.FirebaseHelper;
 
 import java.util.Calendar;
 
@@ -95,7 +96,7 @@ public class PlayerCardFragment extends Fragment {
         boolean playerUpdated = false;
 
         String newGradeNumber = vGrade.getText().toString();
-        String newName = vName.getText().toString();
+        String newName = FirebaseHelper.sanitizeKey(vName.getText().toString());
 
         if (!TextUtils.isEmpty(newGradeNumber)) { // update grade
             int newGradeString = Integer.parseInt(newGradeNumber);

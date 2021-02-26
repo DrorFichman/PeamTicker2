@@ -135,7 +135,7 @@ public class StatisticsActivity extends AppCompatActivity implements Sorting.sor
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == ACTIVITY_RESULT_PLAYER && resultCode > 0) {
-            Log.d("TEAMS", "refresh statistics list on save");
+            Log.d("TEAMS", "localDataChanged statistics list on save");
             refreshPlayers();
         }
     }
@@ -155,7 +155,7 @@ public class StatisticsActivity extends AppCompatActivity implements Sorting.sor
     }
 
     @Override
-    public void refresh() {
+    public void sortingChanged() {
         refreshPlayers();
     }
 }

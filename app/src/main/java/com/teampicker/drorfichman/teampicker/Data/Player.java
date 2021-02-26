@@ -1,5 +1,6 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
+import com.google.firebase.database.Exclude;
 import com.teampicker.drorfichman.teampicker.Controller.Sort.Sortable;
 
 import java.io.Serializable;
@@ -21,15 +22,22 @@ public class Player extends Sortable implements Serializable, Comparable {
     public boolean isComing;
     public boolean archived;
 
-    public ArrayList<PlayerGameStat> results = new ArrayList<>();
-    public StatisticsData statistics;
     public boolean isGK;
     public boolean isDefender;
     public boolean isPlaymaker;
     public boolean isUnbreakable;
 
+    public Player() {
+    }
+
+    @Exclude
+    public ArrayList<PlayerGameStat> results = new ArrayList<>();
+    @Exclude
+    public StatisticsData statistics;
+
     private static final int RECENT_GAMES_COUNT = 10;
 
+    @Exclude
     public int gameResult;
 
     public Player(String name, int grade) {
@@ -42,6 +50,7 @@ public class Player extends Sortable implements Serializable, Comparable {
         return mName;
     }
 
+    @Exclude
     public int getSuggestedGrade() {
         if (results == null || results.size() < 5) {
             return mGrade;
@@ -53,6 +62,7 @@ public class Player extends Sortable implements Serializable, Comparable {
         }
     }
 
+    @Exclude
     public int getSuggestedGradeDiff() {
         return getSuggestedGrade() - mGrade;
     }
@@ -76,6 +86,7 @@ public class Player extends Sortable implements Serializable, Comparable {
         }
     }
 
+    @Exclude
     public int getSuccess() {
         int gameCount = 0;
         int value = 0;
@@ -94,6 +105,7 @@ public class Player extends Sortable implements Serializable, Comparable {
         return value;
     }
 
+    @Exclude
     public void setStatistics(StatisticsData statistics) {
         this.statistics = statistics;
     }
@@ -143,7 +155,7 @@ public class Player extends Sortable implements Serializable, Comparable {
         if (isGK) attributes += "GK,";
         if (isPlaymaker) attributes += "PM,";
         if (isDefender) attributes += "D,";
-        return attributes.substring(0,attributes.length()-1);
+        return attributes.substring(0, attributes.length() - 1);
     }
 
     public boolean isAttribute(PlayerAttribute attribute) {
@@ -165,7 +177,7 @@ public class Player extends Sortable implements Serializable, Comparable {
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof Player && this.mName != null) {
-            return this.mName.equals(((Player)obj).mName);
+            return this.mName.equals(((Player) obj).mName);
         }
         return super.equals(obj);
     }

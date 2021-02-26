@@ -174,7 +174,7 @@ public class PlayerParticipationFragment extends Fragment implements Sorting.sor
 
     //region sort
     @Override
-    public void refresh() {
+    public void sortingChanged() {
         refreshPlayers();
     }
     //endregion

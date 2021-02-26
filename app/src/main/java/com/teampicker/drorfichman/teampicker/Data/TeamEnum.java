@@ -18,9 +18,9 @@ public enum TeamEnum {
     private int drawable;
     private int drawableIndex;
 
-    TeamEnum(int index, int draw) {
-        drawableIndex = index;
-        drawable = draw;
+    TeamEnum(int drawableIndex, int drawableResource) {
+        this.drawableIndex = drawableIndex;
+        drawable = drawableResource;
     }
 
     @DrawableRes

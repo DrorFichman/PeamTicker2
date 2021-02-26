@@ -12,17 +12,23 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.teampicker.drorfichman.teampicker.Adapter.PlayerAdapter;
 import com.teampicker.drorfichman.teampicker.Controller.Sort.Sorting;
 import com.teampicker.drorfichman.teampicker.Controller.Sort.sortType;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.AuthHelper;
 import com.teampicker.drorfichman.teampicker.tools.DBSnapshotUtils;
 import com.teampicker.drorfichman.teampicker.tools.FileHelper;
+import com.teampicker.drorfichman.teampicker.tools.FirebaseHelper;
 import com.teampicker.drorfichman.teampicker.tools.PermissionTools;
 import com.teampicker.drorfichman.teampicker.tools.SnapshotHelper;
 
@@ -37,10 +43,11 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, Sorting.sortingCallbacks {
+        implements NavigationView.OnNavigationItemSelectedListener, Sorting.sortingCallbacks, FirebaseHelper.DataCallback {
 
     private static final int ACTIVITY_RESULT_PLAYER = 1;
     private static final int ACTIVITY_RESULT_IMPORT_FILE_SELECTED = 2;
+    private static final int ACTIVITY_RESULT_SIGN_IN = 3;
     private static final int RECENT_GAMES_COUNT = 10;
 
     private PlayerAdapter playersAdapter;
@@ -65,6 +72,8 @@ public class MainActivity extends AppCompatActivity
         setNavigationDrawer(toolbar);
 
         setPlayersList();
+
+        AuthHelper.requireLogin(this, ACTIVITY_RESULT_SIGN_IN);
     }
 
     private void setPlayersList() {
@@ -143,11 +152,28 @@ public class MainActivity extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Import data result
-        if (requestCode == ACTIVITY_RESULT_IMPORT_FILE_SELECTED &&
+        if (requestCode == ACTIVITY_RESULT_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            if (resultCode == RESULT_OK) {
+                // Successfully signed in
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                Log.i("AccountFB", "User success " + user);
+                Toast.makeText(this, "Welcome " + user.getEmail(), Toast.LENGTH_SHORT).show();
+                // TODO load user's data
+            } else {
+                // Sign in failed. Either user canceled the sign-in flow using the back button.
+                // Or response.getError().getErrorCode() with additional details
+                Log.w("AccountFB", "Failed login - " + response);
+                Toast.makeText(this, "Login failed", Toast.LENGTH_SHORT).show();
+                // TODO finish? enforce authentication (and connectivity)
+            }
+
+        } else if (requestCode == ACTIVITY_RESULT_IMPORT_FILE_SELECTED &&
                 resultCode == RESULT_OK &&
                 data != null && data.getData() != null) {
 
+            // Import data result
             SnapshotHelper.checkImportApproved(this, getImportListener(),
                     FileHelper.getPath(this, data.getData()));
         }
@@ -249,6 +275,14 @@ public class MainActivity extends AppCompatActivity
             startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == R.id.nav_getting_started) {
             showTutorialDialog();
+        } else if (id == R.id.nav_data_sync) {
+            FirebaseHelper.sync(this);
+        } else if (id == R.id.nav_data_pull) {
+            FirebaseHelper.pull(this, this);
+        } else if (id == R.id.nav_auth_logout) {
+            Log.i("AccountFB", "Log out user " + AuthHelper.getUser());
+            AuthUI.getInstance().signOut(this);
+            finish();
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -414,7 +448,12 @@ public class MainActivity extends AppCompatActivity
     //endregion
 
     @Override
-    public void refresh() {
+    public void localDataChanged() {
+        refreshPlayers();
+    }
+
+    @Override
+    public void sortingChanged() {
         refreshPlayers();
     }
 }

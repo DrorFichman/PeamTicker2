@@ -16,7 +16,7 @@ public class Sorting {
     private HashMap<View, sortType> headlines = new HashMap<>();
 
     public interface sortingCallbacks {
-        void refresh();
+        void sortingChanged();
     }
 
     private sortType sort;
@@ -123,7 +123,7 @@ public class Sorting {
                     sort = sorting;
                     setSorted((TextView) view);
                 }
-                handler.refresh();
+                handler.sortingChanged();
             });
         }
     }

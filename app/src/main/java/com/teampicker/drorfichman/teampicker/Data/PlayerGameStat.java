@@ -1,5 +1,6 @@
 package com.teampicker.drorfichman.teampicker.Data;
 
+import com.google.firebase.database.Exclude;
 import com.teampicker.drorfichman.teampicker.tools.DateHelper;
 
 import java.io.Serializable;
@@ -15,8 +16,9 @@ public class PlayerGameStat implements Serializable {
 
     public ResultEnum result;
     public int grade;
-    String gameDateString;
+    public String gameDateString;
 
+    @Exclude
     public Date getDate() {
         return DateHelper.getDate(this.gameDateString);
     }

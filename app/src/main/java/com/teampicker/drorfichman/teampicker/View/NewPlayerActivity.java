@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
+import com.teampicker.drorfichman.teampicker.tools.FirebaseHelper;
 
 import java.util.Calendar;
 
@@ -60,14 +60,14 @@ public class NewPlayerActivity extends AppCompatActivity {
                 return;
             }
 
-            String newName = vName.getText().toString().trim();
+            String newName = FirebaseHelper.sanitizeKey(vName.getText().toString().trim());
             if (TextUtils.isEmpty(newName)) {
                 Toast.makeText(getApplicationContext(), "Fill player's name", Toast.LENGTH_LONG).show();
                 return;
             }
 
             Player p = new Player(newName, newGrade);
-            boolean isCreated = createNewPlayer(p);
+            boolean isCreated = DbHelper.insertPlayer(NewPlayerActivity.this, p);
 
             if (isCreated) {
                 setPlayerBirthday(p);
@@ -108,10 +108,6 @@ public class NewPlayerActivity extends AppCompatActivity {
 
             DbHelper.updatePlayerBirth(getApplicationContext(), p.mName, newYear, newMonth);
         }
-    }
-
-    private boolean createNewPlayer(Player p) {
-        return DbHelper.insertPlayer(NewPlayerActivity.this, p.mName, p.mGrade);
     }
 
     @Override

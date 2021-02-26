@@ -162,7 +162,7 @@ public class PlayerDbHelper {
         updatePlayer(db, name, values);
     }
 
-    public static void archivePlayer(SQLiteDatabase db, String name, boolean archive) {
+    public static void setPlayerArchive(SQLiteDatabase db, String name, boolean archive) {
         ContentValues values = new ContentValues();
         values.put(PlayerContract.PlayerEntry.ARCHIVED, archive ? 1 : 0);
 
@@ -170,10 +170,37 @@ public class PlayerDbHelper {
     }
 
     @NonNull
+    public static ArrayList<Player> getPlayers(SQLiteDatabase db) {
+
+        String[] projection = {
+                PlayerContract.PlayerEntry.ID,
+                PlayerContract.PlayerEntry.NAME,
+                PlayerContract.PlayerEntry.GRADE,
+                PlayerContract.PlayerEntry.BIRTH_YEAR,
+                PlayerContract.PlayerEntry.BIRTH_MONTH,
+                PlayerContract.PlayerEntry.IS_COMING,
+                PlayerContract.PlayerEntry.ARCHIVED,
+                PlayerContract.PlayerEntry.ATTRIBUTES
+        };
+
+        String sortOrder = PlayerContract.PlayerEntry.NAME + " ASC";
+
+        Cursor c = db.query(
+                PlayerContract.PlayerEntry.TABLE_NAME,    // The table to query
+                projection,                               // The columns to return
+                null,                                    // where
+                null,                        // where values
+                null,                            // don't group the rows
+                null,                             // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+        return getPlayers(c);
+    }
+
+    @NonNull
     public static ArrayList<Player> getPlayers(SQLiteDatabase db, boolean showArchived) {
 
-        // Define a projection that specifies which columns from the database
-        // you will actually use after this query.
         String[] projection = {
                 PlayerContract.PlayerEntry.ID,
                 PlayerContract.PlayerEntry.NAME,
@@ -203,10 +230,10 @@ public class PlayerDbHelper {
         return getPlayers(c);
     }
 
-    public static boolean insertPlayer(SQLiteDatabase db, String name, int grade) {
+    public static boolean insertPlayer(SQLiteDatabase db, Player p) {
 
         String where = PlayerContract.PlayerEntry.NAME + " = ? ";
-        String[] whereArgs = new String[]{name};
+        String[] whereArgs = new String[]{p.mName};
         String[] projection = {
                 PlayerContract.PlayerEntry.ID};
         Cursor c = db.query(
@@ -219,7 +246,7 @@ public class PlayerDbHelper {
                 null                                 // The sort order
         );
         int count = c.getCount();
-        Log.d("DB", "Found " + count + " players with " + name);
+        Log.d("DB", "Found " + count + " players with " + p.mName);
         c.close();
         if (count > 0) {
             return false;
@@ -227,8 +254,13 @@ public class PlayerDbHelper {
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(PlayerContract.PlayerEntry.NAME, name);
-        values.put(PlayerContract.PlayerEntry.GRADE, grade);
+        values.put(PlayerContract.PlayerEntry.NAME, p.mName);
+        values.put(PlayerContract.PlayerEntry.GRADE, p.mGrade);
+        values.put(PlayerContract.PlayerEntry.IS_COMING, p.isComing ? 1 : 0);
+        if (p.mBirthYear > 0) values.put(PlayerContract.PlayerEntry.BIRTH_YEAR, p.mBirthYear);
+        if (p.mBirthMonth > 0) values.put(PlayerContract.PlayerEntry.BIRTH_MONTH, p.mBirthMonth);
+        values.put(PlayerContract.PlayerEntry.ATTRIBUTES, p.getAttributes());
+        values.put(PlayerContract.PlayerEntry.ARCHIVED, p.archived ? 1 : 0);
 
         // Insert the new row, returning the primary key value of the new row
         db.insert(PlayerContract.PlayerEntry.TABLE_NAME,
