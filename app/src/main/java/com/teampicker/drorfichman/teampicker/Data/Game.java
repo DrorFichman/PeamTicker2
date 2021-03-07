@@ -2,6 +2,7 @@ package com.teampicker.drorfichman.teampicker.Data;
 
 import android.content.Context;
 
+import com.google.firebase.database.Exclude;
 import com.teampicker.drorfichman.teampicker.tools.DateHelper;
 
 import java.io.Serializable;
@@ -19,6 +20,10 @@ public class Game implements Serializable {
     public int team2Score;
 
     public ResultEnum playerResult;
+
+    public Game() {}
+
+    @Exclude
     public int playerGrade;
 
     public Game(int gameId, String date, int score1, int score2) {
@@ -37,6 +42,7 @@ public class Game implements Serializable {
         return DateHelper.getDisplayDate(ctx, this.dateString);
     }
 
+    @Exclude
     public Date getDate() {
         return DateHelper.getDate(this.dateString);
     }

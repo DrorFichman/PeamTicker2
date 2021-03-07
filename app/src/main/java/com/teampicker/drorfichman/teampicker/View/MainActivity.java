@@ -276,9 +276,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_getting_started) {
             showTutorialDialog();
         } else if (id == R.id.nav_data_sync) {
-            FirebaseHelper.sync(this);
+            FirebaseHelper.syncToCloud(this);
         } else if (id == R.id.nav_data_pull) {
-            FirebaseHelper.pull(this, this);
+            FirebaseHelper.pullFromCloud(this, this);
         } else if (id == R.id.nav_auth_logout) {
             Log.i("AccountFB", "Log out user " + AuthHelper.getUser());
             AuthUI.getInstance().signOut(this);
@@ -448,7 +448,7 @@ public class MainActivity extends AppCompatActivity
     //endregion
 
     @Override
-    public void localDataChanged() {
+    public void DataChanged() {
         refreshPlayers();
     }
 
