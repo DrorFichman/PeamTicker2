@@ -9,9 +9,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.teampicker.drorfichman.teampicker.Data.AccountData;
 import com.teampicker.drorfichman.teampicker.Data.DbHelper;
 import com.teampicker.drorfichman.teampicker.Data.Game;
 import com.teampicker.drorfichman.teampicker.Data.Player;
+import com.teampicker.drorfichman.teampicker.Data.PlayerGame;
+import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 
 import java.util.ArrayList;
 
@@ -24,7 +27,8 @@ public class FirebaseHelper {
     private enum Node {
         players,
         games,
-        playersGames
+        playersGames,
+        account
     }
 
     private static DatabaseReference games() {
@@ -33,6 +37,10 @@ public class FirebaseHelper {
 
     private static DatabaseReference playersGames() {
         return getNode(Node.playersGames);
+    }
+
+    private static DatabaseReference account() {
+        return getNode(Node.account);
     }
 
     private static DatabaseReference players() {
@@ -54,6 +62,8 @@ public class FirebaseHelper {
         return key.replaceAll("\\.", "");
     }
 
+    //region Sync
+
     public static void syncToCloud(Context ctx) {
         syncPlayersToCloud(ctx, () ->
                 syncGamesToCloud(ctx, () ->
@@ -61,8 +71,74 @@ public class FirebaseHelper {
                                 Toast.makeText(ctx, "Sync completed", Toast.LENGTH_LONG).show())));
     }
 
+    private static void syncPlayersToCloud(Context ctx, DataCallback handler) {
+        players().removeValue((error, ref) -> {
+            Log.i("syncPlayersToCloud", "Deleted error - " + error);
+            if (error == null) {
+
+                ArrayList<Player> players = DbHelper.getPlayers(ctx);
+                for (Player p : players) {
+                    storePlayer(p);
+                }
+
+                Log.i("syncPlayersToCloud", "Sync players completed");
+                handler.DataChanged();
+
+            } else {
+                Log.i("syncPlayersToCloud", "Sync failed " + error);
+                Toast.makeText(ctx, "Failed to sync players data " + error, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private static void syncGamesToCloud(Context ctx, DataCallback handler) {
+        games().removeValue((error, ref) -> {
+            Log.i("syncGamesToCloud", "Deleted error - " + error);
+            if (error == null) {
+
+                ArrayList<Game> games = DbHelper.getGames(ctx);
+                for (Game g : games) {
+                    ArrayList<Player> team1 = DbHelper.getCurrTeam(ctx, g.gameId, TeamEnum.Team1, -1);
+                    ArrayList<Player> team2 = DbHelper.getCurrTeam(ctx, g.gameId, TeamEnum.Team2, -1);
+                    g.setTeams(team1, team2);
+                    storeGame(g);
+                }
+
+                Log.i("syncGamesToCloud", "Sync games completed");
+                handler.DataChanged();
+
+            } else {
+                Log.i("syncGamesToCloud", "Sync failed " + error);
+                Toast.makeText(ctx, "Failed to sync games data " + error, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private static void syncPlayersGamesToCloud(Context ctx, DataCallback handler) {
+        playersGames().removeValue((error, ref) -> {
+            Log.i("syncPlayersGamesToCloud", "Deleted, error - " + error);
+            if (error == null) {
+                ArrayList<PlayerGame> pgs = DbHelper.getPlayersGames(ctx);
+                for (PlayerGame pg : pgs) {
+                    storePlayerGame(pg);
+                }
+                Log.i("syncPlayersGamesToCloud", "Sync players games completed");
+                handler.DataChanged();
+            } else {
+                Log.i("syncPlayersGamesToCloud", "Sync failed " + error);
+                Toast.makeText(ctx, "Failed to sync players games data " + error, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    //endregion
+
+    //region Pull
 
     public static void pullFromCloud(Context ctx, DataCallback handler) {
+        DbHelper.deleteTableContents(ctx);
+        Log.i("pullFromCloud", "Delete local DB");
+
         pullPlayersFromCloud(ctx, () ->
                 pullGamesFromCloud(ctx, () ->
                         pullPlayersGamesFromCloud(ctx, () -> {
@@ -75,9 +151,6 @@ public class FirebaseHelper {
         ValueEventListener playerListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
-                Log.i("pullPlayersFromCloud", "Delete local players DB");
-                DbHelper.deletePlayersContents(ctx);
 
                 for (DataSnapshot snapshotNode : dataSnapshot.getChildren()) {
                     Player p = snapshotNode.getValue(Player.class);
@@ -98,54 +171,19 @@ public class FirebaseHelper {
         players().addListenerForSingleValueEvent(playerListener);
     }
 
-    private static void syncPlayersToCloud(Context ctx, DataCallback handler) {
-        players().removeValue((error, ref) -> {
-            Log.i("syncPlayersToCloud", "Deleted " + error);
-            if (error == null) {
-                ArrayList<Player> players = DbHelper.getPlayers(ctx);
-                for (Player p : players) {
-                    storePlayer(p);
-                }
-                Log.i("syncPlayersToCloud", "Sync completed");
-                handler.DataChanged();
-            } else {
-                Log.i("syncPlayersToCloud", "Sync failed " + error);
-                Toast.makeText(ctx, "Failed to sync players data " + error, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private static void syncGamesToCloud(Context ctx, DataCallback handler) {
-        games().removeValue((error, ref) -> {
-            Log.i("syncGamesToCloud", "Deleted " + error);
-            if (error == null) {
-                ArrayList<Game> games = DbHelper.getGames(ctx);
-                for (Game g : games) {
-                    storeGame(g);
-                }
-                Log.i("syncGamesToCloud", "Sync completed");
-                handler.DataChanged();
-            } else {
-                Log.i("syncGamesToCloud", "Sync failed " + error);
-                Toast.makeText(ctx, "Failed to sync games data " + error, Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
     private static void pullGamesFromCloud(Context ctx, DataCallback handler) {
         ValueEventListener gamesListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                Log.i("pullGamesFromCloud", "Delete local players DB");
-                DbHelper.deleteGamesContents(ctx);
-
+                int gameCount = 0;
                 for (DataSnapshot snapshotNode : dataSnapshot.getChildren()) {
                     Game g = snapshotNode.getValue(Game.class);
                     DbHelper.insertGame(ctx, g);
+                    gameCount++;
                 }
 
-                Log.i("pullGamesFromCloud", "Local games DB updated from cloud");
+                Log.i("pullGamesFromCloud", "Local games DB updated from cloud - " + gameCount);
                 handler.DataChanged();
             }
 
@@ -159,12 +197,35 @@ public class FirebaseHelper {
     }
 
     private static void pullPlayersGamesFromCloud(Context ctx, DataCallback handler) {
+        ArrayList<Player> players = DbHelper.getPlayers(ctx);
+        for (Player p : players) {
+            ValueEventListener playersGamesListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    int gameCount = 0;
+                    for (DataSnapshot snapshotNode : dataSnapshot.getChildren()) {
+                        PlayerGame pg = snapshotNode.getValue(PlayerGame.class);
+                        DbHelper.insertPlayerGame(ctx, pg);
+                        gameCount++;
+                    }
+
+                    Log.i("pullPlayersGamesFromCloud",  "Local players games DB updated from cloud - " + p.mName + " - " + gameCount);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("pullPlayersGamesFromCloud", "onCancelled", databaseError.toException());
+                }
+            };
+
+            playersGames().child(p.mName).addListenerForSingleValueEvent(playersGamesListener);
+        }
+
         handler.DataChanged();
     }
 
-    private static void syncPlayersGamesToCloud(Context ctx, DataCallback handler) {
-        handler.DataChanged();
-    }
+    //endregion
 
     private static void storePlayer(Player p) {
         players().child(sanitizeKey(p.name())).setValue(p);
@@ -173,6 +234,13 @@ public class FirebaseHelper {
     private static void storeGame(Game g) {
         games().child(String.valueOf(g.gameId)).setValue(g);
     }
+
+    private static void storePlayerGame(PlayerGame pg) {
+        playersGames().child(sanitizeKey(pg.playerName)).child(String.valueOf(pg.gameId)).setValue(pg);
+    }
+
+    public static void storeAccountData() {
+        account().setValue(new AccountData(AuthHelper.getUser()));
     }
 }
 

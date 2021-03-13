@@ -8,15 +8,15 @@ import java.util.Date;
 
 public class PlayerGameStat implements Serializable {
 
+    public ResultEnum result;
+    public int grade;
+    public String gameDateString;
+
     public PlayerGameStat(ResultEnum res, int currGrade, String date) {
         result = res;
         grade = currGrade;
         gameDateString = date;
     }
-
-    public ResultEnum result;
-    public int grade;
-    public String gameDateString;
 
     @Exclude
     public Date getDate() {

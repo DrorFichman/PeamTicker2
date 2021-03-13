@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.tools.DateHelper;
+import com.teampicker.drorfichman.teampicker.tools.FirebaseHelper;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -47,16 +48,20 @@ public class PlayerGamesDbHelper {
         return SQL_CREATE_PLAYERS_GAMES;
     }
 
-    public static void addPlayerGame(SQLiteDatabase db, Player player, int currGame, TeamEnum team) {
+    public static void addPlayerGame(SQLiteDatabase db, PlayerGame pg) {
 
         ContentValues values = new ContentValues();
-        values.put(PlayerContract.PlayerGameEntry.GAME, currGame);
+        values.put(PlayerContract.PlayerGameEntry.GAME, pg.gameId);
         values.put(PlayerContract.PlayerGameEntry.DATE, DateHelper.getNow());
-        values.put(PlayerContract.PlayerGameEntry.NAME, player.mName);
-        values.put(PlayerContract.PlayerGameEntry.PLAYER_GRADE, player.mGrade);
-        values.put(PlayerContract.PlayerGameEntry.TEAM, team.ordinal());
-        values.put(PlayerContract.PlayerGameEntry.PLAYER_AGE, player.getAge());
-        values.put(PlayerContract.PlayerGameEntry.ATTRIBUTES, player.getAttributes());
+        values.put(PlayerContract.PlayerGameEntry.NAME, pg.playerName);
+        values.put(PlayerContract.PlayerGameEntry.PLAYER_GRADE, pg.playerGrade);
+        values.put(PlayerContract.PlayerGameEntry.TEAM, pg.team.ordinal());
+        values.put(PlayerContract.PlayerGameEntry.PLAYER_AGE, pg.playerAge);
+
+        if (pg.result != null) {
+            values.put(PlayerContract.PlayerGameEntry.PLAYER_RESULT, pg.result.getValue());
+            values.put(PlayerContract.PlayerGameEntry.DID_WIN, pg.result == ResultEnum.Win ? 1 : 0);
+        }
 
         // Insert the new row, returning the primary key value of the new row
         db.insert(PlayerContract.PlayerGameEntry.TABLE_NAME,
@@ -135,6 +140,59 @@ public class PlayerGamesDbHelper {
         Log.d("teams", "deleted games players " + n);
     }
 
+    public static ArrayList<PlayerGame> getPlayersGames(SQLiteDatabase db) {
+
+        ArrayList<PlayerGame> playersGames = new ArrayList<>();
+
+        String[] projection = {
+                PlayerContract.PlayerGameEntry.NAME,
+                PlayerContract.PlayerGameEntry.GAME,
+                PlayerContract.PlayerGameEntry.DATE,
+                PlayerContract.PlayerGameEntry.PLAYER_GRADE,
+                PlayerContract.PlayerGameEntry.PLAYER_AGE,
+                PlayerContract.PlayerGameEntry.TEAM,
+                PlayerContract.PlayerGameEntry.PLAYER_RESULT,
+                PlayerContract.PlayerGameEntry.DID_WIN
+        };
+
+        String sortOrder = "date(" + PlayerContract.PlayerGameEntry.DATE + ") DESC";
+
+        Cursor c = db.query(
+                PlayerContract.PlayerGameEntry.TABLE_NAME,  // The table to query
+                projection,                               // The columns to return
+                null,                                // The columns for the WHERE clause
+                null,                            // The values for the WHERE clause
+                null,                                     // don't group the rows
+                null,                                     // don't filter by row groups
+                sortOrder                                 // The sort order
+        );
+
+        try {
+            if (c.moveToFirst()) {
+                do {
+                    PlayerGame g = new PlayerGame();
+                    g.playerGrade = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_GRADE));
+                    g.date = c.getString(c.getColumnIndex(PlayerContract.PlayerGameEntry.DATE));
+                    g.playerAge = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_AGE));
+                    g.playerName = FirebaseHelper.sanitizeKey(c.getString(c.getColumnIndex(PlayerContract.PlayerGameEntry.NAME)));
+                    g.gameId = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.GAME));
+                    g.didWin = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.DID_WIN));
+
+                    int res = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT));
+                    g.result = ResultEnum.getResultFromOrdinal(res);
+                    int team = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.TEAM));
+                    g.team = TeamEnum.getResultFromOrdinal(team);
+
+                    playersGames.add(g);
+                } while (c.moveToNext());
+            }
+        } finally {
+            c.close();
+        }
+
+        return playersGames;
+    }
+
     public static ArrayList<PlayerGameStat> getPlayerLastGames(SQLiteDatabase db, Player player, int countLastGames) {
 
         ArrayList<PlayerGameStat> results = new ArrayList<>();
@@ -194,13 +252,13 @@ public class PlayerGamesDbHelper {
         updateTeamGameResult(db, gameId, date, TeamEnum.Team2, TeamEnum.getTeam2Result(winningTeam));
     }
 
-    static class PlayerGame {
+    static class PlayerGameResult {
         int team;
         ResultEnum result;
-        PlayerGame(int t, ResultEnum r) {team = t; result = r;}
+        PlayerGameResult(int t, ResultEnum r) {team = t; result = r;}
     }
 
-    public static PlayerGame getPlayerResult(SQLiteDatabase db, int gameId, String name) {
+    public static PlayerGameResult getPlayerResult(SQLiteDatabase db, int gameId, String name) {
 
         String[] projection = {
                 PlayerContract.PlayerGameEntry.PLAYER_RESULT,
@@ -226,7 +284,7 @@ public class PlayerGamesDbHelper {
                 int team = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.TEAM));
                 int res = c.getInt(c.getColumnIndex(PlayerContract.PlayerGameEntry.PLAYER_RESULT));
                 ResultEnum r = ResultEnum.getResultFromOrdinal(res);
-                PlayerGame pg = new PlayerGame(team, r);
+                PlayerGameResult pg = new PlayerGameResult(team, r);
                 return pg;
             }
         } finally {

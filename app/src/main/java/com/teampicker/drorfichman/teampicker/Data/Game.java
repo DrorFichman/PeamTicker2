@@ -6,6 +6,7 @@ import com.google.firebase.database.Exclude;
 import com.teampicker.drorfichman.teampicker.tools.DateHelper;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -20,8 +21,15 @@ public class Game implements Serializable {
     public int team2Score;
 
     public ResultEnum playerResult;
+    public ArrayList<String> team1 = new ArrayList<>();
+    public ArrayList<String> team2 = new ArrayList<>();
 
     public Game() {}
+
+    public void setTeams(ArrayList<Player> t1,ArrayList<Player> t2) {
+        t1.forEach(p -> team1.add(p.mName));
+        t2.forEach(p -> team2.add(p.mName));
+    }
 
     @Exclude
     public int playerGrade;
@@ -34,6 +42,7 @@ public class Game implements Serializable {
         this.winningTeam = TeamEnum.getResult(this.team1Score, this.team2Score);
     }
 
+    @Exclude
     public String getScore() {
         return team1Score + " - " + team2Score;
     }

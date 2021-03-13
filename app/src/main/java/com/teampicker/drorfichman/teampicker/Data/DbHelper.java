@@ -37,10 +37,12 @@ public class DbHelper extends SQLiteOpenHelper {
         int currGame = DbHelper.getMaxGame(ctx) + 1;
 
         for (Player a : firstTeam) {
-            DbHelper.insertPlayerGame(ctx, a, currGame, TeamEnum.Team1);
+            PlayerGame pg = new PlayerGame(currGame, a.mName, a.mGrade, TeamEnum.Team1, a.getAge());
+            DbHelper.insertPlayerGame(ctx, pg);
         }
         for (Player b : secondTeam) {
-            DbHelper.insertPlayerGame(ctx, b, currGame, TeamEnum.Team2);
+            PlayerGame pg = new PlayerGame(currGame, b.mName, b.mGrade, TeamEnum.Team2, b.getAge());
+            DbHelper.insertPlayerGame(ctx, pg);
         }
     }
 
@@ -65,7 +67,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
         addColumns(db);
 
-        // TODO sanitize player names
+        // TODO sanitize player names for firebase, not mandatory - sanitized when synced to cloud
     }
 
     /*
@@ -127,17 +129,9 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static void deleteTableContents(Context context) {
-        getSqLiteDatabase(context).execSQL(GameDbHelper.SQL_DROP_GAMES_TABLE);
         getSqLiteDatabase(context).execSQL(PlayerDbHelper.SQL_DROP_PLAYER_TABLE);
+        getSqLiteDatabase(context).execSQL(GameDbHelper.SQL_DROP_GAMES_TABLE);
         getSqLiteDatabase(context).execSQL(PlayerGamesDbHelper.SQL_DROP_PLAYER_GAMES_TABLE);
-    }
-
-    public static void deletePlayersContents(Context context) {
-        getSqLiteDatabase(context).execSQL(PlayerDbHelper.SQL_DROP_PLAYER_TABLE);
-    }
-
-    public static void deleteGamesContents(Context context) {
-        getSqLiteDatabase(context).execSQL(GameDbHelper.SQL_DROP_GAMES_TABLE);
     }
 
     public static void setPlayerComing(Context context, ArrayList<Player> team) {
@@ -236,8 +230,13 @@ public class DbHelper extends SQLiteOpenHelper {
         PlayerGamesDbHelper.clearOldGameTeams(getSqLiteDatabase(context));
     }
 
-    public static void insertPlayerGame(Context context, Player player, int currGame, TeamEnum team) {
-        PlayerGamesDbHelper.addPlayerGame(getSqLiteDatabase(context), player, currGame, team);
+    public static void insertPlayerGame(Context context, PlayerGame pg) {
+        pg.playerName = FirebaseHelper.sanitizeKey(pg.playerName);
+        PlayerGamesDbHelper.addPlayerGame(getSqLiteDatabase(context), pg);
+    }
+
+    public static ArrayList<PlayerGame> getPlayersGames(Context ctx) {
+        return PlayerGamesDbHelper.getPlayersGames(getSqLiteDatabase(ctx));
     }
 
     public static ArrayList<Player> getCurrTeam(Context context, int currGame, TeamEnum team, int countLastGames) {
@@ -286,7 +285,7 @@ public class DbHelper extends SQLiteOpenHelper {
     }
 
     public static void modifyPlayerResult(Context context, int gameId, String name) {
-        PlayerGamesDbHelper.PlayerGame pg = PlayerGamesDbHelper.getPlayerResult(getSqLiteDatabase(context), gameId, name);
+        PlayerGamesDbHelper.PlayerGameResult pg = PlayerGamesDbHelper.getPlayerResult(getSqLiteDatabase(context), gameId, name);
 
         ResultEnum newRes = ResultEnum.Missed;
         int newTeam = -1;
@@ -295,7 +294,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
             // TODO move this option to another place // TODO check with Uri
             Game game = GameDbHelper.getGame(getSqLiteDatabase(context), gameId);
-            newRes = TeamEnum.getTeamResultInGame(game, pg.team);
+            newRes = TeamEnum.getTeamResultInGame(game.winningTeam, pg.team);
 
         } else {
 

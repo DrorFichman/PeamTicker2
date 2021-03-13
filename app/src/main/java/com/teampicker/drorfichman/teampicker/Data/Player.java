@@ -147,6 +147,7 @@ public class Player extends Sortable implements Serializable, Comparable {
         return isGK || isPlaymaker || isDefender || isUnbreakable;
     }
 
+    @Exclude
     public String getAttributes() {
         if (!hasAttributes()) return "";
 

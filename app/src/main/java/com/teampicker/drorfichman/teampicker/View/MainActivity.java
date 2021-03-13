@@ -160,7 +160,9 @@ public class MainActivity extends AppCompatActivity
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 Log.i("AccountFB", "User success " + user);
                 Toast.makeText(this, "Welcome " + user.getEmail(), Toast.LENGTH_SHORT).show();
-                // TODO load user's data
+
+                FirebaseHelper.storeAccountData();
+
             } else {
                 // Sign in failed. Either user canceled the sign-in flow using the back button.
                 // Or response.getError().getErrorCode() with additional details

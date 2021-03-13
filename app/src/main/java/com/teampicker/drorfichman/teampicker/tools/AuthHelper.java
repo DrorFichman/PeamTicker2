@@ -30,6 +30,7 @@ public class AuthHelper {
         } else {
             Log.i("AccountFB", "User found " + user.getEmail() + " - " + user.getUid());
             Toast.makeText(ctx, "Welcome " + user.getEmail(), Toast.LENGTH_SHORT).show();
+            FirebaseHelper.storeAccountData();
         }
     }
 

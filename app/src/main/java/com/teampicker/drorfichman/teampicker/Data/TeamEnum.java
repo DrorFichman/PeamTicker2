@@ -23,6 +23,15 @@ public enum TeamEnum {
         drawable = drawableResource;
     }
 
+    public static TeamEnum getResultFromOrdinal(int res) {
+        for (TeamEnum r : TeamEnum.values()) {
+            if (r.drawableIndex == res) {
+                return r;
+            }
+        }
+        return null;
+    }
+
     @DrawableRes
     public int getDrawable(Context ctx) {
         if (drawableIndex == 0 || drawableIndex == 1) {
@@ -67,13 +76,13 @@ public enum TeamEnum {
         }
     }
 
-    public static ResultEnum getTeamResultInGame(Game game, int team) {
-        if (game.winningTeam == Tie) {
+    public static ResultEnum getTeamResultInGame(TeamEnum winningTeam, int playerTeam) {
+        if (winningTeam == Tie) {
             return ResultEnum.Tie;
-        } else if (game.winningTeam == Team1) {
-            return team == Team1.ordinal() ? ResultEnum.Win : ResultEnum.Lose;
-        } else if (game.winningTeam == Team2) {
-            return team == Team2.ordinal() ? ResultEnum.Win : ResultEnum.Lose;
+        } else if (winningTeam == Team1) {
+            return playerTeam == Team1.ordinal() ? ResultEnum.Win : ResultEnum.Lose;
+        } else if (winningTeam == Team2) {
+            return playerTeam == Team2.ordinal() ? ResultEnum.Win : ResultEnum.Lose;
         }
         return ResultEnum.Missed;
     }
