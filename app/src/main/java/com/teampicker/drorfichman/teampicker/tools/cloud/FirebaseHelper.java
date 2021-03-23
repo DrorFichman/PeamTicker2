@@ -1,4 +1,4 @@
-package com.teampicker.drorfichman.teampicker.tools;
+package com.teampicker.drorfichman.teampicker.tools.cloud;
 
 import android.content.Context;
 import android.util.Log;
@@ -15,13 +15,27 @@ import com.teampicker.drorfichman.teampicker.Data.Game;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerGame;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
+import com.teampicker.drorfichman.teampicker.tools.AuthHelper;
 
 import java.util.ArrayList;
 
-public class FirebaseHelper {
+public class FirebaseHelper implements CloudSync {
 
-    public interface DataCallback {
-        void DataChanged();
+    private static CloudSync helper;
+
+    public static CloudSync getInstance() {
+        if (AuthHelper.getUser() != null) {
+            return getHelper();
+        } else {
+            return new UnimplementedCloud();
+        }
+    }
+
+    private static CloudSync getHelper() {
+        if (helper == null) {
+            helper = new FirebaseHelper();
+        }
+        return helper;
     }
 
     private enum Node {
@@ -64,11 +78,15 @@ public class FirebaseHelper {
 
     //region Sync
 
-    public static void syncToCloud(Context ctx) {
+    @Override
+    public void syncToCloud(Context ctx, SyncProgress progress) {
+        progress.showSyncStatus("Syncing...");
         syncPlayersToCloud(ctx, () ->
                 syncGamesToCloud(ctx, () ->
-                        syncPlayersGamesToCloud(ctx, () ->
-                                Toast.makeText(ctx, "Sync completed", Toast.LENGTH_LONG).show())));
+                        syncPlayersGamesToCloud(ctx, () -> {
+                            progress.showSyncStatus(null);
+                            Toast.makeText(ctx, "Sync completed", Toast.LENGTH_LONG).show();
+                        })));
     }
 
     private static void syncPlayersToCloud(Context ctx, DataCallback handler) {
@@ -97,6 +115,7 @@ public class FirebaseHelper {
             if (error == null) {
 
                 ArrayList<Game> games = DbHelper.getGames(ctx);
+
                 for (Game g : games) {
                     ArrayList<Player> team1 = DbHelper.getCurrTeam(ctx, g.gameId, TeamEnum.Team1, -1);
                     ArrayList<Player> team2 = DbHelper.getCurrTeam(ctx, g.gameId, TeamEnum.Team2, -1);
@@ -135,15 +154,17 @@ public class FirebaseHelper {
 
     //region Pull
 
-    public static void pullFromCloud(Context ctx, DataCallback handler) {
+    @Override
+    public void pullFromCloud(Context ctx, SyncProgress handler) {
         DbHelper.deleteTableContents(ctx);
         Log.i("pullFromCloud", "Delete local DB");
 
+        handler.showSyncStatus("Pulling...");
         pullPlayersFromCloud(ctx, () ->
                 pullGamesFromCloud(ctx, () ->
                         pullPlayersGamesFromCloud(ctx, () -> {
                             Toast.makeText(ctx, "Pull completed", Toast.LENGTH_LONG).show();
-                            handler.DataChanged();
+                            handler.showSyncStatus(null);
                         })));
     }
 
@@ -210,7 +231,7 @@ public class FirebaseHelper {
                         gameCount++;
                     }
 
-                    Log.i("pullPlayersGamesFromCloud",  "Local players games DB updated from cloud - " + p.mName + " - " + gameCount);
+                    Log.i("pullPlayersGamesFromCloud", "Local players games DB updated from cloud - " + p.mName + " - " + gameCount);
                 }
 
                 @Override
@@ -239,7 +260,8 @@ public class FirebaseHelper {
         playersGames().child(sanitizeKey(pg.playerName)).child(String.valueOf(pg.gameId)).setValue(pg);
     }
 
-    public static void storeAccountData() {
+    @Override
+    public void storeAccountData() {
         account().setValue(new AccountData(AuthHelper.getUser()));
     }
 }

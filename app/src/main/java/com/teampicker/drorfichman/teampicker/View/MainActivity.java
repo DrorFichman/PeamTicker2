@@ -8,8 +8,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
@@ -28,9 +30,11 @@ import com.teampicker.drorfichman.teampicker.R;
 import com.teampicker.drorfichman.teampicker.tools.AuthHelper;
 import com.teampicker.drorfichman.teampicker.tools.DBSnapshotUtils;
 import com.teampicker.drorfichman.teampicker.tools.FileHelper;
-import com.teampicker.drorfichman.teampicker.tools.FirebaseHelper;
+import com.teampicker.drorfichman.teampicker.tools.cloud.DataCallback;
+import com.teampicker.drorfichman.teampicker.tools.cloud.FirebaseHelper;
 import com.teampicker.drorfichman.teampicker.tools.PermissionTools;
 import com.teampicker.drorfichman.teampicker.tools.SnapshotHelper;
+import com.teampicker.drorfichman.teampicker.tools.cloud.SyncProgress;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -43,7 +47,8 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, Sorting.sortingCallbacks, FirebaseHelper.DataCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, Sorting.sortingCallbacks,
+        SyncProgress {
 
     private static final int ACTIVITY_RESULT_PLAYER = 1;
     private static final int ACTIVITY_RESULT_IMPORT_FILE_SELECTED = 2;
@@ -54,9 +59,12 @@ public class MainActivity extends AppCompatActivity
 
     FloatingActionsMenu fab;
 
+    View syncInProgress;
+    TextView syncProgressStatus;
+
     private boolean showArchivedPlayers = false;
 
-    Sorting sorting = new Sorting(this, sortType.grade);
+    Sorting sorting = new Sorting(this::sortingChanged, sortType.grade);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +80,9 @@ public class MainActivity extends AppCompatActivity
         setNavigationDrawer(toolbar);
 
         setPlayersList();
+
+        syncInProgress = findViewById(R.id.sync_progress);
+        syncProgressStatus = findViewById(R.id.sync_progress_status);
 
         AuthHelper.requireLogin(this, ACTIVITY_RESULT_SIGN_IN);
     }
@@ -161,7 +172,7 @@ public class MainActivity extends AppCompatActivity
                 Log.i("AccountFB", "User success " + user);
                 Toast.makeText(this, "Welcome " + user.getEmail(), Toast.LENGTH_SHORT).show();
 
-                FirebaseHelper.storeAccountData();
+                FirebaseHelper.getInstance().storeAccountData();
 
             } else {
                 // Sign in failed. Either user canceled the sign-in flow using the back button.
@@ -278,9 +289,9 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_getting_started) {
             showTutorialDialog();
         } else if (id == R.id.nav_data_sync) {
-            FirebaseHelper.syncToCloud(this);
+            FirebaseHelper.getInstance().syncToCloud(this, this::showSyncStatus);
         } else if (id == R.id.nav_data_pull) {
-            FirebaseHelper.pullFromCloud(this, this);
+            FirebaseHelper.getInstance().pullFromCloud(this, this::showSyncStatus);
         } else if (id == R.id.nav_auth_logout) {
             Log.i("AccountFB", "Log out user " + AuthHelper.getUser());
             AuthUI.getInstance().signOut(this);
@@ -313,6 +324,18 @@ public class MainActivity extends AppCompatActivity
             setTitle("Archived players");
         } else {
             setTitle(getString(R.string.main_title, DbHelper.getComingPlayersCount(this)));
+        }
+    }
+
+    @Override
+    public void showSyncStatus(String status) {
+        if (status != null) {
+            syncInProgress.setVisibility(View.VISIBLE);
+            syncProgressStatus.setText(status);
+        } else {
+            syncInProgress.setVisibility(View.GONE);
+            syncProgressStatus.setText("");
+            refreshPlayers();
         }
     }
 
@@ -448,11 +471,6 @@ public class MainActivity extends AppCompatActivity
         }, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
     //endregion
-
-    @Override
-    public void DataChanged() {
-        refreshPlayers();
-    }
 
     @Override
     public void sortingChanged() {

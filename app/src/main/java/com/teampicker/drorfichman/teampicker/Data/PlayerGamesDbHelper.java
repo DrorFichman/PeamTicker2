@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.teampicker.drorfichman.teampicker.tools.DateHelper;
-import com.teampicker.drorfichman.teampicker.tools.FirebaseHelper;
+import com.teampicker.drorfichman.teampicker.tools.cloud.FirebaseHelper;
 
 import java.util.ArrayList;
 import java.util.Comparator;

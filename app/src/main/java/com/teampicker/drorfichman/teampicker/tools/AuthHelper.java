@@ -7,9 +7,12 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.teampicker.drorfichman.teampicker.tools.cloud.FirebaseHelper;
 
 import java.util.Arrays;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 public class AuthHelper {
 
@@ -30,7 +33,7 @@ public class AuthHelper {
         } else {
             Log.i("AccountFB", "User found " + user.getEmail() + " - " + user.getUid());
             Toast.makeText(ctx, "Welcome " + user.getEmail(), Toast.LENGTH_SHORT).show();
-            FirebaseHelper.storeAccountData();
+            FirebaseHelper.getInstance().storeAccountData();
         }
     }
 
@@ -38,7 +41,8 @@ public class AuthHelper {
         return FirebaseAuth.getInstance().getCurrentUser();
     }
 
+    @NonNull
     public static String getUerUID() {
-        return getUser().getUid();
+        return getUser() != null ? getUser().getUid() : "";
     }
 }

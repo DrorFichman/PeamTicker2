@@ -31,7 +31,7 @@ public class StatisticsActivity extends AppCompatActivity implements Sorting.sor
     TextView gradeTitle;
 
     private PlayerStatisticsAdapter playersAdapter;
-    Sorting sorting = new Sorting(this, sortType.success);
+    Sorting sorting = new Sorting(this::sortingChanged, sortType.success);
 
     private static final int ACTIVITY_RESULT_PLAYER = 1;
 

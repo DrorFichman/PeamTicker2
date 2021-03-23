@@ -44,7 +44,7 @@ public class PlayerParticipationFragment extends Fragment implements Sorting.sor
     private int[] teamsIcons;
 
     private int games = 50;
-    private Sorting sorting = new Sorting(this, sortType.gamesWith);
+    private Sorting sorting = new Sorting(this::sortingChanged, sortType.gamesWith);
 
     private ListView playersList;
     private View titles;
