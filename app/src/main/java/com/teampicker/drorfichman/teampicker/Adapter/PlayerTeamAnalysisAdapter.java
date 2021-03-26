@@ -13,13 +13,13 @@ import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.EffectMargin
 import com.teampicker.drorfichman.teampicker.Controller.TeamAnalyze.PlayerCollaboration;
 import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.R;
-import com.teampicker.drorfichman.teampicker.tools.MathTools;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
+
+import static com.teampicker.drorfichman.teampicker.tools.ColorHelper.setColorAlpha;
 
 /**
  * Created by drorfichman on 7/30/16.
@@ -96,8 +96,8 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
                 games.setText(context.getString(R.string.player_analysis_selected_games, selectedPlayerData.games));
                 collaboration.setText(selectedPlayerData.getExpectedWinRateString());
 
-                setAlpha(winRate, selectedPlayerData.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
-                setAlpha(collaboration, selectedPlayerData.getExpectedWinRateDiff(), MAX_DELTA_ALPHA);
+                setColorAlpha(getContext(), winRate, selectedPlayerData.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
+                setColorAlpha(getContext(), collaboration, selectedPlayerData.getExpectedWinRateDiff(), MAX_DELTA_ALPHA);
 
             } else { // collaborator of selected player stats
                 EffectMargin collaboratorEffect = selectedPlayerData.getEffect(player.mName);
@@ -108,8 +108,8 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
                     games.setText(context.getString(R.string.player_analysis_selected_games, collaboratorEffect.getGamesWith()));
                     collaboration.setText(context.getString(R.string.player_analysis_selected_win_rate, collaboratorEffect.getWinRateWith()));
 
-                    setAlpha(winRate, collaborator.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
-                    setAlpha(collaboration, collaboratorEffect.getWinRateMarginWith(), MAX_DELTA_ALPHA);
+                    setColorAlpha(getContext(), winRate, collaborator.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
+                    setColorAlpha(getContext(), collaboration, collaboratorEffect.getWinRateMarginWith(), MAX_DELTA_ALPHA);
                 } else {
                     setEmptyData(winRate, games, collaboration);
                 }
@@ -123,8 +123,8 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
                 games.setText(context.getString(R.string.player_analysis_selected_games, data.games));
                 collaboration.setText(data.getExpectedWinRateString());
 
-                setAlpha(winRate, data.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
-                setAlpha(collaboration,  data.getExpectedWinRate() - data.winRate, MAX_DELTA_ALPHA);
+                setColorAlpha(getContext(), winRate, data.winRate - 50, MAX_DELTA_WIN_RATE_ALPHA);
+                setColorAlpha(getContext(), collaboration,  data.getExpectedWinRate() - data.winRate, MAX_DELTA_ALPHA);
             } else {
                 setEmptyData(winRate, games, collaboration);
             }
@@ -138,15 +138,5 @@ public class PlayerTeamAnalysisAdapter extends ArrayAdapter<Player> {
         winRate.setAlpha(1);
         games.setAlpha(1);
         collaboration.setAlpha(1);
-    }
-
-    private void setAlpha(TextView textView, int delta, int maxDelta) {
-
-        if (delta > 0) textView.setTextColor(ContextCompat.getColor(getContext(), R.color.high));
-        else if (delta < 0) textView.setTextColor(ContextCompat.getColor(getContext(), R.color.low));
-        else textView.setTextColor(Color.BLACK);
-
-        float alpha = MathTools.getAlpha(delta, maxDelta);
-        textView.setTextColor(textView.getTextColors().withAlpha((int) (alpha * 255)));
     }
 }

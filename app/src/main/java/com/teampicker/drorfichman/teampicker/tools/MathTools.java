@@ -16,14 +16,15 @@ public class MathTools {
     }
 
     /**
-     * Returns a 0.5-1 value
+     * Returns a 0.35-1 value
      */
     public static float getAlpha(int value, int max) {
         if (max == 0) return 1;
         value = Math.abs(value);
-        float alpha = Math.abs((float) ((value) / (max)));
+        max = Math.abs(max);
+        float alpha = Math.abs((float) value / max);
         if (alpha > 1) return 1;
-        if (alpha < 0.3) return (float) 0.35;
+        if (alpha < 0.35) return (float) 0.35;
         return alpha;
     }
 

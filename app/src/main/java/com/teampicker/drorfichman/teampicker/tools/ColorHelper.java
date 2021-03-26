@@ -1,6 +1,8 @@
 package com.teampicker.drorfichman.teampicker.tools;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.widget.TextView;
 
 import com.teampicker.drorfichman.teampicker.R;
 
@@ -50,5 +52,13 @@ public class ColorHelper {
         return icons;
     }
 
+    public static void setColorAlpha(Context ctx, TextView textView, int delta, int maxDelta) {
 
+        if (delta > 0) textView.setTextColor(ContextCompat.getColor(ctx, R.color.high));
+        else if (delta < 0) textView.setTextColor(ContextCompat.getColor(ctx, R.color.low));
+        else textView.setTextColor(Color.BLACK);
+
+        float alpha = MathTools.getAlpha(delta, maxDelta);
+        textView.setTextColor(textView.getTextColors().withAlpha((int) (alpha * 255)));
+    }
 }

@@ -12,6 +12,8 @@ import com.teampicker.drorfichman.teampicker.R;
 
 import java.util.List;
 
+import static com.teampicker.drorfichman.teampicker.tools.ColorHelper.setColorAlpha;
+
 /**
  * Created by drorfichman on 7/30/16.
  */
@@ -19,6 +21,8 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
 
     private final Context context;
     private final List<Player> mPlayers;
+    int maxSuccess = 0;
+    int maxGames = 0;
 
     boolean isGradeVisible;
 
@@ -27,6 +31,15 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
         context = ctx;
         mPlayers = players;
         isGradeVisible = showGrades;
+
+        for (Player p : players) {
+            if (Math.abs(p.statistics.successRate) > maxSuccess) {
+                maxSuccess = p.statistics.successRate;
+            }
+            if (p.statistics.gamesCount > maxGames) {
+                maxGames = p.statistics.gamesCount;
+            }
+        }
     }
 
     @Override
@@ -35,7 +48,7 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
 
         TextView name = view.findViewById(R.id.player_name);
         TextView grade = view.findViewById(R.id.stat_player_grade);
-        TextView count = view.findViewById(R.id.stat_games_count);
+        TextView gamesCount = view.findViewById(R.id.stat_games_count);
         TextView success = view.findViewById(R.id.stat_success);
         TextView winRate = view.findViewById(R.id.stat_wins_percentage);
 
@@ -51,7 +64,11 @@ public class PlayerStatisticsAdapter extends ArrayAdapter<Player> {
 
         if (p.statistics != null) {
             success.setText(String.valueOf(p.statistics.successRate));
-            count.setText(String.valueOf(p.statistics.gamesCount));
+            setColorAlpha(context, success, p.statistics.successRate, maxSuccess);
+
+            gamesCount.setText(String.valueOf(p.statistics.gamesCount));
+            setColorAlpha(context, gamesCount, p.statistics.gamesCount, maxGames);
+
             winRate.setText(String.valueOf(p.statistics.getWinRateDisplay()));
         }
 

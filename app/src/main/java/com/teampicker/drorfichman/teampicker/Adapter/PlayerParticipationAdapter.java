@@ -17,6 +17,8 @@ import com.teampicker.drorfichman.teampicker.tools.ColorHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.teampicker.drorfichman.teampicker.tools.ColorHelper.setColorAlpha;
+
 /**
  * Created by drorfichman on 7/30/16.
  */
@@ -28,6 +30,9 @@ public class PlayerParticipationAdapter extends ArrayAdapter<PlayerParticipation
     private final ArrayList<Player> mOrange;
     private final int[] teamsIcons;
 
+    int maxSuccess = 0;
+    int maxGames = 0;
+
     public PlayerParticipationAdapter(Context ctx, List<PlayerParticipation> players,
                                       ArrayList<Player> blue, ArrayList<Player> orange) {
         super(ctx, -1, players);
@@ -37,6 +42,15 @@ public class PlayerParticipationAdapter extends ArrayAdapter<PlayerParticipation
         mOrange = orange;
 
         teamsIcons = ColorHelper.getTeamsIcons(ctx);
+
+        for (PlayerParticipation p : players) {
+            if (Math.max(Math.abs(p.successVs()), Math.abs(p.successWith())) > maxSuccess) {
+                maxSuccess = Math.max(Math.abs(p.successVs()), Math.abs(p.successWith()));
+            }
+            if (Math.max(p.gamesVsCount(), p.gamesWithCount()) > maxGames) {
+                maxGames = Math.max(p.gamesVsCount(), p.gamesWithCount());
+            }
+        }
     }
 
     @Override
@@ -56,16 +70,22 @@ public class PlayerParticipationAdapter extends ArrayAdapter<PlayerParticipation
         name.setText(p.mName);
 
         countWith.setText(String.valueOf(p.statisticsWith.gamesCount));
+        setColorAlpha(context, countWith, p.gamesWithCount(), maxGames);
+
         if (p.statisticsWith.gamesCount > 0)
             winRateWith.setText(context.getString(R.string.player_wins_participation, String.valueOf(p.statisticsWith.successRate), p.statisticsWith.getWinRateDisplay()));
         else
             winRateWith.setText(p.statisticsWith.getWinRateDisplay());
+        setColorAlpha(context, winRateWith, p.successWith(), maxSuccess);
 
         countVs.setText(String.valueOf(p.statisticsVs.gamesCount));
+        setColorAlpha(context, countVs, p.gamesVsCount(), maxGames);
+
         if (p.statisticsVs.gamesCount > 0)
             winRateVs.setText(context.getString(R.string.player_wins_participation, String.valueOf(p.statisticsVs.successRate), p.statisticsVs.getWinRateDisplay()));
         else
             winRateVs.setText(p.statisticsVs.getWinRateDisplay());
+        setColorAlpha(context, winRateVs, p.successVs(), maxSuccess);
 
         ImageView teamIcon = view.findViewById(R.id.team_icon);
         teamIcon.setVisibility(View.INVISIBLE);
