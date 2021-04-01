@@ -1,6 +1,7 @@
 package com.teampicker.drorfichman.teampicker.tools.cloud;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -16,8 +17,11 @@ import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerGame;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.tools.AuthHelper;
+import com.teampicker.drorfichman.teampicker.tools.cloud.queries.GetLastGame;
 
 import java.util.ArrayList;
+
+import androidx.appcompat.app.AlertDialog;
 
 public class FirebaseHelper implements CloudSync {
 
@@ -38,26 +42,26 @@ public class FirebaseHelper implements CloudSync {
         return helper;
     }
 
-    private enum Node {
+    public enum Node {
         players,
         games,
         playersGames,
         account
     }
 
-    private static DatabaseReference games() {
+    public static DatabaseReference games() {
         return getNode(Node.games);
     }
 
-    private static DatabaseReference playersGames() {
+    public static DatabaseReference playersGames() {
         return getNode(Node.playersGames);
     }
 
-    private static DatabaseReference account() {
+    public static DatabaseReference account() {
         return getNode(Node.account);
     }
 
-    private static DatabaseReference players() {
+    public static DatabaseReference players() {
         return getNode(Node.players);
     }
 
@@ -76,8 +80,6 @@ public class FirebaseHelper implements CloudSync {
         return key.replaceAll("\\.", "");
     }
 
-    //region Sync
-
     @Override
     public void syncToCloud(Context ctx, SyncProgress progress) {
         progress.showSyncStatus("Syncing...");
@@ -89,6 +91,7 @@ public class FirebaseHelper implements CloudSync {
                         })));
     }
 
+    //region Sync
     private static void syncPlayersToCloud(Context ctx, DataCallback handler) {
         players().removeValue((error, ref) -> {
             Log.i("syncPlayersToCloud", "Deleted error - " + error);
@@ -149,25 +152,44 @@ public class FirebaseHelper implements CloudSync {
             }
         });
     }
-
     //endregion
-
-    //region Pull
 
     @Override
     public void pullFromCloud(Context ctx, SyncProgress handler) {
-        DbHelper.deleteTableContents(ctx);
-        Log.i("pullFromCloud", "Delete local DB");
 
-        handler.showSyncStatus("Pulling...");
-        pullPlayersFromCloud(ctx, () ->
-                pullGamesFromCloud(ctx, () ->
-                        pullPlayersGamesFromCloud(ctx, () -> {
-                            Toast.makeText(ctx, "Pull completed", Toast.LENGTH_LONG).show();
-                            handler.showSyncStatus(null);
-                        })));
+        GetLastGame.query(ctx, (game) -> {
+            if (game != null) {
+                Log.d("Date", "Date " + game.dateString);
+                checkPull(ctx, game.getDisplayDate(ctx), handler);
+            } else {
+                Toast.makeText(ctx,"No Games found - sync to cloud first", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
+    private void checkPull(Context ctx, String date, SyncProgress handler) {
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
+
+        alertDialogBuilder.setTitle("Pull data from cloud? \n" +
+                "Last game - " + date)
+                .setCancelable(true)
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    DbHelper.deleteTableContents(ctx);
+                    Log.i("pullFromCloud", "Delete local DB");
+
+                    handler.showSyncStatus("Pulling...");
+                    pullPlayersFromCloud(ctx, () ->
+                            pullGamesFromCloud(ctx, () ->
+                                    pullPlayersGamesFromCloud(ctx, () -> {
+                                        Toast.makeText(ctx, "Pull completed", Toast.LENGTH_LONG).show();
+                                        handler.showSyncStatus(null);
+                                    })));
+                });
+        alertDialogBuilder.create().show();
+    }
+
+    //region Pull
     private static void pullPlayersFromCloud(Context ctx, DataCallback handler) {
         ValueEventListener playerListener = new ValueEventListener() {
             @Override
@@ -245,7 +267,6 @@ public class FirebaseHelper implements CloudSync {
 
         handler.DataChanged();
     }
-
     //endregion
 
     private static void storePlayer(Player p) {
