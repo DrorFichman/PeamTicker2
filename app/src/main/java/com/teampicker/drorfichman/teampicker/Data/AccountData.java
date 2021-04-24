@@ -12,6 +12,9 @@ public class AccountData {
     public long creation;
     public long lastUsage;
 
+    public AccountData() {
+    }
+
     public AccountData(FirebaseUser user) {
         if (user != null) {
             this.email = user.getEmail();

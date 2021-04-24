@@ -1,7 +1,6 @@
 package com.teampicker.drorfichman.teampicker.tools.cloud;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,7 +16,9 @@ import com.teampicker.drorfichman.teampicker.Data.Player;
 import com.teampicker.drorfichman.teampicker.Data.PlayerGame;
 import com.teampicker.drorfichman.teampicker.Data.TeamEnum;
 import com.teampicker.drorfichman.teampicker.tools.AuthHelper;
+import com.teampicker.drorfichman.teampicker.tools.DialogHelper;
 import com.teampicker.drorfichman.teampicker.tools.cloud.queries.GetLastGame;
+import com.teampicker.drorfichman.teampicker.tools.cloud.queries.GetUsers;
 
 import java.util.ArrayList;
 
@@ -66,13 +67,13 @@ public class FirebaseHelper implements CloudSync {
     }
 
     private static DatabaseReference getNode(Node node) {
-        if (AuthHelper.getUser() == null || AuthHelper.getUerUID().isEmpty()) {
+        if (AuthHelper.getUser() == null || AuthHelper.getUserUID().isEmpty()) {
             Log.e("AccountFB", "User is not connected" + AuthHelper.getUser());
             return null;
         }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        return database.getReference(AuthHelper.getUerUID()).child(node.name());
+        return database.getReference(AuthHelper.getUserUID()).child(node.name());
     }
 
     public static String sanitizeKey(String key) {
@@ -157,36 +158,72 @@ public class FirebaseHelper implements CloudSync {
     @Override
     public void pullFromCloud(Context ctx, SyncProgress handler) {
 
-        GetLastGame.query(ctx, (game) -> {
-            if (game != null) {
-                Log.d("Date", "Date " + game.dateString);
-                checkPull(ctx, game.getDisplayDate(ctx), handler);
-            } else {
-                Toast.makeText(ctx,"No Games found - sync to cloud first", Toast.LENGTH_LONG).show();
-            }
+        if (isAdmin()) {
+
+            GetUsers.query(ctx, result -> {
+                showUsersDialog(ctx, result);
+            });
+
+        } else {
+
+            GetLastGame.query(ctx, (game) -> {
+                if (game != null) {
+                    Log.d("Date", "Date " + game.dateString);
+                    checkPull(ctx, game.getDisplayDate(ctx), handler);
+                } else {
+                    Toast.makeText(ctx, "No Games found - sync to cloud first", Toast.LENGTH_LONG).show();
+                }
+            });
+
+        }
+    }
+
+    private void showUsersDialog(Context ctx, ArrayList<AccountData> users) {
+        Log.d("showUsersDialog", users.size() + " users ");
+        String[] list = new String[users.size()];
+        int curr = 0;
+        for (AccountData a : users) {
+            list[curr] = a.displayName;
+            curr++;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+        builder.setTitle("Pick a user");
+        builder.setItems(list, (dialog, which) -> {
+
+            // Fetch data from the selected user
+            AuthHelper.fetchFor(users.get(which));
+            fetchData(ctx, status -> {
+                if (status == null) {
+                    // Clear selection once done
+                    AuthHelper.fetchFor(null);
+                    Toast.makeText(ctx, "Pulled from " + users.get(which).displayName, Toast.LENGTH_LONG).show();
+                }
+            });
         });
+        builder.show();
     }
 
     private void checkPull(Context ctx, String date, SyncProgress handler) {
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ctx);
-
-        alertDialogBuilder.setTitle("Pull data from cloud? \n" +
-                "Last game - " + date)
-                .setCancelable(true)
-                .setPositiveButton("Yes", (dialog, which) -> {
-                    DbHelper.deleteTableContents(ctx);
-                    Log.i("pullFromCloud", "Delete local DB");
-
-                    handler.showSyncStatus("Pulling...");
-                    pullPlayersFromCloud(ctx, () ->
-                            pullGamesFromCloud(ctx, () ->
-                                    pullPlayersGamesFromCloud(ctx, () -> {
-                                        Toast.makeText(ctx, "Pull completed", Toast.LENGTH_LONG).show();
-                                        handler.showSyncStatus(null);
-                                    })));
+        DialogHelper.showApprovalDialog(ctx,
+                "Pull data from cloud? \n" + "Last game - " + date, "",
+                (dialog, which) -> {
+                    fetchData(ctx, handler);
                 });
-        alertDialogBuilder.create().show();
+    }
+
+    private void fetchData(Context ctx, SyncProgress handler) {
+        DbHelper.deleteTableContents(ctx);
+        Log.i("pullFromCloud", "Delete local DB");
+
+        handler.showSyncStatus("Pulling...");
+        pullPlayersFromCloud(ctx, () ->
+                pullGamesFromCloud(ctx, () ->
+                        pullPlayersGamesFromCloud(ctx, () -> {
+                            Toast.makeText(ctx, "Pull completed", Toast.LENGTH_LONG).show();
+                            handler.showSyncStatus(null);
+                        })));
     }
 
     //region Pull
@@ -284,6 +321,10 @@ public class FirebaseHelper implements CloudSync {
     @Override
     public void storeAccountData() {
         account().setValue(new AccountData(AuthHelper.getUser()));
+    }
+
+    public static boolean isAdmin() {
+        return ("T13cmH6prBhDyMeSgYrmKut7sPG3".equals(AuthHelper.getUserUID()));
     }
 }
 

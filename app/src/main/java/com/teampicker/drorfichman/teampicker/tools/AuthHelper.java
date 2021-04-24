@@ -7,6 +7,7 @@ import android.widget.Toast;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.teampicker.drorfichman.teampicker.Data.AccountData;
 import com.teampicker.drorfichman.teampicker.tools.cloud.FirebaseHelper;
 
 import java.util.Arrays;
@@ -42,7 +43,17 @@ public class AuthHelper {
     }
 
     @NonNull
-    public static String getUerUID() {
-        return getUser() != null ? getUser().getUid() : "";
+    public static String getUserUID() {
+        if (fetchUser != null && fetchUser.uid != null) {
+            return fetchUser.uid;
+        } else {
+            return getUser() != null ? getUser().getUid() : "";
+        }
+    }
+
+    // Allow fetching data on behalf of another user
+    static AccountData fetchUser;
+    public static void fetchFor(AccountData accountData) {
+        fetchUser = accountData;
     }
 }

@@ -154,8 +154,7 @@ public class MakeTeamsActivity extends AppCompatActivity {
 
     private void saveResults() {
         int currGame = DbHelper.getActiveGame(this);
-        Game game = new Game(currGame,
-                getGameDateString() != null ? getGameDateString() : DateHelper.getNow(),
+        Game game = new Game(currGame, getGameDateString(),
                 getScoreValue(team1Score), getScoreValue(team2Score));
 
         DbHelper.insertGame(this, game);

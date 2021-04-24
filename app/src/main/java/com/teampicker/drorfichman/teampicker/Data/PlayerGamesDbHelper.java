@@ -52,7 +52,7 @@ public class PlayerGamesDbHelper {
 
         ContentValues values = new ContentValues();
         values.put(PlayerContract.PlayerGameEntry.GAME, pg.gameId);
-        values.put(PlayerContract.PlayerGameEntry.DATE, DateHelper.getNow());
+        values.put(PlayerContract.PlayerGameEntry.DATE, pg.date != null ? pg.date : DateHelper.getNow());
         values.put(PlayerContract.PlayerGameEntry.NAME, pg.playerName);
         values.put(PlayerContract.PlayerGameEntry.PLAYER_GRADE, pg.playerGrade);
         values.put(PlayerContract.PlayerGameEntry.TEAM, pg.team.ordinal());

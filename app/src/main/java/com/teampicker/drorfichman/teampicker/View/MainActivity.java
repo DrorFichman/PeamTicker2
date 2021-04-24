@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity
     private static final int ACTIVITY_RESULT_PLAYER = 1;
     private static final int ACTIVITY_RESULT_IMPORT_FILE_SELECTED = 2;
     private static final int ACTIVITY_RESULT_SIGN_IN = 3;
-    private static final int RECENT_GAMES_COUNT = 10;
+    private static final int RECENT_GAMES_COUNT = 10; // for +/- grade suggestion
 
     private PlayerAdapter playersAdapter;
 
